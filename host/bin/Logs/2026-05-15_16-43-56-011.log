@@ -1,0 +1,34 @@
+﻿LOG 2026/05/15
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/15 16:43:56
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/36ef6e29-30c8-4a47-a814-8c57520a1eda/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "REBD-885 Yuria2 A Miraculous Port Town Yuria Yoshine -" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\REBD-885 Yuria2 A Miraculous Port Town Yuria Yoshine -_6891b8f8_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/en/rebd-885" -H "Origin: https://missav.ws"
+
+16:43:56.011 INFO : N_m3u8DL-RE (Beta version) 20251029
+16:43:56.012 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+16:43:56.013 EXTRA: User-Defined Header => referer: https://missav.ws/en/rebd-885
+16:43:56.013 EXTRA: User-Defined Header => origin: https://missav.ws
+16:43:56.013 INFO : Loading URL: https://surrit.com/36ef6e29-30c8-4a47-a814-8c57520a1eda/playlist.m3u8
+16:43:56.597 INFO : Content Matched: HTTP Live Streaming
+16:43:56.597 INFO : Parsing streams...
+16:43:56.597 WARN : Master List detected, try parse all streams
+16:43:56.600 WARN : Writing meta json
+16:43:56.601 INFO : Extracted, there are 3 streams, with 3 basic streams, 0 audio streams, 0 subtitle streams
+16:43:56.602 INFO : Vid 1280x720 | 4741 Kbps | avc1.64001f,mp4a.40.2
+16:43:56.602 INFO : Vid 854x480 | 2448 Kbps | avc1.64001e,mp4a.40.2
+16:43:56.603 INFO : Vid 640x360 | 1420 Kbps | avc1.64001e,mp4a.40.2
+16:43:56.603 INFO : Parsing streams...
+16:43:56.757 INFO : Selected streams:
+16:43:56.757 INFO : Vid 1280x720 | 4741 Kbps | avc1.64001f,mp4a.40.2 | 1235 Segments | ~01h22m17s
+16:43:56.758 WARN : Writing meta json
+16:43:56.761 INFO : Save Name: REBD-885 Yuria2 A Miraculous Port Town Yuria Yoshine -
+16:43:56.761 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+16:43:56.763 INFO : Start downloading...Vid 1280x720 | 4741 Kbps | avc1.64001f,mp4a.40.2
+16:43:57.356 WARN : Reading media info...
+16:43:57.397 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1280x720, 24 fps
+16:43:57.397 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 101 kb/s
+16:45:00.719 INFO : Binary merging...
+16:45:09.630 WARN : REBD-885 Yuria2 A Miraculous Port Town Yuria Yoshine -.ts
+16:45:09.632 WARN : Muxing to REBD-885 Yuria2 A Miraculous Port Town Yuria Yoshine -.MUX.mp4
+16:45:20.308 WARN : Cleaning files...
+16:45:20.430 WARN : Rename to REBD-885 Yuria2 A Miraculous Port Town Yuria Yoshine -.mp4
+16:45:20.431 INFO : Done

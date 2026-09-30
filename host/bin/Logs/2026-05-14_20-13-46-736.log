@@ -1,0 +1,330 @@
+﻿LOG 2026/05/14
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/14 20:13:46
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "FPRE-195 A cunning SM trainer turns a busty woman into (2)" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\FPRE-195 A cunning SM trainer turns a busty woman into (2)_d749f1ab_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/en/fpre-195" -H "Origin: https://missav.ws"
+
+20:13:46.739 INFO : N_m3u8DL-RE (Beta version) 20251029
+20:13:46.745 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+20:13:46.746 EXTRA: User-Defined Header => referer: https://missav.ws/en/fpre-195
+20:13:46.747 EXTRA: User-Defined Header => origin: https://missav.ws
+20:13:46.748 INFO : Loading URL: https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/playlist.m3u8
+20:13:47.674 INFO : Content Matched: HTTP Live Streaming
+20:13:47.677 INFO : Parsing streams...
+20:13:47.679 WARN : Master List detected, try parse all streams
+20:13:47.699 WARN : Writing meta json
+20:13:47.709 INFO : Extracted, there are 3 streams, with 3 basic streams, 0 audio streams, 0 subtitle streams
+20:13:47.715 INFO : Vid 1280x720 | 4738 Kbps | avc1.64001f,mp4a.40.2
+20:13:47.719 INFO : Vid 854x480 | 2443 Kbps | avc1.64001f,mp4a.40.2
+20:13:47.726 INFO : Vid 640x360 | 1416 Kbps | avc1.64001e,mp4a.40.2
+20:13:47.729 INFO : Parsing streams...
+20:13:47.905 INFO : Selected streams:
+20:13:47.906 INFO : Vid 1280x720 | 4738 Kbps | avc1.64001f,mp4a.40.2 | 2169 Segments | ~02h24m32s
+20:13:47.908 WARN : Writing meta json
+20:13:47.918 INFO : Save Name: FPRE-195 A cunning SM trainer turns a busty woman into (2)
+20:13:47.919 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+20:13:47.921 INFO : Start downloading...Vid 1280x720 | 4738 Kbps | avc1.64001f,mp4a.40.2
+20:13:48.613 WARN : Reading media info...
+20:13:48.886 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1280x720, 29.97 fps
+20:13:48.888 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 243 kb/s
+20:14:15.997 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 651044 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1017.jpeg
+20:14:16.251 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 891120 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1087.jpeg
+20:14:19.281 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 871944 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1137.jpeg
+20:14:19.397 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 725868 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1135.jpeg
+20:14:24.284 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 811596 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1190.jpeg
+20:14:39.866 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 989068 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1310.jpeg
+20:14:51.528 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 676236 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1413.jpeg
+20:14:51.637 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 615664 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1390.jpeg
+20:14:54.434 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 372024 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video932.jpeg
+20:14:54.665 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 893752 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1439.jpeg
+20:14:56.255 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 684548 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1399.jpeg
+20:15:05.334 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 78108 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video779.jpeg
+20:15:06.406 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 705416 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1478.jpeg
+20:15:07.164 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 1027384 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video932.jpeg
+20:15:12.738 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 1001252 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1530.jpeg
+20:15:13.832 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 783772 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1615.jpeg
+20:15:14.501 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 474928 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1546.jpeg
+20:15:15.437 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 611940 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1637.jpeg
+20:15:15.491 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 682628 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1638.jpeg
+20:15:16.491 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 422404 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1399.jpeg
+20:15:22.022 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 287984 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1390.jpeg
+20:15:26.539 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 712560 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1683.jpeg
+20:15:31.179 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 935716 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1530.jpeg
+20:15:35.889 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 853144 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1777.jpeg
+20:15:35.963 EXTRA: Ah oh!
+RetryCount => 1
+Exception  => The response ended prematurely, with at least 550128 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1390.jpeg
+20:15:37.478 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 654616 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1788.jpeg
+20:15:41.333 EXTRA: Ah oh!
+RetryCount => 1
+Exception  => The response ended prematurely, with at least 568632 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video932.jpeg
+20:15:42.143 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 473876 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1699.jpeg
+20:15:44.432 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 214252 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1601.jpeg
+20:15:50.776 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 366044 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1642.jpeg
+20:15:53.103 EXTRA: Ah oh!
+RetryCount => 0
+Exception  => The response ended prematurely, with at least 484592 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1390.jpeg
+20:15:53.104 EXTRA: The retry attempts have been exhausted and the download of this segment has failed.
+Exception  => The response ended prematurely, with at least 484592 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1390.jpeg
+20:15:53.105 WARN : The response ended prematurely, with at least 484592 additional bytes expected. (ResponseEnded)
+20:15:53.218 EXTRA: Ah oh!
+RetryCount => 0
+Exception  => The response ended prematurely, with at least 1092920 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video932.jpeg
+20:15:53.219 EXTRA: The retry attempts have been exhausted and the download of this segment has failed.
+Exception  => The response ended prematurely, with at least 1092920 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video932.jpeg
+20:15:53.219 WARN : The response ended prematurely, with at least 1092920 additional bytes expected. (ResponseEnded)
+20:15:57.159 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 427368 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1805.jpeg
+20:15:57.292 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 372208 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1840.jpeg
+20:15:59.097 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 541932 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1601.jpeg
+20:16:00.110 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 597016 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1875.jpeg
+20:16:00.132 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 274716 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video779.jpeg
+20:16:00.844 EXTRA: Ah oh!
+RetryCount => 1
+Exception  => The response ended prematurely, with at least 673572 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1530.jpeg
+20:16:02.418 EXTRA: Ah oh!
+RetryCount => 1
+Exception  => The response ended prematurely, with at least 160260 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1399.jpeg
+20:16:03.233 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 1240048 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1947.jpeg
+20:16:10.110 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 188272 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1683.jpeg
+20:16:13.274 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 739484 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1900.jpeg
+20:16:13.496 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 463464 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1880.jpeg
+20:16:15.455 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 915184 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video2002.jpeg
+20:16:16.974 EXTRA: Ah oh!
+RetryCount => 0
+Exception  => The response ended prematurely, with at least 804644 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1530.jpeg
+20:16:16.976 EXTRA: The retry attempts have been exhausted and the download of this segment has failed.
+Exception  => The response ended prematurely, with at least 804644 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1530.jpeg
+20:16:16.976 WARN : The response ended prematurely, with at least 804644 additional bytes expected. (ResponseEnded)
+20:16:19.830 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 211732 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1699.jpeg
+20:16:20.957 EXTRA: Ah oh!
+RetryCount => 1
+Exception  => The response ended prematurely, with at least 279788 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1601.jpeg
+20:16:22.451 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 1177444 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video2043.jpeg
+20:16:23.721 EXTRA: Ah oh!
+RetryCount => 1
+Exception  => The response ended prematurely, with at least 778096 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1683.jpeg
+20:16:23.968 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 1067164 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1900.jpeg
+20:16:25.351 EXTRA: Ah oh!
+RetryCount => 1
+Exception  => The response ended prematurely, with at least 864540 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video779.jpeg
+20:16:27.742 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 400408 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1875.jpeg
+20:16:32.684 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 954288 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video2131.jpeg
+20:16:32.776 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 1155072 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video2127.jpeg
+20:16:33.639 EXTRA: Ah oh!
+RetryCount => 0
+Exception  => The response ended prematurely, with at least 1126684 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video779.jpeg
+20:16:33.640 EXTRA: The retry attempts have been exhausted and the download of this segment has failed.
+Exception  => The response ended prematurely, with at least 1126684 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video779.jpeg
+20:16:33.640 WARN : The response ended prematurely, with at least 1126684 additional bytes expected. (ResponseEnded)
+20:16:34.970 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 361832 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1805.jpeg
+20:16:38.408 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 204920 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video2162.jpeg
+20:16:47.958 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 826492 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video2020.jpeg
+20:16:51.155 EXTRA: Ah oh!
+RetryCount => 1
+Exception  => The response ended prematurely, with at least 277268 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1699.jpeg
+20:16:51.854 EXTRA: Ah oh!
+RetryCount => 0
+Exception  => The response ended prematurely, with at least 410860 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1601.jpeg
+20:16:51.855 EXTRA: The retry attempts have been exhausted and the download of this segment has failed.
+Exception  => The response ended prematurely, with at least 410860 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1601.jpeg
+20:16:51.856 WARN : The response ended prematurely, with at least 410860 additional bytes expected. (ResponseEnded)
+20:16:58.147 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 135784 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1880.jpeg
+20:17:08.872 EXTRA: Ah oh!
+RetryCount => 0
+Exception  => The response ended prematurely, with at least 473876 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1699.jpeg
+20:17:08.873 EXTRA: The retry attempts have been exhausted and the download of this segment has failed.
+Exception  => The response ended prematurely, with at least 473876 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1699.jpeg
+20:17:08.874 WARN : The response ended prematurely, with at least 473876 additional bytes expected. (ResponseEnded)
+20:17:12.651 EXTRA: Ah oh!
+RetryCount => 1
+Exception  => The response ended prematurely, with at least 346268 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1900.jpeg
+20:17:19.725 EXTRA: Ah oh!
+RetryCount => 0
+Exception  => The response ended prematurely, with at least 1132700 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1900.jpeg
+20:17:19.727 EXTRA: The retry attempts have been exhausted and the download of this segment has failed.
+Exception  => The response ended prematurely, with at least 1132700 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video1900.jpeg
+20:17:19.728 WARN : The response ended prematurely, with at least 1132700 additional bytes expected. (ResponseEnded)
+20:17:25.870 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 826492 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video2020.jpeg
+20:17:36.315 EXTRA: Ah oh!
+RetryCount => 1
+Exception  => The response ended prematurely, with at least 1285244 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video2020.jpeg
+20:17:52.700 EXTRA: Ah oh!
+RetryCount => 0
+Exception  => The response ended prematurely, with at least 1154172 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video2020.jpeg
+20:17:52.701 EXTRA: The retry attempts have been exhausted and the download of this segment has failed.
+Exception  => The response ended prematurely, with at least 1154172 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/63b7dd23-7d20-4087-bf9e-fa0b20b6edec/720p/video2020.jpeg
+20:17:52.702 WARN : The response ended prematurely, with at least 1154172 additional bytes expected. (ResponseEnded)
+20:17:52.708 ERROR: Segment count check not pass, total: 2169, downloaded: 2161.
+20:17:52.715 ERROR: Failed

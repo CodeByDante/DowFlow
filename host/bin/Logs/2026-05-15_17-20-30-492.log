@@ -1,0 +1,35 @@
+﻿LOG 2026/05/15
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/15 17:20:30
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/04807b19-ace9-42f2-b025-55d4f53839b0/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "ACZD-200 Captive Bondage Lady DID Collection 2 - Yuria" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\ACZD-200 Captive Bondage Lady DID Collection 2 - Yuria_424027b0_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/en/aczd-200" -H "Origin: https://missav.ws"
+
+17:20:30.493 INFO : N_m3u8DL-RE (Beta version) 20251029
+17:20:30.496 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+17:20:30.497 EXTRA: User-Defined Header => referer: https://missav.ws/en/aczd-200
+17:20:30.497 EXTRA: User-Defined Header => origin: https://missav.ws
+17:20:30.498 INFO : Loading URL: https://surrit.com/04807b19-ace9-42f2-b025-55d4f53839b0/playlist.m3u8
+17:20:31.130 INFO : Content Matched: HTTP Live Streaming
+17:20:31.131 INFO : Parsing streams...
+17:20:31.133 WARN : Master List detected, try parse all streams
+17:20:31.141 WARN : Writing meta json
+17:20:31.144 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+17:20:31.145 INFO : Vid 1920x1080 | 7980 Kbps | avc1.640028,mp4a.40.2
+17:20:31.146 INFO : Vid 1280x720 | 4471 Kbps | avc1.64001f,mp4a.40.2
+17:20:31.147 INFO : Vid 854x480 | 2238 Kbps | avc1.64001f,mp4a.40.2
+17:20:31.148 INFO : Vid 640x360 | 1281 Kbps | avc1.64001e,mp4a.40.2
+17:20:31.150 INFO : Parsing streams...
+17:20:31.352 INFO : Selected streams:
+17:20:31.358 INFO : Vid 1920x1080 | 7980 Kbps | avc1.640028,mp4a.40.2 | 2853 Segments | ~03h10m11s
+17:20:31.359 WARN : Writing meta json
+17:20:31.373 INFO : Save Name: ACZD-200 Captive Bondage Lady DID Collection 2 - Yuria
+17:20:31.374 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+17:20:31.378 INFO : Start downloading...Vid 1920x1080 | 7980 Kbps | avc1.640028,mp4a.40.2
+17:20:31.926 WARN : Reading media info...
+17:20:32.029 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1920x1080, 29.97 fps
+17:20:32.031 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+17:23:06.245 INFO : Binary merging...
+17:23:44.653 WARN : ACZD-200 Captive Bondage Lady DID Collection 2 - Yuria.ts
+17:23:44.667 WARN : Muxing to ACZD-200 Captive Bondage Lady DID Collection 2 - Yuria.MUX.mp4
+17:25:34.238 WARN : Cleaning files...
+17:25:34.460 WARN : Rename to ACZD-200 Captive Bondage Lady DID Collection 2 - Yuria.mp4
+17:25:34.463 INFO : Done

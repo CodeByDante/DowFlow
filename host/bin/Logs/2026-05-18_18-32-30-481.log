@@ -1,0 +1,29 @@
+﻿LOG 2026/05/18
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/18 18:32:30
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://r2.1hanime.com/kegareboshi-3.mp4?verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D --save-dir C:\Users\Gonzalo\Downloads --save-name r2.1hanime.comkegareboshi-3.mp4verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D --auto-select --thread-count 4 --tmp-dir C:\Users\Gonzalo\AppData\Local\Temp\r2.1hanime.comkegareboshi-3.mp4verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D_454f5a6a_tmp --mux-after-done mp4 -H "Referer: https://r2.1hanime.com/kegareboshi-3.mp4?verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D" -H "Origin: https://r2.1hanime.com"
+
+18:32:30.482 INFO : N_m3u8DL-RE (Beta version) 20251029
+18:32:30.484 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+18:32:30.485 EXTRA: User-Defined Header => referer: https://r2.1hanime.com/kegareboshi-3.mp4?verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D
+18:32:30.486 EXTRA: User-Defined Header => origin: https://r2.1hanime.com
+18:32:30.486 INFO : Loading URL: https://r2.1hanime.com/kegareboshi-3.mp4?verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D
+18:32:30.827 WARN : Response status code does not indicate success: 403 (Forbidden). (1/10)
+18:32:32.337 INFO : Loading URL: https://r2.1hanime.com/kegareboshi-3.mp4?verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D
+18:32:32.564 WARN : Response status code does not indicate success: 403 (Forbidden). (2/10)
+18:32:34.081 INFO : Loading URL: https://r2.1hanime.com/kegareboshi-3.mp4?verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D
+18:32:34.334 WARN : Response status code does not indicate success: 403 (Forbidden). (3/10)
+18:32:35.844 INFO : Loading URL: https://r2.1hanime.com/kegareboshi-3.mp4?verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D
+18:32:36.071 WARN : Response status code does not indicate success: 403 (Forbidden). (4/10)
+18:32:37.579 INFO : Loading URL: https://r2.1hanime.com/kegareboshi-3.mp4?verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D
+18:32:37.804 WARN : Response status code does not indicate success: 403 (Forbidden). (5/10)
+18:32:39.315 INFO : Loading URL: https://r2.1hanime.com/kegareboshi-3.mp4?verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D
+18:32:39.570 WARN : Response status code does not indicate success: 403 (Forbidden). (6/10)
+18:32:41.074 INFO : Loading URL: https://r2.1hanime.com/kegareboshi-3.mp4?verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D
+18:32:41.303 WARN : Response status code does not indicate success: 403 (Forbidden). (7/10)
+18:32:42.814 INFO : Loading URL: https://r2.1hanime.com/kegareboshi-3.mp4?verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D
+18:32:43.026 WARN : Response status code does not indicate success: 403 (Forbidden). (8/10)
+18:32:44.542 INFO : Loading URL: https://r2.1hanime.com/kegareboshi-3.mp4?verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D
+18:32:44.787 WARN : Response status code does not indicate success: 403 (Forbidden). (9/10)
+18:32:46.290 INFO : Loading URL: https://r2.1hanime.com/kegareboshi-3.mp4?verify=1779147100-ZTp53EZ4gqlkcyW7eh0ZS8oaEQ1aPcVK0FV8qxombro%3D
+18:32:46.516 WARN : Response status code does not indicate success: 403 (Forbidden). (10/10)

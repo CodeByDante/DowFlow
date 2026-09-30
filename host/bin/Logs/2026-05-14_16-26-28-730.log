@@ -1,0 +1,34 @@
+﻿LOG 2026/05/14
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/14 16:26:28
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/a9081d0f-a0c7-441d-9833-39e38d82ec81/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "55T3800027 A group of sugar daddies will teach this arr" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\55T3800027 A group of sugar daddies will teach this arr_45c2dd07_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/en/55t3800027" -H "Origin: https://missav.ws"
+
+16:26:28.731 INFO : N_m3u8DL-RE (Beta version) 20251029
+16:26:28.733 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+16:26:28.734 EXTRA: User-Defined Header => referer: https://missav.ws/en/55t3800027
+16:26:28.735 EXTRA: User-Defined Header => origin: https://missav.ws
+16:26:28.735 INFO : Loading URL: https://surrit.com/a9081d0f-a0c7-441d-9833-39e38d82ec81/playlist.m3u8
+16:26:29.391 INFO : Content Matched: HTTP Live Streaming
+16:26:29.393 INFO : Parsing streams...
+16:26:29.395 WARN : Master List detected, try parse all streams
+16:26:29.404 WARN : Writing meta json
+16:26:29.409 INFO : Extracted, there are 3 streams, with 3 basic streams, 0 audio streams, 0 subtitle streams
+16:26:29.412 INFO : Vid 1280x720 | 4737 Kbps | avc1.64001f,mp4a.40.2
+16:26:29.414 INFO : Vid 854x480 | 2445 Kbps | avc1.64001e,mp4a.40.2
+16:26:29.417 INFO : Vid 640x360 | 1418 Kbps | avc1.64001e,mp4a.40.2
+16:26:29.419 INFO : Parsing streams...
+16:26:29.635 INFO : Selected streams:
+16:26:29.637 INFO : Vid 1280x720 | 4737 Kbps | avc1.64001f,mp4a.40.2 | 2471 Segments | ~02h44m43s
+16:26:29.640 WARN : Writing meta json
+16:26:29.660 INFO : Save Name: 55T3800027 A group of sugar daddies will teach this arr
+16:26:29.662 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+16:26:29.667 INFO : Start downloading...Vid 1280x720 | 4737 Kbps | avc1.64001f,mp4a.40.2
+16:26:30.455 WARN : Reading media info...
+16:26:30.601 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1280x720, 24 fps
+16:26:30.603 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 235 kb/s
+16:27:32.252 INFO : Binary merging...
+16:27:49.294 WARN : 55T3800027 A group of sugar daddies will teach this arr.ts
+16:27:49.295 WARN : Muxing to 55T3800027 A group of sugar daddies will teach this arr.MUX.mp4
+16:28:47.230 WARN : Cleaning files...
+16:28:47.379 WARN : Rename to 55T3800027 A group of sugar daddies will teach this arr.mp4
+16:28:47.382 INFO : Done

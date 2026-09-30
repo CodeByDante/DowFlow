@@ -1,0 +1,31 @@
+﻿LOG 2026/05/13
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/13 22:42:27
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/f5ae2943-4e5e-4092-a790-183f07098eeb/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "MIMK-249 A live-action version of a female boss who is" --auto-select --thread-count 16 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\MIMK-249 A live-action version of a female boss who is_tmp" -H "Referer: https://missav.ws/en/mimk-249-uncensored-leak" -H "Origin: https://missav.ws"
+
+22:42:27.958 INFO : N_m3u8DL-RE (Beta version) 20251029
+22:42:27.960 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+22:42:27.961 EXTRA: User-Defined Header => referer: https://missav.ws/en/mimk-249-uncensored-leak
+22:42:27.961 EXTRA: User-Defined Header => origin: https://missav.ws
+22:42:27.962 INFO : Loading URL: https://surrit.com/f5ae2943-4e5e-4092-a790-183f07098eeb/playlist.m3u8
+22:42:28.595 INFO : Content Matched: HTTP Live Streaming
+22:42:28.597 INFO : Parsing streams...
+22:42:28.599 WARN : Master List detected, try parse all streams
+22:42:28.608 WARN : Writing meta json
+22:42:28.616 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+22:42:28.617 INFO : Vid 1920x1080 | 8115 Kbps | avc1.640028,mp4a.40.2
+22:42:28.619 INFO : Vid 1280x720 | 4606 Kbps | avc1.64001f,mp4a.40.2
+22:42:28.621 INFO : Vid 854x480 | 2514 Kbps | avc1.64001f,mp4a.40.2
+22:42:28.623 INFO : Vid 640x360 | 1416 Kbps | avc1.64001e,mp4a.40.2
+22:42:28.625 INFO : Parsing streams...
+22:42:28.860 INFO : Selected streams:
+22:42:28.862 INFO : Vid 1920x1080 | 8115 Kbps | avc1.640028,mp4a.40.2 | 1801 Segments | ~02h00m02s
+22:42:28.867 WARN : Writing meta json
+22:42:28.882 INFO : Save Name: MIMK-249 A live-action version of a female boss who is
+22:42:28.890 INFO : Start downloading...Vid 1920x1080 | 8115 Kbps | avc1.640028,mp4a.40.2
+22:42:29.702 WARN : Reading media info...
+22:42:29.963 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1920x1080, 30 fps
+22:42:29.965 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 116 kb/s
+22:44:50.197 INFO : ffmpeg merging...
+22:44:50.199 WARN : Segments more than 1800, start partial merge...
+22:46:29.726 INFO : Done

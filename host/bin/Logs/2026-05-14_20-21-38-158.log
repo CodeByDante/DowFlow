@@ -1,0 +1,43 @@
+﻿LOG 2026/05/14
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/14 20:21:38
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/25144bca-c9d3-49ec-848a-fd3302dd4d9b/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "MIMK-232 Series sales exceed 55,000 copies! Cum inside (2)" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\MIMK-232 Series sales exceed 55,000 copies! Cum inside (2)_b9d45cc5_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/en/mimk-232-uncensored-leak" -H "Origin: https://missav.ws"
+
+20:21:38.159 INFO : N_m3u8DL-RE (Beta version) 20251029
+20:21:38.160 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+20:21:38.161 EXTRA: User-Defined Header => referer: https://missav.ws/en/mimk-232-uncensored-leak
+20:21:38.162 EXTRA: User-Defined Header => origin: https://missav.ws
+20:21:38.162 INFO : Loading URL: https://surrit.com/25144bca-c9d3-49ec-848a-fd3302dd4d9b/playlist.m3u8
+20:21:38.742 INFO : Content Matched: HTTP Live Streaming
+20:21:38.743 INFO : Parsing streams...
+20:21:38.744 WARN : Master List detected, try parse all streams
+20:21:38.751 WARN : Writing meta json
+20:21:38.754 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+20:21:38.756 INFO : Vid 1920x1080 | 8258 Kbps | avc1.640028,mp4a.40.2
+20:21:38.757 INFO : Vid 1280x720 | 4749 Kbps | avc1.64001f,mp4a.40.2
+20:21:38.758 INFO : Vid 854x480 | 2447 Kbps | avc1.64001f,mp4a.40.2
+20:21:38.759 INFO : Vid 640x360 | 1418 Kbps | avc1.64001e,mp4a.40.2
+20:21:38.761 INFO : Parsing streams...
+20:21:39.035 INFO : Selected streams:
+20:21:39.036 INFO : Vid 1920x1080 | 8258 Kbps | avc1.640028,mp4a.40.2 | 1827 Segments | ~02h01m46s
+20:21:39.037 WARN : Writing meta json
+20:21:39.048 INFO : Save Name: MIMK-232 Series sales exceed 55,000 copies! Cum inside (2)
+20:21:39.049 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+20:21:39.051 INFO : Start downloading...Vid 1920x1080 | 8258 Kbps | avc1.640028,mp4a.40.2
+20:21:39.657 WARN : Reading media info...
+20:21:39.751 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1920x1080, 30 fps
+20:21:39.752 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+20:22:19.873 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 2130040 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/25144bca-c9d3-49ec-848a-fd3302dd4d9b/1080p/video923.jpeg
+20:22:40.259 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 2500588 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/25144bca-c9d3-49ec-848a-fd3302dd4d9b/1080p/video1230.jpeg
+20:23:12.205 INFO : Binary merging...
+20:23:41.596 WARN : MIMK-232 Series sales exceed 55,000 copies! Cum inside (2).ts
+20:23:41.605 WARN : Muxing to MIMK-232 Series sales exceed 55,000 copies! Cum inside (2).MUX.mp4
+20:24:55.355 WARN : Cleaning files...
+20:24:55.605 WARN : Rename to MIMK-232 Series sales exceed 55,000 copies! Cum inside (2).mp4
+20:24:55.607 INFO : Done

@@ -1,0 +1,35 @@
+﻿LOG 2026/06/23
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\Logs
+Task Start: 2026/06/23 10:15:14
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\N_m3u8DL-RE.exe" https://video3.xhcdn.com/key=7v9AgPYTenHy3lWLdfc0Fw,end=1782241200/data=2001:1388:74a3:e9b2:746e:c814:102:4592-dvp/media=hls4/multi=256x144:144p:,426x240:240p:,854x480:480p:,1280x720:720p:/028/521/822/_TPL_.av1.mp4.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "Thick Pantyhose Peeks From the Big Booty Wives Next Door! - C feat. Mihina Nagai" --auto-select --thread-count 16 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\Thick Pantyhose Peeks From the Big Booty Wives Next Door! - C feat. Mihina Nagai_1204d41d_tmp" --mux-after-done mp4 -H "Referer: https://xhamster.com/videos/thick-pantyhose-peeks-from-the-big-booty-wives-next-door-c-xh4uvx8" -H "Origin: https://xhamster.com"
+
+10:15:14.502 INFO : N_m3u8DL-RE (Beta version) 20251029
+10:15:14.503 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\ffmpeg.exe
+10:15:14.503 EXTRA: User-Defined Header => referer: https://xhamster.com/videos/thick-pantyhose-peeks-from-the-big-booty-wives-next-door-c-xh4uvx8
+10:15:14.504 EXTRA: User-Defined Header => origin: https://xhamster.com
+10:15:14.504 INFO : Loading URL: https://video3.xhcdn.com/key=7v9AgPYTenHy3lWLdfc0Fw,end=1782241200/data=2001:1388:74a3:e9b2:746e:c814:102:4592-dvp/media=hls4/multi=256x144:144p:,426x240:240p:,854x480:480p:,1280x720:720p:/028/521/822/_TPL_.av1.mp4.m3u8
+10:15:15.027 INFO : Content Matched: HTTP Live Streaming
+10:15:15.028 INFO : Parsing streams...
+10:15:15.028 WARN : Master List detected, try parse all streams
+10:15:15.031 WARN : Writing meta json
+10:15:15.034 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+10:15:15.035 INFO : Vid 1280x720 | 853 Kbps
+10:15:15.035 INFO : Vid 854x480 | 487 Kbps
+10:15:15.036 INFO : Vid 426x240 | 223 Kbps
+10:15:15.037 INFO : Vid 256x144 | 123 Kbps
+10:15:15.038 INFO : Parsing streams...
+10:15:15.246 INFO : Selected streams:
+10:15:15.247 INFO : Vid 1280x720 | 853 Kbps | 1096 Segments | ~01h13m04s
+10:15:15.248 WARN : Writing meta json
+10:15:15.251 INFO : Save Name: Thick Pantyhose Peeks From the Big Booty Wives Next Door! - C feat. Mihina Nagai
+10:15:15.251 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+10:15:15.253 INFO : Start downloading...Vid 1280x720 | 853 Kbps
+10:15:15.523 WARN : Reading media info...
+10:15:15.579 INFO : [0x1]: Video, av1 (libdav1d) (Main) (av01), 1280x720
+10:15:15.580 INFO : [0x2]: Audio, aac (mp4a), 131 kb/s
+10:15:26.959 INFO : Binary merging...
+10:15:28.057 WARN : Thick Pantyhose Peeks From the Big Booty Wives Next Door! - C feat. Mihina Nagai.mp4
+10:15:28.058 WARN : Muxing to Thick Pantyhose Peeks From the Big Booty Wives Next Door! - C feat. Mihina Nagai.MUX.mp4
+10:15:31.699 WARN : Cleaning files...
+10:15:31.740 WARN : Rename to Thick Pantyhose Peeks From the Big Booty Wives Next Door! - C feat. Mihina Nagai.mp4
+10:15:31.957 INFO : Done

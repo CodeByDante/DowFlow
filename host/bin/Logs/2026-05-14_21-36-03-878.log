@@ -1,0 +1,34 @@
+﻿LOG 2026/05/14
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/14 21:36:03
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/88880540-7037-4362-a73d-64be5bdb6c07/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "FPRE-128 I found out that my annoying female boss is ac (2)" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\FPRE-128 I found out that my annoying female boss is ac (2)_46b2bc09_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/dm36/en/fpre-128" -H "Origin: https://missav.ws"
+
+21:36:03.879 INFO : N_m3u8DL-RE (Beta version) 20251029
+21:36:03.880 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+21:36:03.881 EXTRA: User-Defined Header => referer: https://missav.ws/dm36/en/fpre-128
+21:36:03.881 EXTRA: User-Defined Header => origin: https://missav.ws
+21:36:03.882 INFO : Loading URL: https://surrit.com/88880540-7037-4362-a73d-64be5bdb6c07/playlist.m3u8
+21:36:04.452 INFO : Content Matched: HTTP Live Streaming
+21:36:04.455 INFO : Parsing streams...
+21:36:04.459 WARN : Master List detected, try parse all streams
+21:36:04.465 WARN : Writing meta json
+21:36:04.468 INFO : Extracted, there are 3 streams, with 3 basic streams, 0 audio streams, 0 subtitle streams
+21:36:04.474 INFO : Vid 1280x720 | 4606 Kbps | avc1.64001f,mp4a.40.2
+21:36:04.476 INFO : Vid 854x480 | 2514 Kbps | avc1.64001e,mp4a.40.2
+21:36:04.481 INFO : Vid 640x360 | 1416 Kbps | avc1.64001e,mp4a.40.2
+21:36:04.482 INFO : Parsing streams...
+21:36:04.673 INFO : Selected streams:
+21:36:04.680 INFO : Vid 1280x720 | 4606 Kbps | avc1.64001f,mp4a.40.2 | 2228 Segments | ~02h28m31s
+21:36:04.683 WARN : Writing meta json
+21:36:04.696 INFO : Save Name: FPRE-128 I found out that my annoying female boss is ac (2)
+21:36:04.700 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+21:36:04.704 INFO : Start downloading...Vid 1280x720 | 4606 Kbps | avc1.64001f,mp4a.40.2
+21:36:05.048 WARN : Reading media info...
+21:36:05.144 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1280x720, 24 fps
+21:36:05.145 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+21:37:02.493 INFO : Binary merging...
+21:37:14.658 WARN : FPRE-128 I found out that my annoying female boss is ac (2).ts
+21:37:14.659 WARN : Muxing to FPRE-128 I found out that my annoying female boss is ac (2).MUX.mp4
+21:37:46.767 WARN : Cleaning files...
+21:37:46.872 WARN : Rename to FPRE-128 I found out that my annoying female boss is ac (2).mp4
+21:37:46.873 INFO : Done

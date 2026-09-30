@@ -1,0 +1,10 @@
+﻿LOG 2026/05/14
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/14 15:08:14
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://www.youtube.com/watch?v=WRxpwpi6-4c --save-dir C:\Users\Gonzalo\Downloads --save-name "efecto de sonid ode humo" --auto-select --thread-count 24 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\efecto de sonid ode humo_tmp" -H "Referer: https://www.youtube.com/watch?v=WRxpwpi6-4c" -H "Origin: https://www.youtube.com"
+
+15:08:14.671 INFO : N_m3u8DL-RE (Beta version) 20251029
+15:08:14.685 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+15:08:14.685 EXTRA: User-Defined Header => referer: https://www.youtube.com/watch?v=WRxpwpi6-4c
+15:08:14.686 EXTRA: User-Defined Header => origin: https://www.youtube.com
+15:08:14.687 INFO : Loading URL: https://www.youtube.com/watch?v=WRxpwpi6-4c

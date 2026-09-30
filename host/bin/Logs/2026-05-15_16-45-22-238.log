@@ -1,0 +1,34 @@
+﻿LOG 2026/05/15
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/15 16:45:22
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/749c75fd-2c59-459f-a9f6-f94166d622c2/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "FPRE-117 The first exclusive release! Yuria Yoshine, th" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\FPRE-117 The first exclusive release! Yuria Yoshine, th_2f345f4b_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/dm56/en/fpre-117" -H "Origin: https://missav.ws"
+
+16:45:22.239 INFO : N_m3u8DL-RE (Beta version) 20251029
+16:45:22.240 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+16:45:22.240 EXTRA: User-Defined Header => referer: https://missav.ws/dm56/en/fpre-117
+16:45:22.240 EXTRA: User-Defined Header => origin: https://missav.ws
+16:45:22.240 INFO : Loading URL: https://surrit.com/749c75fd-2c59-459f-a9f6-f94166d622c2/playlist.m3u8
+16:45:22.854 INFO : Content Matched: HTTP Live Streaming
+16:45:22.855 INFO : Parsing streams...
+16:45:22.855 WARN : Master List detected, try parse all streams
+16:45:22.858 WARN : Writing meta json
+16:45:22.859 INFO : Extracted, there are 3 streams, with 3 basic streams, 0 audio streams, 0 subtitle streams
+16:45:22.860 INFO : Vid 1280x720 | 4733 Kbps | avc1.64001f,mp4a.40.2
+16:45:22.860 INFO : Vid 854x480 | 2442 Kbps | avc1.64001e,mp4a.40.2
+16:45:22.861 INFO : Vid 640x360 | 1416 Kbps | avc1.64001e,mp4a.40.2
+16:45:22.861 INFO : Parsing streams...
+16:45:23.024 INFO : Selected streams:
+16:45:23.025 INFO : Vid 1280x720 | 4733 Kbps | avc1.64001f,mp4a.40.2 | 2477 Segments | ~02h45m07s
+16:45:23.026 WARN : Writing meta json
+16:45:23.032 INFO : Save Name: FPRE-117 The first exclusive release! Yuria Yoshine, th
+16:45:23.033 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+16:45:23.034 INFO : Start downloading...Vid 1280x720 | 4733 Kbps | avc1.64001f,mp4a.40.2
+16:45:23.362 WARN : Reading media info...
+16:45:23.417 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1280x720, 24 fps
+16:45:23.418 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+16:47:07.537 INFO : Binary merging...
+16:47:19.696 WARN : FPRE-117 The first exclusive release! Yuria Yoshine, th.ts
+16:47:19.697 WARN : Muxing to FPRE-117 The first exclusive release! Yuria Yoshine, th.MUX.mp4
+16:47:54.667 WARN : Cleaning files...
+16:47:54.789 WARN : Rename to FPRE-117 The first exclusive release! Yuria Yoshine, th.mp4
+16:47:54.790 INFO : Done

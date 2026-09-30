@@ -1,0 +1,35 @@
+﻿LOG 2026/05/15
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/15 17:00:04
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/612c2af9-0857-4fff-845a-4d5d454aa2fe/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "KSBJ-337 I was so horny that I tempted my husband's sub" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\KSBJ-337 I was so horny that I tempted my husband's sub_ef354e2a_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/dm2/en/ksbj-337-uncensored-leak" -H "Origin: https://missav.ws"
+
+17:00:04.842 INFO : N_m3u8DL-RE (Beta version) 20251029
+17:00:04.844 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+17:00:04.845 EXTRA: User-Defined Header => referer: https://missav.ws/dm2/en/ksbj-337-uncensored-leak
+17:00:04.846 EXTRA: User-Defined Header => origin: https://missav.ws
+17:00:04.846 INFO : Loading URL: https://surrit.com/612c2af9-0857-4fff-845a-4d5d454aa2fe/playlist.m3u8
+17:00:05.463 INFO : Content Matched: HTTP Live Streaming
+17:00:05.465 INFO : Parsing streams...
+17:00:05.466 WARN : Master List detected, try parse all streams
+17:00:05.476 WARN : Writing meta json
+17:00:05.480 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+17:00:05.482 INFO : Vid 1920x1080 | 8178 Kbps | avc1.640028,mp4a.40.2
+17:00:05.484 INFO : Vid 1280x720 | 4669 Kbps | avc1.64001f,mp4a.40.2
+17:00:05.486 INFO : Vid 854x480 | 2412 Kbps | avc1.64001f,mp4a.40.2
+17:00:05.489 INFO : Vid 640x360 | 1416 Kbps | avc1.64001e,mp4a.40.2
+17:00:05.491 INFO : Parsing streams...
+17:00:05.671 INFO : Selected streams:
+17:00:05.673 INFO : Vid 1920x1080 | 8178 Kbps | avc1.640028,mp4a.40.2 | 1809 Segments | ~02h00m33s
+17:00:05.674 WARN : Writing meta json
+17:00:05.682 INFO : Save Name: KSBJ-337 I was so horny that I tempted my husband's sub
+17:00:05.683 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+17:00:05.687 INFO : Start downloading...Vid 1920x1080 | 8178 Kbps | avc1.640028,mp4a.40.2
+17:00:06.504 WARN : Reading media info...
+17:00:06.672 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1920x1080, 30 fps
+17:00:06.674 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 214 kb/s
+17:01:40.327 INFO : Binary merging...
+17:02:07.092 WARN : KSBJ-337 I was so horny that I tempted my husband's sub.ts
+17:02:07.117 WARN : Muxing to KSBJ-337 I was so horny that I tempted my husband's sub.MUX.mp4
+17:03:20.362 WARN : Cleaning files...
+17:03:20.570 WARN : Rename to KSBJ-337 I was so horny that I tempted my husband's sub.mp4
+17:03:20.572 INFO : Done

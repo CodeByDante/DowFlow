@@ -1,0 +1,34 @@
+﻿LOG 2026/05/15
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/15 16:51:00
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/0bd712ca-25fa-4758-b07f-1898ca0f1c09/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "LBJ-035 White thick juice soaked semen assortment Yuria" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\LBJ-035 White thick juice soaked semen assortment Yuria_92dc5d49_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/dm39/en/lbj-035" -H "Origin: https://missav.ws"
+
+16:51:00.394 INFO : N_m3u8DL-RE (Beta version) 20251029
+16:51:00.395 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+16:51:00.395 EXTRA: User-Defined Header => referer: https://missav.ws/dm39/en/lbj-035
+16:51:00.395 EXTRA: User-Defined Header => origin: https://missav.ws
+16:51:00.396 INFO : Loading URL: https://surrit.com/0bd712ca-25fa-4758-b07f-1898ca0f1c09/playlist.m3u8
+16:51:00.997 INFO : Content Matched: HTTP Live Streaming
+16:51:00.998 INFO : Parsing streams...
+16:51:00.998 WARN : Master List detected, try parse all streams
+16:51:01.002 WARN : Writing meta json
+16:51:01.003 INFO : Extracted, there are 3 streams, with 3 basic streams, 0 audio streams, 0 subtitle streams
+16:51:01.004 INFO : Vid 1280x720 | 4712 Kbps | avc1.64001f,mp4a.40.2
+16:51:01.005 INFO : Vid 854x480 | 2443 Kbps | avc1.64001e,mp4a.40.2
+16:51:01.005 INFO : Vid 640x360 | 1416 Kbps | avc1.64001e,mp4a.40.2
+16:51:01.006 INFO : Parsing streams...
+16:51:01.161 INFO : Selected streams:
+16:51:01.161 INFO : Vid 1280x720 | 4712 Kbps | avc1.64001f,mp4a.40.2 | 1509 Segments | ~01h40m33s
+16:51:01.162 WARN : Writing meta json
+16:51:01.165 INFO : Save Name: LBJ-035 White thick juice soaked semen assortment Yuria
+16:51:01.169 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+16:51:01.170 INFO : Start downloading...Vid 1280x720 | 4712 Kbps | avc1.64001f,mp4a.40.2
+16:51:01.675 WARN : Reading media info...
+16:51:01.716 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1280x720, 24 fps
+16:51:01.716 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+16:51:55.470 INFO : Binary merging...
+16:51:59.441 WARN : LBJ-035 White thick juice soaked semen assortment Yuria.ts
+16:51:59.441 WARN : Muxing to LBJ-035 White thick juice soaked semen assortment Yuria.MUX.mp4
+16:52:09.653 WARN : Cleaning files...
+16:52:09.767 WARN : Rename to LBJ-035 White thick juice soaked semen assortment Yuria.mp4
+16:52:09.768 INFO : Done

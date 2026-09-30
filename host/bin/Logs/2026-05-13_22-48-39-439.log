@@ -1,0 +1,47 @@
+﻿LOG 2026/05/13
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/13 22:48:39
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/a27d3650-f5f5-44d4-a027-913c51ed266e/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "MIMK-251 The Story of the Ejaculator and the Prostitute" --auto-select --thread-count 24 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\MIMK-251 The Story of the Ejaculator and the Prostitute_tmp" -H "Referer: https://missav.ws/en/mimk-251-uncensored-leak" -H "Origin: https://missav.ws"
+
+22:48:39.440 INFO : N_m3u8DL-RE (Beta version) 20251029
+22:48:39.443 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+22:48:39.444 EXTRA: User-Defined Header => referer: https://missav.ws/en/mimk-251-uncensored-leak
+22:48:39.447 EXTRA: User-Defined Header => origin: https://missav.ws
+22:48:39.448 INFO : Loading URL: https://surrit.com/a27d3650-f5f5-44d4-a027-913c51ed266e/playlist.m3u8
+22:48:40.038 INFO : Content Matched: HTTP Live Streaming
+22:48:40.039 INFO : Parsing streams...
+22:48:40.040 WARN : Master List detected, try parse all streams
+22:48:40.046 WARN : Writing meta json
+22:48:40.050 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+22:48:40.051 INFO : Vid 1920x1080 | 8245 Kbps | avc1.640028,mp4a.40.2
+22:48:40.052 INFO : Vid 1280x720 | 4736 Kbps | avc1.64001f,mp4a.40.2
+22:48:40.054 INFO : Vid 854x480 | 2444 Kbps | avc1.64001f,mp4a.40.2
+22:48:40.055 INFO : Vid 640x360 | 1416 Kbps | avc1.64001e,mp4a.40.2
+22:48:40.057 INFO : Parsing streams...
+22:48:40.256 INFO : Selected streams:
+22:48:40.257 INFO : Vid 1920x1080 | 8245 Kbps | avc1.640028,mp4a.40.2 | 1804 Segments | ~02h00m16s
+22:48:40.258 WARN : Writing meta json
+22:48:40.265 INFO : Save Name: MIMK-251 The Story of the Ejaculator and the Prostitute
+22:48:40.268 INFO : Start downloading...Vid 1920x1080 | 8245 Kbps | avc1.640028,mp4a.40.2
+22:48:41.136 WARN : Reading media info...
+22:48:41.279 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1920x1080, 30 fps
+22:48:41.281 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+22:49:58.908 INFO : ffmpeg merging...
+22:49:58.913 WARN : Segments more than 1800, start partial merge...
+22:50:27.441 WARN : [in#0/mpegts @ 00000230268469c0] Packet corrupt (stream = 0, dts = 113163000).
+22:50:27.443 WARN : [in#0/mpegts @ 0000023026835340] corrupt input packet in stream 0
+22:50:39.963 WARN : [in#0/mpegts @ 00000230268469c0] Packet corrupt (stream = 0, dts = 308283000).
+22:50:39.965 WARN : [in#0/mpegts @ 0000023026835340] corrupt input packet in stream 0
+22:50:39.967 WARN : [vist#0:0/h264 @ 0000023028ba1040] timestamp discontinuity (stream id=256): 1348768001, new offset= -1348768001
+22:50:39.970 WARN : [in#0/mpegts @ 00000230268469c0] Packet corrupt (stream = 0, dts = 430032477).
+22:50:39.972 WARN : [in#0/mpegts @ 0000023026835340] corrupt input packet in stream 0
+22:50:39.974 WARN : [vist#0:0/h264 @ 0000023028ba1040] timestamp discontinuity (stream id=256): -1348772000, new offset= 3999
+22:50:45.373 WARN : [in#0/mpegts @ 00000230268469c0] Packet corrupt (stream = 0, dts = 426363000).
+22:50:45.375 WARN : [in#0/mpegts @ 0000023026835340] corrupt input packet in stream 0
+22:50:46.932 WARN : [in#0/mpegts @ 00000230268469c0] Packet corrupt (stream = 0, dts = 459843000).
+22:50:46.934 WARN : [in#0/mpegts @ 0000023026835340] corrupt input packet in stream 0
+22:50:51.593 WARN : [in#0/mpegts @ 00000230268469c0] Packet corrupt (stream = 0, dts = 548403000).
+22:50:51.595 WARN : [in#0/mpegts @ 0000023026835340] corrupt input packet in stream 0
+22:50:55.583 WARN : [in#0/mpegts @ 00000230268469c0] Packet corrupt (stream = 0, dts = 625443000).
+22:50:55.585 WARN : [in#0/mpegts @ 0000023026835340] corrupt input packet in stream 0
+22:50:57.238 INFO : Done

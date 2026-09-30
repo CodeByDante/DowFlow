@@ -1,0 +1,26 @@
+﻿LOG 2026/05/13
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/13 22:13:35
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/ce0d8ae5-c65b-474f-96a6-55d99383bd7e/1080p/video.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "HOWS-018 How to Academy A Textbook AV That Will [Defin" --auto-select --thread-count 8 -H "Referer: https://missav.ws/en/hows-018" -H "Origin: https://missav.ws"
+
+22:13:35.260 INFO : N_m3u8DL-RE (Beta version) 20251029
+22:13:35.359 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+22:13:35.360 EXTRA: User-Defined Header => referer: https://missav.ws/en/hows-018
+22:13:35.362 EXTRA: User-Defined Header => origin: https://missav.ws
+22:13:35.363 INFO : Loading URL: https://surrit.com/ce0d8ae5-c65b-474f-96a6-55d99383bd7e/1080p/video.m3u8
+22:13:35.977 INFO : Content Matched: HTTP Live Streaming
+22:13:35.978 INFO : Parsing streams...
+22:13:36.204 WARN : Writing meta json
+22:13:36.298 INFO : Extracted, there are 1 streams, with 1 basic streams, 0 audio streams, 0 subtitle streams
+22:13:36.304 INFO : Vid Kbps | 3608 Segments | ~04h00m28s
+22:13:36.320 INFO : Selected streams:
+22:13:36.322 INFO : Vid Kbps | 3608 Segments | ~04h00m28s
+22:13:36.323 WARN : Writing meta json
+22:13:36.406 INFO : Save Name: HOWS-018 How to Academy A Textbook AV That Will [Defin
+22:13:36.408 INFO : Start downloading...Vid Kbps
+22:13:37.311 WARN : Reading media info...
+22:13:37.417 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1920x1080, 29.97 fps
+22:13:37.420 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 99 kb/s
+22:18:49.064 INFO : ffmpeg merging...
+22:18:49.076 WARN : Segments more than 1800, start partial merge...
+22:21:11.663 INFO : Done

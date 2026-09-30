@@ -1,0 +1,10 @@
+﻿LOG 2026/05/16
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/16 19:01:59
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://www.youtube.com/shorts/9mSI8R1o5CU --save-dir C:\Users\Gonzalo\Downloads --save-name "El Demonio Que Se Enfrentó Contra DOS ARCÁNGELES 💀 #dios #angeles #arcangeles #parati #fypシ" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\El Demonio Que Se Enfrentó Contra DOS ARCÁNGELES 💀 #dios #angeles #arcangeles #parati #fypシ_721b2d52_tmp" --mux-after-done mp4 -H "Referer: https://www.youtube.com/shorts/9mSI8R1o5CU" -H "Origin: https://www.youtube.com"
+
+19:01:59.435 INFO : N_m3u8DL-RE (Beta version) 20251029
+19:01:59.437 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+19:01:59.438 EXTRA: User-Defined Header => referer: https://www.youtube.com/shorts/9mSI8R1o5CU
+19:01:59.438 EXTRA: User-Defined Header => origin: https://www.youtube.com
+19:01:59.439 INFO : Loading URL: https://www.youtube.com/shorts/9mSI8R1o5CU

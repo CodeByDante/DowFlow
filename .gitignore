@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Binaries (mejor descargarlos con los scripts de instalación)
+host/bin/*.exe
+host/bin/ffmpeg
+host/bin/ffprobe
+host/bin/aria2c
+host/bin/AtomicParsley
+host/bin/N_m3u8DL-RE
+host/bin/yt-dlp
+
+# Archivos de configuración locales y temporales
+host/youtube_cookies.txt
+host/last_update.txt
+host/*.part
+host/*.ytdl
+
+# Videos de prueba y descargas
+host/*.mp4
+host/*.mkv
+host/*.mp3
+host/*.webm
+
+# OS
+.DS_Store
+Thumbs.db

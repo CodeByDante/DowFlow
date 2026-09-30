@@ -1,0 +1,35 @@
+﻿LOG 2026/05/14
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/14 17:18:06
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/8ceecf40-e010-4da5-ab5c-594ad92b26de/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "NIMA-074 Live-action version I've been changed. Until (2)" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\NIMA-074 Live-action version I've been changed. Until (2)_a10b3877_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/en/nima-074" -H "Origin: https://missav.ws"
+
+17:18:06.282 INFO : N_m3u8DL-RE (Beta version) 20251029
+17:18:06.284 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+17:18:06.284 EXTRA: User-Defined Header => referer: https://missav.ws/en/nima-074
+17:18:06.284 EXTRA: User-Defined Header => origin: https://missav.ws
+17:18:06.285 INFO : Loading URL: https://surrit.com/8ceecf40-e010-4da5-ab5c-594ad92b26de/playlist.m3u8
+17:18:06.859 INFO : Content Matched: HTTP Live Streaming
+17:18:06.860 INFO : Parsing streams...
+17:18:06.860 WARN : Master List detected, try parse all streams
+17:18:06.864 WARN : Writing meta json
+17:18:06.867 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+17:18:06.868 INFO : Vid 1920x1080 | 8238 Kbps | avc1.640028,mp4a.40.2
+17:18:06.868 INFO : Vid 1280x720 | 4729 Kbps | avc1.64001f,mp4a.40.2
+17:18:06.869 INFO : Vid 854x480 | 2444 Kbps | avc1.64001e,mp4a.40.2
+17:18:06.870 INFO : Vid 640x360 | 1416 Kbps | avc1.64001e,mp4a.40.2
+17:18:06.871 INFO : Parsing streams...
+17:18:07.034 INFO : Selected streams:
+17:18:07.035 INFO : Vid 1920x1080 | 8238 Kbps | avc1.640028,mp4a.40.2 | 1856 Segments | ~02h03m41s
+17:18:07.036 WARN : Writing meta json
+17:18:07.042 INFO : Save Name: NIMA-074 Live-action version I've been changed. Until (2)
+17:18:07.044 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+17:18:07.047 INFO : Start downloading...Vid 1920x1080 | 8238 Kbps | avc1.640028,mp4a.40.2
+17:18:07.513 WARN : Reading media info...
+17:18:07.581 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1920x1080, 24 fps
+17:18:07.582 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+17:19:20.413 INFO : Binary merging...
+17:19:37.555 WARN : NIMA-074 Live-action version I've been changed. Until (2).ts
+17:19:37.555 WARN : Muxing to NIMA-074 Live-action version I've been changed. Until (2).MUX.mp4
+17:20:03.903 WARN : Cleaning files...
+17:20:03.999 WARN : Rename to NIMA-074 Live-action version I've been changed. Until (2).mp4
+17:20:04.000 INFO : Done

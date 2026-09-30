@@ -1,0 +1,35 @@
+﻿LOG 2026/05/15
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/15 17:07:57
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/7d41499c-968f-4004-9615-866facdd25d7/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "JJDA-053 Wife Yuria Yoshine who was massaged by a shiat (2)" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\JJDA-053 Wife Yuria Yoshine who was massaged by a shiat (2)_c4c632d6_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/en/jjda-053-uncensored-leak" -H "Origin: https://missav.ws"
+
+17:07:57.502 INFO : N_m3u8DL-RE (Beta version) 20251029
+17:07:57.506 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+17:07:57.507 EXTRA: User-Defined Header => referer: https://missav.ws/en/jjda-053-uncensored-leak
+17:07:57.508 EXTRA: User-Defined Header => origin: https://missav.ws
+17:07:57.509 INFO : Loading URL: https://surrit.com/7d41499c-968f-4004-9615-866facdd25d7/playlist.m3u8
+17:07:58.132 INFO : Content Matched: HTTP Live Streaming
+17:07:58.135 INFO : Parsing streams...
+17:07:58.138 WARN : Master List detected, try parse all streams
+17:07:58.150 WARN : Writing meta json
+17:07:58.159 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+17:07:58.165 INFO : Vid 1920x1080 | 8200 Kbps | avc1.640028,mp4a.40.2
+17:07:58.172 INFO : Vid 1280x720 | 4691 Kbps | avc1.64001f,mp4a.40.2
+17:07:58.177 INFO : Vid 854x480 | 2426 Kbps | avc1.64001f,mp4a.40.2
+17:07:58.181 INFO : Vid 640x360 | 1416 Kbps | avc1.64001e,mp4a.40.2
+17:07:58.184 INFO : Parsing streams...
+17:07:58.389 INFO : Selected streams:
+17:07:58.391 INFO : Vid 1920x1080 | 8200 Kbps | avc1.640028,mp4a.40.2 | 1793 Segments | ~01h59m31s
+17:07:58.394 WARN : Writing meta json
+17:07:58.425 INFO : Save Name: JJDA-053 Wife Yuria Yoshine who was massaged by a shiat (2)
+17:07:58.427 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+17:07:58.432 INFO : Start downloading...Vid 1920x1080 | 8200 Kbps | avc1.640028,mp4a.40.2
+17:07:58.829 WARN : Reading media info...
+17:07:59.006 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1920x1080, 30 fps
+17:07:59.013 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+17:09:35.903 INFO : Binary merging...
+17:09:59.319 WARN : JJDA-053 Wife Yuria Yoshine who was massaged by a shiat (2).ts
+17:09:59.320 WARN : Muxing to JJDA-053 Wife Yuria Yoshine who was massaged by a shiat (2).MUX.mp4
+17:11:08.190 WARN : Cleaning files...
+17:11:08.466 WARN : Rename to JJDA-053 Wife Yuria Yoshine who was massaged by a shiat (2).mp4
+17:11:08.468 INFO : Done

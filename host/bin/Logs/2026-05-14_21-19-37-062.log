@@ -1,0 +1,34 @@
+﻿LOG 2026/05/14
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/14 21:19:37
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/0797e842-1252-4247-9d05-a8d2826ebc43/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "FPRE-146 When I teased my virgin cousin after sunburn w" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\FPRE-146 When I teased my virgin cousin after sunburn w_e62ff3c9_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/en/fpre-146-chinese-subtitle" -H "Origin: https://missav.ws"
+
+21:19:37.065 INFO : N_m3u8DL-RE (Beta version) 20251029
+21:19:37.067 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+21:19:37.067 EXTRA: User-Defined Header => referer: https://missav.ws/en/fpre-146-chinese-subtitle
+21:19:37.068 EXTRA: User-Defined Header => origin: https://missav.ws
+21:19:37.068 INFO : Loading URL: https://surrit.com/0797e842-1252-4247-9d05-a8d2826ebc43/playlist.m3u8
+21:19:37.669 INFO : Content Matched: HTTP Live Streaming
+21:19:37.670 INFO : Parsing streams...
+21:19:37.671 WARN : Master List detected, try parse all streams
+21:19:37.684 WARN : Writing meta json
+21:19:37.689 INFO : Extracted, there are 3 streams, with 3 basic streams, 0 audio streams, 0 subtitle streams
+21:19:37.692 INFO : Vid 1280x720 | 4691 Kbps | avc1.64001f,mp4a.40.2
+21:19:37.696 INFO : Vid 854x480 | 2433 Kbps | avc1.64001f,mp4a.40.2
+21:19:37.700 INFO : Vid 640x360 | 1416 Kbps | avc1.64001e,mp4a.40.2
+21:19:37.702 INFO : Parsing streams...
+21:19:37.932 INFO : Selected streams:
+21:19:37.934 INFO : Vid 1280x720 | 4691 Kbps | avc1.64001f,mp4a.40.2 | 2220 Segments | ~02h27m59s
+21:19:37.935 WARN : Writing meta json
+21:19:37.963 INFO : Save Name: FPRE-146 When I teased my virgin cousin after sunburn w
+21:19:37.967 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+21:19:37.987 INFO : Start downloading...Vid 1280x720 | 4691 Kbps | avc1.64001f,mp4a.40.2
+21:19:38.357 WARN : Reading media info...
+21:19:38.427 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1280x720, 29.97 fps
+21:19:38.428 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+21:20:25.816 INFO : Binary merging...
+21:20:38.811 WARN : FPRE-146 When I teased my virgin cousin after sunburn w.ts
+21:20:38.812 WARN : Muxing to FPRE-146 When I teased my virgin cousin after sunburn w.MUX.mp4
+21:21:07.214 WARN : Cleaning files...
+21:21:07.256 WARN : Rename to FPRE-146 When I teased my virgin cousin after sunburn w.mp4
+21:21:07.361 INFO : Done

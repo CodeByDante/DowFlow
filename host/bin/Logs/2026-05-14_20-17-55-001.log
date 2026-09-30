@@ -1,0 +1,118 @@
+﻿LOG 2026/05/14
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/14 20:17:55
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "MIMK-232 Series sales exceed 55,000 copies! Cum inside" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\MIMK-232 Series sales exceed 55,000 copies! Cum inside_7b40f94c_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/en/mimk-232" -H "Origin: https://missav.ws"
+
+20:17:55.003 INFO : N_m3u8DL-RE (Beta version) 20251029
+20:17:55.006 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+20:17:55.007 EXTRA: User-Defined Header => referer: https://missav.ws/en/mimk-232
+20:17:55.008 EXTRA: User-Defined Header => origin: https://missav.ws
+20:17:55.009 INFO : Loading URL: https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/playlist.m3u8
+20:17:55.889 INFO : Content Matched: HTTP Live Streaming
+20:17:55.891 INFO : Parsing streams...
+20:17:55.892 WARN : Master List detected, try parse all streams
+20:17:55.902 WARN : Writing meta json
+20:17:55.907 INFO : Extracted, there are 3 streams, with 3 basic streams, 0 audio streams, 0 subtitle streams
+20:17:55.909 INFO : Vid 1280x720 | 4749 Kbps | avc1.64001f,mp4a.40.2
+20:17:55.910 INFO : Vid 854x480 | 2447 Kbps | avc1.64001e,mp4a.40.2
+20:17:55.912 INFO : Vid 640x360 | 1420 Kbps | avc1.64001e,mp4a.40.2
+20:17:55.914 INFO : Parsing streams...
+20:17:56.105 INFO : Selected streams:
+20:17:56.107 INFO : Vid 1280x720 | 4749 Kbps | avc1.64001f,mp4a.40.2 | 1829 Segments | ~02h01m55s
+20:17:56.109 WARN : Writing meta json
+20:17:56.122 INFO : Save Name: MIMK-232 Series sales exceed 55,000 copies! Cum inside
+20:17:56.125 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+20:17:56.130 INFO : Start downloading...Vid 1280x720 | 4749 Kbps | avc1.64001f,mp4a.40.2
+20:17:56.681 WARN : Reading media info...
+20:17:56.994 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1280x720, 24 fps
+20:17:56.995 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 68 kb/s
+20:18:21.551 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 345700 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video223.jpeg
+20:18:22.452 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 631868 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video390.jpeg
+20:18:23.434 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 590132 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video406.jpeg
+20:18:31.238 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 241700 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video305.jpeg
+20:18:31.465 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 345284 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video422.jpeg
+20:18:32.893 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 289112 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video291.jpeg
+20:18:44.036 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 295956 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video341.jpeg
+20:18:44.095 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 804640 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video655.jpeg
+20:18:58.570 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 515800 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video634.jpeg
+20:19:04.411 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 486472 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video767.jpeg
+20:19:06.848 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 176164 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video305.jpeg
+20:19:09.127 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 757152 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video812.jpeg
+20:19:13.906 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 646872 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video634.jpeg
+20:19:18.264 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 99348 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video341.jpeg
+20:19:19.586 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 823628 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video875.jpeg
+20:19:23.702 EXTRA: Ah oh!
+RetryCount => 1
+Exception  => The response ended prematurely, with at least 503844 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video305.jpeg
+20:19:25.439 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 155748 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video659.jpeg
+20:19:39.050 EXTRA: Ah oh!
+RetryCount => 2
+Exception  => The response ended prematurely, with at least 363936 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video812.jpeg
+20:19:54.915 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 941128 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video1129.jpeg
+20:20:11.987 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 717408 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video1356.jpeg
+20:20:13.891 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The response ended prematurely, with at least 824232 additional bytes expected. (ResponseEnded)
+Url        => https://surrit.com/8b964ee5-7337-4cf5-9716-91878a0a75ea/720p/video1294.jpeg
+20:20:54.302 INFO : Binary merging...
+20:21:05.897 WARN : MIMK-232 Series sales exceed 55,000 copies! Cum inside.ts
+20:21:05.899 WARN : Muxing to MIMK-232 Series sales exceed 55,000 copies! Cum inside.MUX.mp4
+20:21:35.776 WARN : Cleaning files...
+20:21:36.000 WARN : Rename to MIMK-232 Series sales exceed 55,000 copies! Cum inside.mp4
+20:21:36.003 INFO : Done

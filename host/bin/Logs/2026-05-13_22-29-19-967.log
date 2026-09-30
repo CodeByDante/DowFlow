@@ -1,0 +1,39 @@
+﻿LOG 2026/05/13
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/13 22:29:19
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/aa34fde3-0dd8-43f8-85ed-4a54badaede0/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name HOWS-018 --auto-select --thread-count 8 --tmp-dir C:\Users\Gonzalo\Downloads\HOWS-018_tmp -H "Referer: https://missav.ws/en/hows-018-uncensored-leak" -H "Origin: https://missav.ws"
+
+22:29:19.968 INFO : N_m3u8DL-RE (Beta version) 20251029
+22:29:19.971 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+22:29:19.971 EXTRA: User-Defined Header => referer: https://missav.ws/en/hows-018-uncensored-leak
+22:29:19.972 EXTRA: User-Defined Header => origin: https://missav.ws
+22:29:19.972 INFO : Loading URL: https://surrit.com/aa34fde3-0dd8-43f8-85ed-4a54badaede0/playlist.m3u8
+22:29:20.590 INFO : Content Matched: HTTP Live Streaming
+22:29:20.593 INFO : Parsing streams...
+22:29:20.595 WARN : Master List detected, try parse all streams
+22:29:20.605 WARN : Writing meta json
+22:29:20.610 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+22:29:20.612 INFO : Vid 1920x1080 | 8239 Kbps | avc1.640028,mp4a.40.2
+22:29:20.615 INFO : Vid 1280x720 | 4730 Kbps | avc1.64001f,mp4a.40.2
+22:29:20.617 INFO : Vid 854x480 | 2440 Kbps | avc1.64001f,mp4a.40.2
+22:29:20.620 INFO : Vid 640x360 | 1414 Kbps | avc1.64001e,mp4a.40.2
+22:29:20.623 INFO : Parsing streams...
+22:29:20.961 INFO : Selected streams:
+22:29:20.963 INFO : Vid 1920x1080 | 8239 Kbps | avc1.640028,mp4a.40.2 | 3608 Segments | ~04h00m28s
+22:29:20.966 WARN : Writing meta json
+22:29:20.990 INFO : Save Name: HOWS-018
+22:29:20.996 INFO : Start downloading...Vid 1920x1080 | 8239 Kbps | avc1.640028,mp4a.40.2
+22:29:21.820 WARN : Reading media info...
+22:29:22.051 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1920x1080, 30 fps
+22:29:22.052 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 176 kb/s
+22:30:35.117 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The process cannot access the file 'C:\Users\Gonzalo\Downloads\HOWS-018_tmp\HOWS-018\0__avc1.640028,mp4a.40.2_8239904_\1773.ts.tmp' because it is being used by another process.
+Url        => https://surrit.com/aa34fde3-0dd8-43f8-85ed-4a54badaede0/1080p/video1773.jpeg
+22:30:35.120 EXTRA: Ah oh!
+RetryCount => 3
+Exception  => The process cannot access the file 'C:\Users\Gonzalo\Downloads\HOWS-018_tmp\HOWS-018\0__avc1.640028,mp4a.40.2_8239904_\1769.ts.tmp' because it is being used by another process.
+Url        => https://surrit.com/aa34fde3-0dd8-43f8-85ed-4a54badaede0/1080p/video1769.jpeg
+22:32:13.477 INFO : ffmpeg merging...
+22:32:13.481 WARN : Segments more than 1800, start partial merge...
+22:34:24.713 INFO : Done

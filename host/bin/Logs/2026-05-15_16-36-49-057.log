@@ -1,0 +1,35 @@
+﻿LOG 2026/05/15
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/15 16:36:49
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/e678dc93-9f8a-4260-a37a-d206fbf13200/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "BONY-094 Bondage Squirting Arrogant Female President pl" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\BONY-094 Bondage Squirting Arrogant Female President pl_974ab6e6_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/dm25/en/bony-094" -H "Origin: https://missav.ws"
+
+16:36:49.058 INFO : N_m3u8DL-RE (Beta version) 20251029
+16:36:49.059 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+16:36:49.059 EXTRA: User-Defined Header => referer: https://missav.ws/dm25/en/bony-094
+16:36:49.059 EXTRA: User-Defined Header => origin: https://missav.ws
+16:36:49.060 INFO : Loading URL: https://surrit.com/e678dc93-9f8a-4260-a37a-d206fbf13200/playlist.m3u8
+16:36:49.644 INFO : Content Matched: HTTP Live Streaming
+16:36:49.645 INFO : Parsing streams...
+16:36:49.645 WARN : Master List detected, try parse all streams
+16:36:49.647 WARN : Writing meta json
+16:36:49.648 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+16:36:49.649 INFO : Vid 1920x1080 | 8080 Kbps | avc1.4d4028,mp4a.40.2
+16:36:49.649 INFO : Vid 1280x720 | 4571 Kbps | avc1.4d401f,mp4a.40.2
+16:36:49.650 INFO : Vid 854x480 | 2336 Kbps | avc1.4d401f,mp4a.40.2
+16:36:49.650 INFO : Vid 640x360 | 1378 Kbps | avc1.4d401e,mp4a.40.2
+16:36:49.651 INFO : Parsing streams...
+16:36:49.811 INFO : Selected streams:
+16:36:49.812 INFO : Vid 1920x1080 | 8080 Kbps | avc1.4d4028,mp4a.40.2 | 2161 Segments | ~02h24m00s
+16:36:49.812 WARN : Writing meta json
+16:36:49.817 INFO : Save Name: BONY-094 Bondage Squirting Arrogant Female President pl
+16:36:49.817 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+16:36:49.819 INFO : Start downloading...Vid 1920x1080 | 8080 Kbps | avc1.4d4028,mp4a.40.2
+16:36:50.170 WARN : Reading media info...
+16:36:50.204 INFO : [0x100]: Video, h264 (Main) ([27][0][0][0]), 1920x1080, 30 fps
+16:36:50.205 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 98 kb/s
+16:38:43.822 INFO : Binary merging...
+16:39:03.224 WARN : BONY-094 Bondage Squirting Arrogant Female President pl.ts
+16:39:03.237 WARN : Muxing to BONY-094 Bondage Squirting Arrogant Female President pl.MUX.mp4
+16:39:41.814 WARN : Cleaning files...
+16:39:41.955 WARN : Rename to BONY-094 Bondage Squirting Arrogant Female President pl.mp4
+16:39:41.957 INFO : Done

@@ -1,0 +1,35 @@
+﻿LOG 2026/05/14
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/14 20:42:19
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/12a48d87-8bca-4e76-b812-3eefc5360f63/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "MANX-015 Obscene, lewd, sensual poses that will make yo" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\MANX-015 Obscene, lewd, sensual poses that will make yo_8a38d5c6_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/en/manx-015-uncensored-leak" -H "Origin: https://missav.ws"
+
+20:42:19.330 INFO : N_m3u8DL-RE (Beta version) 20251029
+20:42:19.333 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+20:42:19.333 EXTRA: User-Defined Header => referer: https://missav.ws/en/manx-015-uncensored-leak
+20:42:19.334 EXTRA: User-Defined Header => origin: https://missav.ws
+20:42:19.334 INFO : Loading URL: https://surrit.com/12a48d87-8bca-4e76-b812-3eefc5360f63/playlist.m3u8
+20:42:19.937 INFO : Content Matched: HTTP Live Streaming
+20:42:19.938 INFO : Parsing streams...
+20:42:19.939 WARN : Master List detected, try parse all streams
+20:42:19.943 WARN : Writing meta json
+20:42:19.945 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+20:42:19.947 INFO : Vid 1920x1080 | 8236 Kbps | avc1.640028,mp4a.40.2
+20:42:19.948 INFO : Vid 1280x720 | 4727 Kbps | avc1.64001f,mp4a.40.2
+20:42:19.949 INFO : Vid 854x480 | 2440 Kbps | avc1.64001f,mp4a.40.2
+20:42:19.950 INFO : Vid 640x360 | 1414 Kbps | avc1.64001e,mp4a.40.2
+20:42:19.951 INFO : Parsing streams...
+20:42:20.116 INFO : Selected streams:
+20:42:20.117 INFO : Vid 1920x1080 | 8236 Kbps | avc1.640028,mp4a.40.2 | 1495 Segments | ~01h39m36s
+20:42:20.118 WARN : Writing meta json
+20:42:20.163 INFO : Save Name: MANX-015 Obscene, lewd, sensual poses that will make yo
+20:42:20.185 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+20:42:20.188 INFO : Start downloading...Vid 1920x1080 | 8236 Kbps | avc1.640028,mp4a.40.2
+20:42:20.644 WARN : Reading media info...
+20:42:20.709 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1920x1080, 30 fps
+20:42:20.710 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+20:43:34.504 INFO : Binary merging...
+20:43:51.573 WARN : MANX-015 Obscene, lewd, sensual poses that will make yo.ts
+20:43:51.574 WARN : Muxing to MANX-015 Obscene, lewd, sensual poses that will make yo.MUX.mp4
+20:44:42.754 WARN : Cleaning files...
+20:44:42.953 WARN : Rename to MANX-015 Obscene, lewd, sensual poses that will make yo.mp4
+20:44:43.045 INFO : Done

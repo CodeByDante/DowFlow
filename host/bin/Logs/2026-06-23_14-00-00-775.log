@@ -1,0 +1,29 @@
+﻿LOG 2026/06/23
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\Logs
+Task Start: 2026/06/23 14:00:00
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\N_m3u8DL-RE.exe" https://www.facebook.com/reel/1358921996160072 --save-dir C:\Users\Gonzalo\Downloads --save-name "Facebook (14)" --auto-select --thread-count 16 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\Facebook (14)_13723d72_tmp" --mux-after-done mp4 -H "Referer: https://www.facebook.com/reel/1358921996160072" -H "Origin: https://www.facebook.com"
+
+14:00:00.776 INFO : N_m3u8DL-RE (Beta version) 20251029
+14:00:00.778 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\ffmpeg.exe
+14:00:00.779 EXTRA: User-Defined Header => referer: https://www.facebook.com/reel/1358921996160072
+14:00:00.779 EXTRA: User-Defined Header => origin: https://www.facebook.com
+14:00:00.780 INFO : Loading URL: https://www.facebook.com/reel/1358921996160072
+14:00:01.024 WARN : Response status code does not indicate success: 400 (Bad Request). (1/10)
+14:00:02.530 INFO : Loading URL: https://www.facebook.com/reel/1358921996160072
+14:00:02.837 WARN : Response status code does not indicate success: 400 (Bad Request). (2/10)
+14:00:04.353 INFO : Loading URL: https://www.facebook.com/reel/1358921996160072
+14:00:04.577 WARN : Response status code does not indicate success: 400 (Bad Request). (3/10)
+14:00:06.084 INFO : Loading URL: https://www.facebook.com/reel/1358921996160072
+14:00:06.318 WARN : Response status code does not indicate success: 400 (Bad Request). (4/10)
+14:00:07.825 INFO : Loading URL: https://www.facebook.com/reel/1358921996160072
+14:00:08.162 WARN : Response status code does not indicate success: 400 (Bad Request). (5/10)
+14:00:09.668 INFO : Loading URL: https://www.facebook.com/reel/1358921996160072
+14:00:09.848 WARN : Response status code does not indicate success: 400 (Bad Request). (6/10)
+14:00:11.357 INFO : Loading URL: https://www.facebook.com/reel/1358921996160072
+14:00:11.536 WARN : Response status code does not indicate success: 400 (Bad Request). (7/10)
+14:00:13.038 INFO : Loading URL: https://www.facebook.com/reel/1358921996160072
+14:00:13.254 WARN : Response status code does not indicate success: 400 (Bad Request). (8/10)
+14:00:14.758 INFO : Loading URL: https://www.facebook.com/reel/1358921996160072
+14:00:14.938 WARN : Response status code does not indicate success: 400 (Bad Request). (9/10)
+14:00:16.446 INFO : Loading URL: https://www.facebook.com/reel/1358921996160072
+14:00:16.673 WARN : Response status code does not indicate success: 400 (Bad Request). (10/10)

@@ -1,0 +1,30 @@
+﻿LOG 2026/06/23
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\Logs
+Task Start: 2026/06/23 10:13:46
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\N_m3u8DL-RE.exe" https://video-nss.xhcdn.com/rrRbk2xTOTI1w-spanQxIQ==,1782241200/media=hls4/multi=256x144:144p:,426x240:240p:,854x480:480p:,1280x720:720p:/028/314/239/720p.av1.mp4.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name video-nss.xhcdn.comrrRbk2xTOTI1w-spanQxIQ==,1782241200media=hls4multi=256x144144 --auto-select --thread-count 16 --tmp-dir C:\Users\Gonzalo\AppData\Local\Temp\video-nss.xhcdn.comrrRbk2xTOTI1w-spanQxIQ==,1782241200media=hls4multi=256x144144_048e556d_tmp --mux-after-done mp4 -H "Referer: https://video-nss.xhcdn.com/rrRbk2xTOTI1w-spanQxIQ==,1782241200/media=hls4/multi=256x144:144p:,426x240:240p:,854x480:480p:,1280x720:720p:/028/314/239/720p.av1.mp4.m3u8" -H "Origin: https://video-nss.xhcdn.com"
+
+10:13:46.182 INFO : N_m3u8DL-RE (Beta version) 20251029
+10:13:46.183 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\ffmpeg.exe
+10:13:46.183 EXTRA: User-Defined Header => referer: https://video-nss.xhcdn.com/rrRbk2xTOTI1w-spanQxIQ==,1782241200/media=hls4/multi=256x144:144p:,426x240:240p:,854x480:480p:,1280x720:720p:/028/314/239/720p.av1.mp4.m3u8
+10:13:46.183 EXTRA: User-Defined Header => origin: https://video-nss.xhcdn.com
+10:13:46.184 INFO : Loading URL: https://video-nss.xhcdn.com/rrRbk2xTOTI1w-spanQxIQ==,1782241200/media=hls4/multi=256x144:144p:,426x240:240p:,854x480:480p:,1280x720:720p:/028/314/239/720p.av1.mp4.m3u8
+10:13:46.268 INFO : Content Matched: HTTP Live Streaming
+10:13:46.270 INFO : Parsing streams...
+10:13:46.312 WARN : Writing meta json
+10:13:46.318 INFO : Extracted, there are 1 streams, with 1 basic streams, 0 audio streams, 0 subtitle streams
+10:13:46.319 INFO : Vid Kbps | 712 Segments | ~47m29s
+10:13:46.322 INFO : Selected streams:
+10:13:46.323 INFO : Vid Kbps | 712 Segments | ~47m29s
+10:13:46.323 WARN : Writing meta json
+10:13:46.328 INFO : Save Name: video-nss.xhcdn.comrrRbk2xTOTI1w-spanQxIQ==,1782241200media=hls4multi=256x144144
+10:13:46.329 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+10:13:46.335 INFO : Start downloading...Vid Kbps
+10:13:46.374 WARN : Reading media info...
+10:13:46.463 INFO : [0x1]: Video, av1 (libdav1d) (Main) (av01), 1280x720
+10:13:46.464 INFO : [0x2]: Audio, aac (mp4a), 131 kb/s
+10:13:55.769 INFO : Binary merging...
+10:13:56.463 WARN : video-nss.xhcdn.comrrRbk2xTOTI1w-spanQxIQ==,1782241200media=hls4multi=256x144144.mp4
+10:13:56.464 WARN : Muxing to video-nss.xhcdn.comrrRbk2xTOTI1w-spanQxIQ==,1782241200media=hls4multi=256x144144.MUX.mp4
+10:13:58.231 WARN : Cleaning files...
+10:13:58.250 WARN : Rename to video-nss.xhcdn.comrrRbk2xTOTI1w-spanQxIQ==,1782241200media=hls4multi=256x144144.mp4
+10:13:58.251 INFO : Done

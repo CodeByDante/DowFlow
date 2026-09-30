@@ -1,0 +1,33 @@
+﻿LOG 2026/09/13
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\Logs
+Task Start: 2026/09/13 18:57:15
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\N_m3u8DL-RE.exe" https://f7e7af6f.wild-forest-115.space/blah4/XEn0ezQAjwPK3U_oUqJFbti+kExggsJTCajV_ASajR0Gy9YylMJUFWzuIw/video.m3u8?v=2 --save-dir "C:/Users/Gonzalo/Downloads/dowload 2" --save-name "WAAA-135-Uncensored-Leaked — Wild-Style Japanese Wife Cuckolding - Live-Action V" --auto-select --thread-count 10 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\WAAA-135-Uncensored-Leaked — Wild-Style Japanese Wife Cuckolding - Live-Action V_164ca6ee_tmp" --mux-after-done mp4 -H "Referer: https://123av.com/en/v/waaa-135-uncensored-leaked" -H "Origin: https://123av.com"
+
+18:57:15.686 INFO : N_m3u8DL-RE (Beta version) 20251029
+18:57:15.687 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\ffmpeg.exe
+18:57:15.688 EXTRA: User-Defined Header => referer: https://123av.com/en/v/waaa-135-uncensored-leaked
+18:57:15.689 EXTRA: User-Defined Header => origin: https://123av.com
+18:57:15.690 INFO : Loading URL: https://f7e7af6f.wild-forest-115.space/blah4/XEn0ezQAjwPK3U_oUqJFbti+kExggsJTCajV_ASajR0Gy9YylMJUFWzuIw/video.m3u8?v=2
+18:57:16.134 INFO : New version detected! v0.6.0-beta
+18:57:16.345 INFO : Content Matched: HTTP Live Streaming
+18:57:16.345 INFO : Parsing streams...
+18:57:16.346 WARN : Master List detected, try parse all streams
+18:57:16.350 WARN : Writing meta json
+18:57:16.352 INFO : Extracted, there are 1 streams, with 1 basic streams, 0 audio streams, 0 subtitle streams
+18:57:16.354 INFO : Vid 854x480 | 1228 Kbps
+18:57:16.362 INFO : Parsing streams...
+18:57:16.694 INFO : Selected streams:
+18:57:16.694 INFO : Vid 854x480 | 1228 Kbps | 1166 Segments | ~01h37m06s
+18:57:16.695 WARN : Writing meta json
+18:57:16.701 INFO : Save Name: WAAA-135-Uncensored-Leaked — Wild-Style Japanese Wife Cuckolding - Live-Action V
+18:57:16.702 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+18:57:16.710 INFO : Start downloading...Vid 854x480 | 1228 Kbps
+18:57:17.081 WARN : Reading media info...
+18:57:17.194 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 852x480, 30 fps
+18:57:17.195 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+18:58:29.363 INFO : Binary merging...
+18:58:30.553 WARN : WAAA-135-Uncensored-Leaked — Wild-Style Japanese Wife Cuckolding - Live-Action V.ts
+18:58:30.554 WARN : Muxing to WAAA-135-Uncensored-Leaked — Wild-Style Japanese Wife Cuckolding - Live-Action V.MUX.mp4
+18:58:36.019 WARN : Cleaning files...
+18:58:36.071 WARN : Rename to WAAA-135-Uncensored-Leaked — Wild-Style Japanese Wife Cuckolding - Live-Action V.mp4
+18:58:36.073 INFO : Done

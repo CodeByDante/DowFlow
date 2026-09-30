@@ -1,0 +1,15 @@
+﻿LOG 2026/07/24
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\Logs
+Task Start: 2026/07/24 23:47:14
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\N_m3u8DL-RE.exe" https://ev-h.phncdn.com/hls/c6251/videos/202601/29/37701715/1080P_4000K_37701715.mp4/master.m3u8?validfrom=1784951147&validto=1784958347&ipa=1&hdl=-1&hash=C1R9Y46t2cVljmTkEYSYwNqbEOY%3D --save-dir C:\Users\Gonzalo\Downloads --save-name "Chica Universitaria Es Follada Luego De Una Partida De Billar Mientras Su Novio " --auto-select --thread-count 9 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\Chica Universitaria Es Follada Luego De Una Partida De Billar Mientras Su Novio _30f5e8c8_tmp" --mux-after-done mp4 -H "Referer: https://es.pornhub.com/view_video.php?viewkey=697aaa7505b0e" -H "Origin: https://es.pornhub.com"
+
+23:47:14.216 INFO : N_m3u8DL-RE (Beta version) 20251029
+23:47:14.218 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\ffmpeg.exe
+23:47:14.222 EXTRA: User-Defined Header => referer: https://es.pornhub.com/view_video.php?viewkey=697aaa7505b0e
+23:47:14.224 EXTRA: User-Defined Header => origin: https://es.pornhub.com
+23:47:14.224 INFO : Loading URL: https://ev-h.phncdn.com/hls/c6251/videos/202601/29/37701715/1080P_4000K_37701715.mp4/master.m3u8?validfrom=1784951147&validto=1784958347&ipa=1&hdl=-1&hash=C1R9Y46t2cVljmTkEYSYwNqbEOY%3D
+23:47:14.677 INFO : New version detected! v0.6.0-beta
+23:47:15.094 INFO : Content Matched: HTTP Live Streaming
+23:47:15.096 INFO : Parsing streams...
+23:47:15.096 WARN : Master List detected, try parse all streams
+23:47:15.100 WARN : Writing meta json

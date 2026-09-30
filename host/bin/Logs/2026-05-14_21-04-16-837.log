@@ -1,0 +1,34 @@
+﻿LOG 2026/05/14
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/14 21:04:16
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/a609f91f-0aa2-4494-a554-8c28efdd4bd6/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "NIMA-055 Live-action version of Wild Japanese Wife Cuck (2)" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\NIMA-055 Live-action version of Wild Japanese Wife Cuck (2)_a7c4ad26_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/en/nima-055-chinese-subtitle" -H "Origin: https://missav.ws"
+
+21:04:16.838 INFO : N_m3u8DL-RE (Beta version) 20251029
+21:04:16.841 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+21:04:16.842 EXTRA: User-Defined Header => referer: https://missav.ws/en/nima-055-chinese-subtitle
+21:04:16.843 EXTRA: User-Defined Header => origin: https://missav.ws
+21:04:16.844 INFO : Loading URL: https://surrit.com/a609f91f-0aa2-4494-a554-8c28efdd4bd6/playlist.m3u8
+21:04:17.451 INFO : Content Matched: HTTP Live Streaming
+21:04:17.453 INFO : Parsing streams...
+21:04:17.454 WARN : Master List detected, try parse all streams
+21:04:17.462 WARN : Writing meta json
+21:04:17.467 INFO : Extracted, there are 3 streams, with 3 basic streams, 0 audio streams, 0 subtitle streams
+21:04:17.469 INFO : Vid 1280x720 | 4686 Kbps | avc1.64001f,mp4a.40.2
+21:04:17.470 INFO : Vid 854x480 | 2429 Kbps | avc1.64001f,mp4a.40.2
+21:04:17.471 INFO : Vid 640x360 | 1416 Kbps | avc1.64001e,mp4a.40.2
+21:04:17.473 INFO : Parsing streams...
+21:04:17.658 INFO : Selected streams:
+21:04:17.659 INFO : Vid 1280x720 | 4686 Kbps | avc1.64001f,mp4a.40.2 | 1732 Segments | ~01h55m26s
+21:04:17.661 WARN : Writing meta json
+21:04:17.668 INFO : Save Name: NIMA-055 Live-action version of Wild Japanese Wife Cuck (2)
+21:04:17.669 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+21:04:17.672 INFO : Start downloading...Vid 1280x720 | 4686 Kbps | avc1.64001f,mp4a.40.2
+21:04:18.063 WARN : Reading media info...
+21:04:18.170 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1280x720, 29.97 fps
+21:04:18.172 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+21:05:12.069 INFO : Binary merging...
+21:05:23.381 WARN : NIMA-055 Live-action version of Wild Japanese Wife Cuck (2).ts
+21:05:23.382 WARN : Muxing to NIMA-055 Live-action version of Wild Japanese Wife Cuck (2).MUX.mp4
+21:05:45.030 WARN : Cleaning files...
+21:05:45.109 WARN : Rename to NIMA-055 Live-action version of Wild Japanese Wife Cuck (2).mp4
+21:05:45.112 INFO : Done

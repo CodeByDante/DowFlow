@@ -1,0 +1,35 @@
+﻿LOG 2026/05/14
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/14 17:20:41
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/3e06810e-4afd-4053-a7f8-74776f85b806/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "NIMA-066 Live-action version!! Gutsy Mom 1 & 2 Yuria Yo" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\NIMA-066 Live-action version!! Gutsy Mom 1 & 2 Yuria Yo_1b8abf55_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/en/nima-066" -H "Origin: https://missav.ws"
+
+17:20:41.291 INFO : N_m3u8DL-RE (Beta version) 20251029
+17:20:41.292 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+17:20:41.293 EXTRA: User-Defined Header => referer: https://missav.ws/en/nima-066
+17:20:41.293 EXTRA: User-Defined Header => origin: https://missav.ws
+17:20:41.294 INFO : Loading URL: https://surrit.com/3e06810e-4afd-4053-a7f8-74776f85b806/playlist.m3u8
+17:20:41.903 INFO : Content Matched: HTTP Live Streaming
+17:20:41.904 INFO : Parsing streams...
+17:20:41.906 WARN : Master List detected, try parse all streams
+17:20:41.909 WARN : Writing meta json
+17:20:41.912 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+17:20:41.912 INFO : Vid 1920x1080 | 8115 Kbps | avc1.640028,mp4a.40.2
+17:20:41.913 INFO : Vid 1280x720 | 4606 Kbps | avc1.64001f,mp4a.40.2
+17:20:41.914 INFO : Vid 854x480 | 2514 Kbps | avc1.64001e,mp4a.40.2
+17:20:41.914 INFO : Vid 640x360 | 1416 Kbps | avc1.64001e,mp4a.40.2
+17:20:41.915 INFO : Parsing streams...
+17:20:42.076 INFO : Selected streams:
+17:20:42.077 INFO : Vid 1920x1080 | 8115 Kbps | avc1.640028,mp4a.40.2 | 1746 Segments | ~01h56m22s
+17:20:42.077 WARN : Writing meta json
+17:20:42.081 INFO : Save Name: NIMA-066 Live-action version!! Gutsy Mom 1 & 2 Yuria Yo
+17:20:42.082 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+17:20:42.083 INFO : Start downloading...Vid 1920x1080 | 8115 Kbps | avc1.640028,mp4a.40.2
+17:20:42.525 WARN : Reading media info...
+17:20:42.567 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1920x1080, 23.98 fps
+17:20:42.567 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+17:21:41.739 INFO : Binary merging...
+17:21:54.678 WARN : NIMA-066 Live-action version!! Gutsy Mom 1 & 2 Yuria Yo.ts
+17:21:54.679 WARN : Muxing to NIMA-066 Live-action version!! Gutsy Mom 1 & 2 Yuria Yo.MUX.mp4
+17:22:24.338 WARN : Cleaning files...
+17:22:24.401 WARN : Rename to NIMA-066 Live-action version!! Gutsy Mom 1 & 2 Yuria Yo.mp4
+17:22:24.402 INFO : Done

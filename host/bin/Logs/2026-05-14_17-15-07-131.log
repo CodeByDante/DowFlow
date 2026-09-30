@@ -1,0 +1,30 @@
+﻿LOG 2026/05/14
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/14 17:15:07
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/50c30ce2-e0b5-4cf8-a5c4-607ba9685c4a/1080p/video.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "NIMA-074 Live-action version I've been changed. Until" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\NIMA-074 Live-action version I've been changed. Until_225e7065_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/en/nima-074-uncensored-leak" -H "Origin: https://missav.ws"
+
+17:15:07.131 INFO : N_m3u8DL-RE (Beta version) 20251029
+17:15:07.132 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+17:15:07.133 EXTRA: User-Defined Header => referer: https://missav.ws/en/nima-074-uncensored-leak
+17:15:07.133 EXTRA: User-Defined Header => origin: https://missav.ws
+17:15:07.133 INFO : Loading URL: https://surrit.com/50c30ce2-e0b5-4cf8-a5c4-607ba9685c4a/1080p/video.m3u8
+17:15:07.722 INFO : Content Matched: HTTP Live Streaming
+17:15:07.723 INFO : Parsing streams...
+17:15:07.745 WARN : Writing meta json
+17:15:07.751 INFO : Extracted, there are 1 streams, with 1 basic streams, 0 audio streams, 0 subtitle streams
+17:15:07.752 INFO : Vid Kbps | 1853 Segments | ~02h03m30s
+17:15:07.762 INFO : Selected streams:
+17:15:07.763 INFO : Vid Kbps | 1853 Segments | ~02h03m30s
+17:15:07.764 WARN : Writing meta json
+17:15:07.771 INFO : Save Name: NIMA-074 Live-action version I've been changed. Until
+17:15:07.772 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+17:15:07.775 INFO : Start downloading...Vid Kbps
+17:15:08.257 WARN : Reading media info...
+17:15:08.462 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1920x1080, 30 fps
+17:15:08.464 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+17:16:46.717 INFO : Binary merging...
+17:17:05.811 WARN : NIMA-074 Live-action version I've been changed. Until.ts
+17:17:05.812 WARN : Muxing to NIMA-074 Live-action version I've been changed. Until.MUX.mp4
+17:18:04.421 WARN : Cleaning files...
+17:18:04.453 WARN : Rename to NIMA-074 Live-action version I've been changed. Until.mp4
+17:18:04.454 INFO : Done

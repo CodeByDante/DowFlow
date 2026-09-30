@@ -1,0 +1,34 @@
+﻿LOG 2026/05/15
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/15 17:11:10
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/2876cb5f-d031-4b5a-898e-2c6160eab622/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "MKMP-579 Busty, sadistic wives with MAX sexual desires" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\MKMP-579 Busty, sadistic wives with MAX sexual desires_23e114a6_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/dm1/en/mkmp-579" -H "Origin: https://missav.ws"
+
+17:11:10.944 INFO : N_m3u8DL-RE (Beta version) 20251029
+17:11:10.950 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+17:11:10.952 EXTRA: User-Defined Header => referer: https://missav.ws/dm1/en/mkmp-579
+17:11:10.953 EXTRA: User-Defined Header => origin: https://missav.ws
+17:11:10.954 INFO : Loading URL: https://surrit.com/2876cb5f-d031-4b5a-898e-2c6160eab622/playlist.m3u8
+17:11:11.602 INFO : Content Matched: HTTP Live Streaming
+17:11:11.604 INFO : Parsing streams...
+17:11:11.606 WARN : Master List detected, try parse all streams
+17:11:11.617 WARN : Writing meta json
+17:11:11.623 INFO : Extracted, there are 3 streams, with 3 basic streams, 0 audio streams, 0 subtitle streams
+17:11:11.625 INFO : Vid 1280x720 | 4729 Kbps | avc1.64001f,mp4a.40.2
+17:11:11.627 INFO : Vid 854x480 | 2428 Kbps | avc1.64001e,mp4a.40.2
+17:11:11.629 INFO : Vid 640x360 | 1408 Kbps | avc1.64001e,mp4a.40.2
+17:11:11.631 INFO : Parsing streams...
+17:11:11.914 INFO : Selected streams:
+17:11:11.915 INFO : Vid 1280x720 | 4729 Kbps | avc1.64001f,mp4a.40.2 | 2278 Segments | ~02h31m48s
+17:11:11.916 WARN : Writing meta json
+17:11:11.926 INFO : Save Name: MKMP-579 Busty, sadistic wives with MAX sexual desires
+17:11:11.928 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+17:11:11.932 INFO : Start downloading...Vid 1280x720 | 4729 Kbps | avc1.64001f,mp4a.40.2
+17:11:13.100 WARN : Reading media info...
+17:11:13.264 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1280x720, 24 fps
+17:11:13.267 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 255 kb/s
+17:12:40.469 INFO : Binary merging...
+17:13:02.278 WARN : MKMP-579 Busty, sadistic wives with MAX sexual desires.ts
+17:13:02.279 WARN : Muxing to MKMP-579 Busty, sadistic wives with MAX sexual desires.MUX.mp4
+17:14:10.622 WARN : Cleaning files...
+17:14:10.788 WARN : Rename to MKMP-579 Busty, sadistic wives with MAX sexual desires.mp4
+17:14:10.790 INFO : Done

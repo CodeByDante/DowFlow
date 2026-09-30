@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>System Console - Herramientas Avanzadas</title>
+  <style>
+    :root {
+      --bg-color: #0b0c10;
+      --surface-color: #1a1b22;
+      --border-color: #2a2b36;
+      --primary-color: #4da6ff;
+      --primary-glow: rgba(77, 166, 255, 0.2);
+      --text-main: #e0e0e0;
+      --text-muted: #8c8d91;
+      --sidebar-width: 260px;
+      --header-height: 64px;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* --- Top Header --- */
+    .header {
+      height: var(--header-height);
+      background-color: rgba(26, 27, 34, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      cursor: pointer;
+      padding: 8px;
+      margin-right: 15px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .menu-toggle:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--primary-color);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-brand svg {
+      color: var(--primary-color);
+      filter: drop-shadow(0 0 8px var(--primary-glow));
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      background: linear-gradient(90deg, #fff, #aab1c0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* --- Sidebar Menu --- */
+    .sidebar {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      bottom: 0;
+      width: var(--sidebar-width);
+      background-color: var(--surface-color);
+      border-right: 1px solid var(--border-color);
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+    }
+
+    .sidebar.active {
+      transform: translateX(0);
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 15px 10px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item:hover {
+      background-color: rgba(255, 255, 255, 0.03);
+      color: #fff;
+    }
+
+    .nav-item.active {
+      background-color: rgba(77, 166, 255, 0.1);
+      color: var(--primary-color);
+      box-shadow: inset 3px 0 0 var(--primary-color);
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(2px);
+      z-index: 80;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* --- Main Content Layout --- */
+    .main-wrapper {
+      flex: 1;
+      padding: 30px;
+      transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (min-width: 900px) {
+      .sidebar {
+        transform: translateX(0);
+        box-shadow: none;
+      }
+      .sidebar-overlay {
+        display: none;
+      }
+      .main-wrapper {
+        margin-left: var(--sidebar-width);
+      }
+      .menu-toggle {
+        display: none;
+      }
+    }
+
+    .view-section {
+      display: none;
+      animation: fadeIn 0.4s ease;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #fff;
+      margin: 0 0 8px 0;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      margin: 0;
+      font-size: 14px;
+      max-width: 600px;
+      line-height: 1.5;
+    }
+
+    /* --- Dashboard Grid & Cards --- */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .tool-card {
+      background-color: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(77, 166, 255, 0.3), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tool-card:hover {
+      border-color: rgba(77, 166, 255, 0.4);
+      background-color: #1e1f26;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+    }
+
+    .tool-card:hover::before {
+      opacity: 1;
+    }
+
+    .tool-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(77, 166, 255, 0.08);
+      color: var(--primary-color);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(77, 166, 255, 0.15);
+    }
+
+    .tool-info h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      margin: 0 0 6px 0;
+    }
+
+    .tool-info p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+      text-align: center;
+      background: rgba(26, 27, 34, 0.4);
+      border: 1px dashed var(--border-color);
+      border-radius: 16px;
+      margin-top: 20px;
+    }
+
+    .empty-state svg {
+      color: #3f4147;
+      margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+      color: var(--text-main);
+      margin: 0 0 8px 0;
+    }
+
+    .empty-state p {
+      color: var(--text-muted);
+      margin: 0;
+      max-width: 400px;
+      line-height: 1.5;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover {
+      background: #3395ff;
+    }
+
+    /* --- Settings Panel Styles --- */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 1000px) {
+      .settings-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .settings-card {
+      background-color: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .setting-item {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .setting-item label.main-label {
+      font-size: 15px;
+      color: #fff;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .setting-item p.desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .radio-switch {
+      display: flex;
+      background-color: #111216;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .radio-switch label {
+      flex: 1;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .radio-switch input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .radio-switch span {
+      display: block;
+      padding: 10px 12px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      border-right: 1px solid var(--border-color);
+    }
+    .radio-switch label:last-child span {
+      border-right: none;
+    }
+
+    .radio-switch input[type="radio"]:checked + span {
+      background-color: rgba(77, 166, 255, 0.1);
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    /* Custom Radio Cards (Format Pref) */
+    .radio-card-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .hidden-radio { position: absolute; opacity: 0; width: 0; height: 0; }
+    .radio-card { display: flex; align-items: flex-start; gap: 12px; padding: 16px; background: #111216; border: 1px solid var(--border-color); border-radius: 8px; transition: all 0.2s; cursor: pointer; }
+    .radio-card:hover { border-color: #444; }
+    .hidden-radio:checked + .radio-card { border-color: var(--primary-color); background: rgba(77, 166, 255, 0.05); }
+    .card-radio-circle { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--text-muted); transition: all 0.2s; flex-shrink: 0; margin-top: 2px; position: relative; }
+    .hidden-radio:checked + .radio-card .card-radio-circle { border-color: var(--primary-color); }
+    .hidden-radio:checked + .radio-card .card-radio-circle::after { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; border-radius: 50%; background: var(--primary-color); }
+    .card-title-text { font-size: 14px; color: #fff; margin-bottom: 4px; font-weight: 600; }
+    .card-desc-text { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+    /* Select Dropdowns */
+    .custom-select-wrapper { position: relative; width: 100%; display: block; }
+    .custom-select { 
+        width: 100%; padding: 12px 36px 12px 14px; background: #111216; color: #eeeeee; 
+        border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; 
+        appearance: none; -moz-appearance: none; -webkit-appearance: none;
+        font-size: 13px; font-family: inherit; transition: all 0.2s; box-sizing: border-box;
+    }
+    .custom-select:hover { border-color: #444; }
+    .custom-select:focus { border-color: var(--primary-color); outline: none; }
+    .select-arrow { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted); pointer-events: none; }
+
+    /* Custom Slider */
+    .custom-slider {
+      -webkit-appearance: none; width: 100%; height: 6px; background: transparent; outline: none; cursor: pointer; margin: 10px 0;
+    }
+    .custom-slider::-webkit-slider-runnable-track { width: 100%; height: 6px; background: #2a2b30; border-radius: 3px; }
+    .custom-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--text-muted);
+      cursor: pointer; margin-top: -5px; border: 2px solid var(--border-color); transition: background 0.2s, transform 0.1s;
+    }
+    .custom-slider:hover::-webkit-slider-thumb { background: #fff; }
+    .custom-slider:active::-webkit-slider-thumb { transform: scale(1.1); background: var(--primary-color); border-color: var(--primary-color); }
+
+    /* YouTube Exclusive Highlight */
+    .yt-card {
+      border-color: rgba(255, 77, 77, 0.3);
+      background: linear-gradient(180deg, rgba(255, 77, 77, 0.03) 0%, transparent 100%);
+    }
+    .yt-card h3 { color: #ff4d4d; font-size: 15px; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; }
+    
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="header">
+    <button class="menu-toggle" id="menuToggleBtn">
+      <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    </button>
+    
+    <div class="header-brand">
+      <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>
+      <h1>System Console</h1>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar" id="sidebar">
+    <ul class="nav-list">
+      <li class="nav-item active" data-target="view-dashboard">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        Dashboard
+      </li>
+      <li class="nav-item" data-target="view-downloader">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        Descargador
+      </li>
+      <li class="nav-item" data-target="view-playlist">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M4 10h12v2H4zm0-4h12v2H4zm0 8h8v2H4zm10 0v6l5-3z"/></svg>
+        Playlist YT
+      </li>
+      <li class="nav-item" data-target="view-console">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8.5 13H4v-2h7.5v2zm2-4.5L9 9l4.5-3.5L15 7l-3 2.5 3 2.5-1.5 1.5z"/></svg>
+        Consola
+      </li>
+      <li class="nav-item" data-target="view-active">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        Progreso
+      </li>
+      <li class="nav-item" data-target="view-settings">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.73 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.49-.12-.61l-2.01-1.58zm-7.14 2.66c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        Configuración
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-wrapper">
+    
+    <!-- View: Dashboard -->
+    <section id="view-dashboard" class="view-section active">
+      <div class="section-header">
+        <h2 class="section-title">Panel de Herramientas</h2>
+        <p class="section-desc">Selecciona una herramienta avanzada para interactuar con la red, extraer medios complejos o gestionar descargas en bloque.</p>
+      </div>
+
+      <div class="tools-grid">
+        <div class="tool-card" id="card-downloader">
+          <div class="tool-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          </div>
+          <div class="tool-info">
+            <h3>Descargador de Enlaces</h3>
+            <p>Pega múltiples enlaces web para procesarlos masivamente con el motor de descarga.</p>
+          </div>
+        </div>
+
+        <div class="tool-card" id="card-playlist">
+          <div class="tool-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M4 10h12v2H4zm0-4h12v2H4zm0 8h8v2H4zm10 0v6l5-3z"/></svg>
+          </div>
+          <div class="tool-info">
+            <h3>Descargador de Playlists</h3>
+            <p>Extrae y descarga todos los videos de una lista de reproducción de YouTube.</p>
+          </div>
+        </div>
+        
+        <div class="tool-card" id="card-console">
+          <div class="tool-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8.5 13H4v-2h7.5v2zm2-4.5L9 9l4.5-3.5L15 7l-3 2.5 3 2.5-1.5 1.5z"/></svg>
+          </div>
+          <div class="tool-info">
+            <h3>Consola de Sistema</h3>
+            <p>Visualiza en tiempo real los registros de descarga, progreso y errores del host.</p>
+          </div>
+        </div>
+
+        <div class="tool-card" id="card-active">
+          <div class="tool-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          </div>
+          <div class="tool-info">
+            <h3>Progreso</h3>
+            <p>Monitorea gráficamente el progreso de las tareas en curso.</p>
+          </div>
+        </div>
+
+        <div class="tool-card" id="card-settings">
+          <div class="tool-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.73 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.49-.12-.61l-2.01-1.58zm-7.14 2.66c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          </div>
+          <div class="tool-info">
+            <h3>Configuración Global</h3>
+            <p>Sincronizada con la extensión: Formatos, directorios, hilos y motor.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- View: Descargador -->
+    <section id="view-downloader" class="view-section">
+      <div class="section-header">
+        <h2 class="section-title">Descargador</h2>
+        <p class="section-desc">Pega aquí los enlaces que deseas descargar. Soporta múltiples URLs separadas por salto de línea.</p>
+      </div>
+      
+      <div class="settings-card" style="gap: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 5px;">
+          <label class="main-label" style="font-size: 16px; margin: 0;">Enlaces a procesar</label>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 12px; color: var(--text-muted);">Nombre en descargas masivas:</span>
+            <select id="batchNamingSelect" style="background: #111216; color: #fff; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 10px; font-size: 12px; outline: none; cursor: pointer;">
+              <option value="original">Título Web (Original)</option>
+              <option value="lote">Numeración Lote (Lote 1, Lote 2...)</option>
+              <option value="lista">Numeración Lista (Lista 1, Lista 2...)</option>
+              <option value="custom">Personalizado...</option>
+            </select>
+            <input type="text" id="batchCustomPrefixInput" placeholder="Prefijo (ej. Capitulo)" style="display: none; width: 140px; background: #111216; color: #fff; border: 1px solid var(--border-color); border-radius: 6px; padding: 5px 8px; font-size: 12px; outline: none;">
+          </div>
+        </div>
+        <textarea id="bulkUrlsInput" placeholder="https://ejemplo.com/video1&#10;https://ejemplo.com/video2&#10;..." style="width: 100%; height: 250px; background: #111216; color: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; font-family: monospace; font-size: 13px; resize: vertical; outline: none; box-sizing: border-box; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--primary-color)'" onblur="this.style.borderColor='var(--border-color)'"></textarea>
+        
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 10px;">
+          <button class="btn-primary" style="background: #2a2b36; color: #fff; display: flex; align-items: center; gap: 8px;" onclick="document.getElementById('bulkUrlsInput').value = ''">
+            Limpiar
+          </button>
+          <button class="btn-primary" id="startBulkDownloadBtn" style="display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Iniciar Descarga
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- View: Playlist Downloader -->
+    <section id="view-playlist" class="view-section">
+      <div class="section-header">
+        <h2 class="section-title">Playlist de YouTube</h2>
+        <p class="section-desc">Pega el enlace de una Playlist de YouTube para obtener y descargar todos sus videos.</p>
+      </div>
+
+      <div class="settings-card" style="gap: 15px;">
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="playlistUrlInput" placeholder="https://www.youtube.com/playlist?list=..." style="flex: 1; background: #111216; color: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px; font-size: 14px; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--primary-color)'" onblur="this.style.borderColor='var(--border-color)'">
+          <button class="btn-primary" id="fetchPlaylistBtn" style="white-space: nowrap; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            Analizar
+          </button>
+        </div>
+        <p id="playlistStatus" style="font-size: 13px; color: var(--text-muted); margin: 0;"></p>
+
+        <div id="playlistResultsContainer" style="display: none; flex-direction: column; gap: 15px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 14px; font-weight: 600; color: #fff;" id="playlistCountTitle">0 videos encontrados</span>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn-primary" style="background: #2a2b36; color: #fff; padding: 6px 12px; font-size: 12px;" id="selectAllPlaylistBtn">Seleccionar Todos</button>
+              <button class="btn-primary" style="padding: 6px 12px; font-size: 12px;" id="downloadSelectedPlaylistBtn">Descargar Seleccionados</button>
+            </div>
+          </div>
+          
+          <div id="playlistVideosList" style="display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto; padding-right: 5px;">
+            <!-- Videos inject here -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- View: Activas -->
+    <section id="view-active" class="view-section">
+      <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div>
+          <h2 class="section-title">Progreso de Descargas</h2>
+          <p class="section-desc">Aquí puedes monitorear el progreso gráfico de tus descargas en curso.</p>
+        </div>
+        <button class="btn-primary" id="emergencyStopBtn" style="background: #ff4d4d; color: #fff; display: flex; align-items: center; gap: 8px; font-weight: bold; border-radius: 8px; padding: 10px 16px; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(255, 77, 77, 0.3);" onmouseover="this.style.backgroundColor='#ff3333'; this.style.transform='scale(1.02)'" onmouseout="this.style.backgroundColor='#ff4d4d'; this.style.transform='scale(1)'">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+          Parada de Emergencia
+        </button>
+      </div>
+      
+      <!-- Activas / Progress Cards Wrapper -->
+      <div id="activeDownloadsWrapper" style="display: flex; flex-direction: column; gap: 10px; max-height: 70vh; overflow-y: auto; padding-right: 5px;">
+        <!-- Cards will be injected here -->
+      </div>
+
+      <template id="consoleVideoCardTemplate">
+        <div class="console-video-card" style="background: #1a1b22; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; transition: all 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+            <div class="card-title" style="font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"></div>
+            <div class="card-status-text" style="font-size: 12px; color: var(--primary-color); white-space: nowrap; font-weight: 600;">0%</div>
+          </div>
+          <div style="width: 100%; height: 6px; background-color: #2a2b36; border-radius: 3px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);">
+            <div class="card-progress-bar" style="width: 0%; height: 100%; background-color: var(--primary-color); transition: width 0.3s ease;"></div>
+          </div>
+          <div class="card-msg" style="font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Iniciando...</div>
+        </div>
+      </template>
+    </section>
+
+    <!-- View: Consola -->
+    <section id="view-console" class="view-section">
+      <div class="section-header">
+        <h2 class="section-title">Consola del Sistema</h2>
+        <p class="section-desc">Aquí verás en tiempo real todo el proceso de descarga de forma independiente.</p>
+      </div>
+      
+      <div style="background: #0d0d12; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; height: 500px; max-height: 70vh;">
+        <div style="background: #15161c; padding: 10px 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 13px; font-family: monospace; color: #4da6ff;">host-bridge-terminal</span>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-primary" id="copyConsoleBtn" style="padding: 4px 10px; font-size: 11px; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted);" title="Copiar Consola">Copiar</button>
+            <button class="btn-primary" id="clearConsoleBtn" style="padding: 4px 10px; font-size: 11px; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted);" title="Limpiar Consola">Limpiar</button>
+            <button class="btn-primary" id="scrollBottomBtn" style="padding: 4px 10px; font-size: 11px; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted);" title="Ir al final">↓</button>
+          </div>
+        </div>
+        <div id="toolConsole" style="flex: 1; padding: 15px; font-family: 'Consolas', monospace; font-size: 12px; color: #a1a1aa; overflow-y: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.4;">
+        </div>
+      </div>
+
+      <!-- Apartado de Errores (Failed Downloads) -->
+      <div id="failedDownloadsContainer" style="margin-top: 20px; display: none; background: rgba(255, 77, 77, 0.04); border: 1px solid rgba(255, 77, 77, 0.2); border-radius: 8px; overflow: hidden; flex-direction: column;">
+        <div style="background: rgba(255, 77, 77, 0.08); padding: 12px 15px; border-bottom: 1px solid rgba(255, 77, 77, 0.15); display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 13px; font-weight: 600; color: #ff6b6b; display: flex; align-items: center; gap: 8px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            Enlaces que fallaron
+          </span>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-primary" id="copyAllFailedBtn" style="padding: 4px 10px; font-size: 11px; background: transparent; border: 1px solid rgba(77, 166, 255, 0.3); color: #4da6ff; cursor: pointer;" title="Copiar todas las URLs que fallaron">Copiar todas las URLs</button>
+            <button class="btn-primary" id="clearFailedBtn" style="padding: 4px 10px; font-size: 11px; background: transparent; border: 1px solid rgba(255, 77, 77, 0.3); color: #ff8a8a; cursor: pointer;" title="Limpiar Errores">Limpiar Errores</button>
+          </div>
+        </div>
+        <div id="failedDownloadsList" style="padding: 12px; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;">
+          <!-- Errores dinámicos se insertan aquí -->
+        </div>
+      </div>
+    </section>
+
+    <!-- View: Settings (Full implementation) -->
+    <section id="view-settings" class="view-section">
+      <div class="section-header">
+        <h2 class="section-title">Configuración</h2>
+        <p class="section-desc">Gestiona el formato, motor de descarga y configuración del host en un solo lugar.</p>
+      </div>
+      
+      <div class="settings-grid">
+        <!-- Col 1 -->
+        <div style="display:flex; flex-direction: column; gap: 20px;">
+          
+          <div class="settings-card">
+            <div class="setting-item">
+              <label class="main-label">Formato de Descarga</label>
+              <div class="radio-switch">
+                <label><input type="radio" name="formatSetting" value="mp4" checked><span>Video</span></label>
+                <label><input type="radio" name="formatSetting" value="mp3"><span>Audio</span></label>
+              </div>
+            </div>
+
+            <div class="setting-item" id="qualitySettingContainer">
+              <label class="main-label">Calidad de Video</label>
+              <div class="radio-switch">
+                <label><input type="radio" name="qualitySetting" value="max" checked><span>Máxima</span></label>
+                <label><input type="radio" name="qualitySetting" value="min"><span>Mínima</span></label>
+                <label><input type="radio" name="qualitySetting" value="ask"><span>Preguntar</span></label>
+                <label title="Extrae resoluciones reales del servidor"><input type="radio" name="qualitySetting" value="detect"><span style="color: #ffb84d;">Detector</span></label>
+              </div>
+              <p class="desc">Al dar en "Preguntar" podrás elegir la calidad manual. Con "Detector", la app interrogará al servidor para extraer la lista real (Requiere configuración del Host).</p>
+            </div>
+
+            <div class="setting-item" id="videoPreferenceContainer" style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+              <label class="main-label" style="color: var(--primary-color);">Preferencia de formato de vídeo</label>
+              <div class="radio-card-wrap">
+                <label>
+                  <input type="radio" name="videoFormatPref" value="legado" checked class="hidden-radio">
+                  <div class="radio-card">
+                    <div class="card-radio-circle"></div>
+                    <div>
+                      <div class="card-title-text">Legado</div>
+                      <div class="card-desc-text">Prefieres los formatos MP4(H.264) para compartir con otras aplicaciones</div>
+                    </div>
+                  </div>
+                </label>
+                <label>
+                  <input type="radio" name="videoFormatPref" value="calidad" class="hidden-radio">
+                  <div class="radio-card">
+                    <div class="card-radio-circle"></div>
+                    <div>
+                      <div class="card-title-text">Calidad</div>
+                      <div class="card-desc-text">Prefieres los formatos AV1, VP9 o H.265 para verlos en las aplicaciones compatibles</div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item" id="audioSettingsContainer" style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+              <label class="main-label" style="color: var(--primary-color);" id="audioSettingsLabel">Ajustes del Audio del Video</label>
+              
+              <div style="margin-top: 10px;">
+                <label style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; display: block;">Formato de audio preferido</label>
+                <div class="custom-select-wrapper">
+                  <select id="audioFormatSelect" class="custom-select">
+                      <option value="best">Sin especificar (por defecto)</option>
+                      <option value="opus">OPUS</option>
+                      <option value="m4a">M4A</option>
+                  </select>
+                  <svg class="select-arrow" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                </div>
+              </div>
+
+              <div style="margin-top: 10px;">
+                <label style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; display: block;">Calidad del audio</label>
+                <div class="custom-select-wrapper">
+                  <select id="audioQualitySelect" class="custom-select">
+                      <option value="0">Ilimitado</option>
+                      <option value="192">192 Kbps</option>
+                      <option value="128">128 Kbps</option>
+                      <option value="64">64 Kbps</option>
+                      <option value="32">32 Kbps</option>
+                  </select>
+                  <svg class="select-arrow" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                </div>
+              </div>
+
+              <div style="margin-top: 10px;">
+                <label style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; display: block;">Convertir formato de audio</label>
+                <div class="custom-select-wrapper">
+                  <select id="audioConvertSelect" class="custom-select">
+                      <option value="mp3" selected>Convertir a mp3</option>
+                      <option value="none">No convertir</option>
+                      <option value="m4a">Convertir a m4a</option>
+                  </select>
+                  <svg class="select-arrow" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="settings-card">
+            <div class="setting-item">
+              <label class="main-label">Usar cookies</label>
+              <div class="radio-switch">
+                <label><input type="radio" name="cookiesSetting" value="none" checked><span>Desactivado</span></label>
+                <label><input type="radio" name="cookiesSetting" value="chrome"><span>Activado</span></label>
+              </div>
+              <p class="desc">Utiliza tu sesión del navegador de forma segura para permitirte bajar videos privados, de pago o con limitación de edad. <b>Aviso:</b> En el caso de YouTube, las cookies ya se extraen de forma silenciosa e invisible en segundo plano porque es necesario. Sin embargo, marcar deliberadamente esta opción para otros sitios a veces puede generar errores si detectan comportamiento automático. Úsalo si un video falla.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Col 2 -->
+        <div style="display:flex; flex-direction: column; gap: 20px;">
+          
+          <div class="settings-card">
+            <div class="setting-item">
+              <label class="main-label">Motor de Descarga</label>
+              <div class="radio-switch" style="flex-wrap: wrap;">
+                <label><input type="radio" name="engineSetting" value="ytdlp" checked><span>Por defecto (yt-dlp)</span></label>
+                <label><input type="radio" name="engineSetting" value="aria2"><span>Acelerador (aria2)</span></label>
+                <label title="Recomendado contra errores 403"><input type="radio" name="engineSetting" value="nm3u8"><span style="color: #ffb84d;">Extremo (N_m3u8DL)</span></label>
+              </div>
+
+            </div>
+
+            <div class="setting-item" id="threadSettingContainer">
+              <label class="main-label">Descarga con múltiples hilos</label>
+              <div style="background: #111216; padding: 16px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 5px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <span id="threadCountLabel" style="font-size: 14px; font-weight: 600;">Hilos: 8</span>
+                </div>
+                <input type="range" class="custom-slider" id="threadSlider" min="1" max="36" value="8">
+              </div>
+              <p id="threadDescription" class="desc"></p>
+            </div>
+
+            <div class="setting-item" id="concurrencySettingContainer" style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 10px;">
+              <label class="main-label">Descargas simultáneas máximas</label>
+              <div style="background: #111216; padding: 16px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 5px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <span id="concurrencyCountLabel" style="font-size: 14px; font-weight: 600;">Descargas a la vez: 1</span>
+                </div>
+                <input type="range" class="custom-slider" id="concurrencySlider" min="1" max="50" value="1">
+              </div>
+              <p class="desc">Controla cuántos videos se pueden descargar al mismo tiempo (de 1 a 50). Los videos adicionales se quedarán en la cola de espera.</p>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="setting-item">
+              <label class="main-label">Nombres de Archivo para Descargas Masivas</label>
+              <p class="desc" style="margin-bottom: 10px;">Define cómo se nombrarán los archivos al procesar múltiples enlaces en lote o listas.</p>
+              <div class="custom-select-wrapper">
+                <select id="configBatchNamingSelect" class="custom-select">
+                  <option value="original">Título Web Original (ej: Nombre_Video.mp4)</option>
+                  <option value="lote">Numeración Lote (Lote 1, Lote 2, Lote 3...)</option>
+                  <option value="lista">Numeración Lista (Lista 1, Lista 2, Lista 3...)</option>
+                  <option value="custom">Personalizado (ej: MiVideo 1, MiVideo 2...)</option>
+                </select>
+              </div>
+              <div id="configBatchCustomPrefixWrap" style="display: none; margin-top: 10px;">
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Prefijo Personalizado</label>
+                <input type="text" id="configBatchCustomPrefixInput" placeholder="ej. Capitulo o Video" style="width: 100%; background: #111216; color: #fff; border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 12px; font-size: 13px; outline: none; box-sizing: border-box;">
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="setting-item">
+              <label class="main-label">Ruta de guardado (Host local)</label>
+              <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                <button class="btn-primary" id="selectFolderBtn">Seleccionar Carpeta...</button>
+              </div>
+              <p id="savePathDisplay" style="color: var(--primary-color); font-size: 13px; font-family: monospace; word-break: break-all; margin: 5px 0 0 0;">Ninguna seleccionada (Descargas)</p>
+              <p class="desc">Si no seleccionas nada, se guardará en Descargas por defecto.</p>
+            </div>
+          </div>
+
+          <div class="settings-card yt-card">
+            <h3 class="main-label"><svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>Exclusivo de YouTube</h3>
+            
+            <div class="setting-item">
+              <label class="main-label" style="font-size: 14px;">Idioma de Audio Preferido (Doblajes)</label>
+              <div class="radio-switch">
+                <label><input type="radio" name="ytAudioLang" value="es" checked><span>Español</span></label>
+                <label><input type="radio" name="ytAudioLang" value="orig"><span>Original</span></label>
+              </div>
+              <p class="desc">Si eliges Español y el video no lo tiene, bajará el idioma original automáticamente.</p>
+            </div>
+
+            <div class="setting-item" style="margin-top: 10px;">
+              <label class="main-label" style="font-size: 14px;">Subtítulos</label>
+              <div class="radio-switch">
+                <label><input type="radio" name="ytSubs" value="on"><span>Incrustar (ES/EN)</span></label>
+                <label><input type="radio" name="ytSubs" value="off" checked><span>Desactivados</span></label>
+              </div>
+              <p class="desc">Incrusta los subtítulos dentro del video para encenderlos o apagarlos en tu reproductor.</p>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="setting-item">
+              <label class="main-label">Nombres en Descargas Masivas / Lotes</label>
+              <p class="desc" style="margin-bottom: 10px;">Define cómo se nombrarán los archivos al procesar múltiples enlaces en lote o listas.</p>
+              <div class="custom-select-wrapper">
+                <select id="configBatchNamingSelect2" class="custom-select">
+                  <option value="original">Título Web Original (ej: Nombre_Video.mp4)</option>
+                  <option value="lote">Numeración Lote (Lote 1, Lote 2, Lote 3...)</option>
+                  <option value="lista">Numeración Lista (Lista 1, Lista 2, Lista 3...)</option>
+                  <option value="custom">Personalizado (ej: MiVideo 1, MiVideo 2...)</option>
+                </select>
+              </div>
+              <div id="configBatchCustomPrefixWrap2" style="display: none; margin-top: 10px;">
+                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Prefijo Personalizado</label>
+                <input type="text" id="configBatchCustomPrefixInput2" placeholder="ej. Capitulo o Video" style="width: 100%; background: #111216; color: #fff; border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 12px; font-size: 13px; outline: none; box-sizing: border-box;">
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="setting-item">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label class="main-label">Modo Personalizado (Enlace Manual)</label>
+                <div class="radio-switch" style="width: auto;">
+                  <label><input type="radio" name="customModeSetting" value="on"><span>Activado</span></label>
+                  <label><input type="radio" name="customModeSetting" value="off" checked><span>Desactivado</span></label>
+                </div>
+              </div>
+              <p class="desc">Muestra una tarjeta fija en el Detector para pegar cualquier enlace manualmente.</p>
+            </div>
+
+            <div class="setting-item" style="margin-top: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label class="main-label">Rastreador de Streams (M3U8 / MP4)</label>
+                <div class="radio-switch" style="width: auto;">
+                  <label><input type="radio" name="snifferSetting" value="on" checked><span>Activado</span></label>
+                  <label><input type="radio" name="snifferSetting" value="off"><span>Desactivado</span></label>
+                </div>
+              </div>
+              <p class="desc">Detecta automáticamente segmentos de video directos ocultos en el tráfico de red de las páginas que visitas.</p>
+            </div>
+            
+            <div class="setting-item" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+              <label class="main-label">Protocolo Backend</label>
+              <div style="font-family: monospace; color: #4ade80; background: rgba(74, 222, 128, 0.1); padding: 8px 12px; border-radius: 6px; display: inline-block;">
+                Native Messaging API [Conectado]
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="tools.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+﻿LOG 2026/07/24
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\Logs
+Task Start: 2026/07/24 23:43:47
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\N_m3u8DL-RE.exe" https://video-pr.xhcdn.com/key=nL2JGFryhhDJQ7sptyz39g,end=1784973600/data=190.238.68.26/media=hls4/multi=426x240:240,854x480:480,1280x720:720,1400x1080:1080/h3/h3CB0M/trailer/_TPL_.mp4.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name video-pr.xhcdn.comkey=nL2JGFryhhDJQ7sptyz39g,end=1784973600data=190.238.68.26med --auto-select --thread-count 9 --tmp-dir C:\Users\Gonzalo\AppData\Local\Temp\video-pr.xhcdn.comkey=nL2JGFryhhDJQ7sptyz39g,end=1784973600data=190.238.68.26med_cae81648_tmp --mux-after-done mp4 -H "Referer: https://video-pr.xhcdn.com/key=nL2JGFryhhDJQ7sptyz39g,end=1784973600/data=190.238.68.26/media=hls4/multi=426x240:240,854x480:480,1280x720:720,1400x1080:1080/h3/h3CB0M/trailer/_TPL_.mp4.m3u8" -H "Origin: https://video-pr.xhcdn.com"
+
+23:43:47.654 INFO : N_m3u8DL-RE (Beta version) 20251029
+23:43:47.655 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\ffmpeg.exe
+23:43:47.655 EXTRA: User-Defined Header => referer: https://video-pr.xhcdn.com/key=nL2JGFryhhDJQ7sptyz39g,end=1784973600/data=190.238.68.26/media=hls4/multi=426x240:240,854x480:480,1280x720:720,1400x1080:1080/h3/h3CB0M/trailer/_TPL_.mp4.m3u8
+23:43:47.655 EXTRA: User-Defined Header => origin: https://video-pr.xhcdn.com
+23:43:47.655 INFO : Loading URL: https://video-pr.xhcdn.com/key=nL2JGFryhhDJQ7sptyz39g,end=1784973600/data=190.238.68.26/media=hls4/multi=426x240:240,854x480:480,1280x720:720,1400x1080:1080/h3/h3CB0M/trailer/_TPL_.mp4.m3u8
+23:43:48.088 INFO : New version detected! v0.6.0-beta
+23:43:48.170 INFO : Content Matched: HTTP Live Streaming
+23:43:48.170 INFO : Parsing streams...
+23:43:48.171 WARN : Master List detected, try parse all streams
+23:43:48.174 WARN : Writing meta json
+23:43:48.178 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+23:43:48.179 INFO : Vid 1400x1080 | 4069 Kbps | mp4a.40.2,avc1.4d4015
+23:43:48.179 INFO : Vid 1280x720 | 2329 Kbps | mp4a.40.2,avc1.4d4015
+23:43:48.180 INFO : Vid 854x480 | 1288 Kbps | mp4a.40.2,avc1.4d4015
+23:43:48.181 INFO : Vid 426x240 | 448 Kbps | mp4a.40.2,avc1.4d4015
+23:43:48.182 INFO : Parsing streams...
+23:43:48.612 INFO : Selected streams:
+23:43:48.612 INFO : Vid 1400x1080 | 4069 Kbps | mp4a.40.2,avc1.4d4015 | 10 Segments | ~00m39s
+23:43:48.613 WARN : Writing meta json
+23:43:48.614 INFO : Save Name: video-pr.xhcdn.comkey=nL2JGFryhhDJQ7sptyz39g,end=1784973600data=190.238.68.26med
+23:43:48.615 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+23:43:48.616 INFO : Start downloading...Vid 1400x1080 | 4069 Kbps | mp4a.40.2,avc1.4d4015
+23:43:49.617 WARN : Reading media info...
+23:43:49.752 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1920x1080, 24 fps
+23:43:49.752 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 143 kb/s
+23:43:49.753 INFO : [0x102]: Data, timed_id3 (ID3 )
+23:43:51.091 INFO : Binary merging...
+23:43:51.172 WARN : video-pr.xhcdn.comkey=nL2JGFryhhDJQ7sptyz39g,end=1784973600data=190.238.68.26med.ts
+23:43:51.173 WARN : Muxing to video-pr.xhcdn.comkey=nL2JGFryhhDJQ7sptyz39g,end=1784973600data=190.238.68.26med.MUX.mp4
+23:43:51.241 WARN : [in#0/mpegts @ 000002c101a8e180] start time for stream 2 is not set in estimate_timings_from_pts
+23:43:51.329 WARN : Cleaning files...
+23:43:51.333 WARN : Rename to video-pr.xhcdn.comkey=nL2JGFryhhDJQ7sptyz39g,end=1784973600data=190.238.68.26med.mp4
+23:43:51.334 INFO : Done

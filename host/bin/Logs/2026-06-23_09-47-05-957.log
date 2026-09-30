@@ -1,0 +1,29 @@
+﻿LOG 2026/06/23
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\Logs
+Task Start: 2026/06/23 09:47:05
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\N_m3u8DL-RE.exe" https://es.xsz-av.com/media/v_586b70c8041b2785c14f.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name es.xsz-av.commediav_586b70c8041b2785c14f.m3u8 --auto-select --thread-count 16 --tmp-dir C:\Users\Gonzalo\AppData\Local\Temp\es.xsz-av.commediav_586b70c8041b2785c14f.m3u8_829c542c_tmp --mux-after-done mp4 -H "Referer: https://es.xsz-av.com/media/v_586b70c8041b2785c14f.m3u8" -H "Origin: https://es.xsz-av.com"
+
+09:47:05.958 INFO : N_m3u8DL-RE (Beta version) 20251029
+09:47:05.958 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\Nueva carpeta\local-video-downloader - copia (2) - copia\host\bin\ffmpeg.exe
+09:47:05.959 EXTRA: User-Defined Header => referer: https://es.xsz-av.com/media/v_586b70c8041b2785c14f.m3u8
+09:47:05.959 EXTRA: User-Defined Header => origin: https://es.xsz-av.com
+09:47:05.960 INFO : Loading URL: https://es.xsz-av.com/media/v_586b70c8041b2785c14f.m3u8
+09:47:06.286 WARN : Response status code does not indicate success: 403 (Forbidden). (1/10)
+09:47:07.788 INFO : Loading URL: https://es.xsz-av.com/media/v_586b70c8041b2785c14f.m3u8
+09:47:08.081 WARN : Response status code does not indicate success: 403 (Forbidden). (2/10)
+09:47:09.596 INFO : Loading URL: https://es.xsz-av.com/media/v_586b70c8041b2785c14f.m3u8
+09:47:09.805 WARN : Response status code does not indicate success: 403 (Forbidden). (3/10)
+09:47:11.314 INFO : Loading URL: https://es.xsz-av.com/media/v_586b70c8041b2785c14f.m3u8
+09:47:11.542 WARN : Response status code does not indicate success: 403 (Forbidden). (4/10)
+09:47:13.049 INFO : Loading URL: https://es.xsz-av.com/media/v_586b70c8041b2785c14f.m3u8
+09:47:13.303 WARN : Response status code does not indicate success: 403 (Forbidden). (5/10)
+09:47:14.805 INFO : Loading URL: https://es.xsz-av.com/media/v_586b70c8041b2785c14f.m3u8
+09:47:15.029 WARN : Response status code does not indicate success: 403 (Forbidden). (6/10)
+09:47:16.543 INFO : Loading URL: https://es.xsz-av.com/media/v_586b70c8041b2785c14f.m3u8
+09:47:16.783 WARN : Response status code does not indicate success: 403 (Forbidden). (7/10)
+09:47:18.284 INFO : Loading URL: https://es.xsz-av.com/media/v_586b70c8041b2785c14f.m3u8
+09:47:18.519 WARN : Response status code does not indicate success: 403 (Forbidden). (8/10)
+09:47:20.023 INFO : Loading URL: https://es.xsz-av.com/media/v_586b70c8041b2785c14f.m3u8
+09:47:20.242 WARN : Response status code does not indicate success: 403 (Forbidden). (9/10)
+09:47:21.743 INFO : Loading URL: https://es.xsz-av.com/media/v_586b70c8041b2785c14f.m3u8
+09:47:21.959 WARN : Response status code does not indicate success: 403 (Forbidden). (10/10)

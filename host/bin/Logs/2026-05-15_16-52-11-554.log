@@ -1,0 +1,35 @@
+﻿LOG 2026/05/15
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\Logs
+Task Start: 2026/05/15 16:52:11
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\N_m3u8DL-RE.exe" https://surrit.com/3eee1a4e-853c-4c09-aee1-b54aaa630ec1/playlist.m3u8 --save-dir C:\Users\Gonzalo\Downloads --save-name "CJOB-166 Being molested while unable to move, played co" --auto-select --thread-count 36 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\CJOB-166 Being molested while unable to move, played co_bcaffedb_tmp" --mux-after-done mp4 -H "Referer: https://missav.ws/dm42/en/cjob-166" -H "Origin: https://missav.ws"
+
+16:52:11.555 INFO : N_m3u8DL-RE (Beta version) 20251029
+16:52:11.555 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader\host\bin\ffmpeg.exe
+16:52:11.556 EXTRA: User-Defined Header => referer: https://missav.ws/dm42/en/cjob-166
+16:52:11.556 EXTRA: User-Defined Header => origin: https://missav.ws
+16:52:11.556 INFO : Loading URL: https://surrit.com/3eee1a4e-853c-4c09-aee1-b54aaa630ec1/playlist.m3u8
+16:52:12.161 INFO : Content Matched: HTTP Live Streaming
+16:52:12.162 INFO : Parsing streams...
+16:52:12.162 WARN : Master List detected, try parse all streams
+16:52:12.165 WARN : Writing meta json
+16:52:12.166 INFO : Extracted, there are 4 streams, with 4 basic streams, 0 audio streams, 0 subtitle streams
+16:52:12.166 INFO : Vid 1280x720 | 4606 Kbps | avc1.64001f,mp4a.40.2
+16:52:12.167 INFO : Vid 854x480 | 2338 Kbps | avc1.64001e,mp4a.40.2
+16:52:12.168 INFO : Vid 640x360 | 1416 Kbps | avc1.640016,mp4a.40.2
+16:52:12.168 INFO : Vid 426x240 | 1097 Kbps | avc1.640015,mp4a.40.2
+16:52:12.169 INFO : Parsing streams...
+16:52:12.348 INFO : Selected streams:
+16:52:12.349 INFO : Vid 1280x720 | 4606 Kbps | avc1.64001f,mp4a.40.2 | 3615 Segments | ~04h00m59s
+16:52:12.350 WARN : Writing meta json
+16:52:12.355 INFO : Save Name: CJOB-166 Being molested while unable to move, played co
+16:52:12.356 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+16:52:12.357 INFO : Start downloading...Vid 1280x720 | 4606 Kbps | avc1.64001f,mp4a.40.2
+16:52:12.851 WARN : Reading media info...
+16:52:12.887 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1280x720, 21.25 fps
+16:52:12.888 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 4 kb/s
+16:54:18.999 INFO : Binary merging...
+16:54:43.425 WARN : CJOB-166 Being molested while unable to move, played co.ts
+16:54:43.426 WARN : Muxing to CJOB-166 Being molested while unable to move, played co.MUX.mp4
+16:55:33.517 WARN : Cleaning files...
+16:55:33.758 WARN : Rename to CJOB-166 Being molested while unable to move, played co.mp4
+16:55:33.759 INFO : Done
