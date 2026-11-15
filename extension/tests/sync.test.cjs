@@ -16,7 +16,7 @@ function createBus(initial = {}) {
     const clients = [], ports = [], timers = [], data = clone(initial);
     let writes = 0;
     const bus = {
-        data, ports, timers, get writes() { return writes; },
+        data, ports, timers, formatResponses: new Map(), scanResults: [], get writes() { return writes; },
         client() {
             const changes = event(), messages = event();
             const client = {
@@ -52,7 +52,12 @@ function createBus(initial = {}) {
                     },
                     connectNative() {
                         const port = { onMessage: event(), onDisconnect: event(), posted: [],
-                            postMessage(message) { this.posted.push(clone(message)); },
+                            postMessage(message) {
+                                this.posted.push(clone(message));
+                                if (message.command === 'get_info' && bus.formatResponses.has(message.url)) {
+                                    queueMicrotask(() => this.onMessage.emit(clone(bus.formatResponses.get(message.url))));
+                                }
+                            },
                             disconnect() { this.onDisconnect.emit(); }
                         };
                         ports.push(port);
@@ -60,9 +65,9 @@ function createBus(initial = {}) {
                     }
                 },
                 tabs: { query: (_, cb) => queueMicrotask(() => cb([{ id: 1, url: 'https://example.com/video', title: 'Example video' }])), create() {}, onUpdated: event(), onRemoved: event() },
-                webRequest: { onBeforeRequest: event() }, contextMenus: { create() {}, onClicked: event() },
+                webRequest: { onBeforeRequest: event(), onHeadersReceived: event() }, contextMenus: { create() {}, onClicked: event() },
                 cookies: { getAll: (_, cb) => queueMicrotask(() => cb([])) },
-                scripting: { executeScript: (_, cb) => queueMicrotask(() => cb?.([{ result: null }])) }
+                scripting: { executeScript: (_, cb) => queueMicrotask(() => cb?.(clone(bus.scanResults))) }
             };
             clients.push(client);
             return client;
@@ -71,7 +76,7 @@ function createBus(initial = {}) {
             const chrome = bus.client();
             chrome.runtime.onMessage.addListener = fn => { chrome.handler = fn; };
             const context = vm.createContext({ chrome, console, URL, setTimeout: fn => { timers.push(fn); }, clearTimeout() {} });
-            context.importScripts = name => vm.runInContext(source(name), context);
+            context.importScripts = (...names) => names.forEach(name => vm.runInContext(source(name), context));
             vm.runInContext(source('background.js'), context);
             return context;
         },
@@ -109,9 +114,9 @@ function setControl(dom, id, value, type = 'change') {
 const send = (client, message) => new Promise(resolve => client.runtime.sendMessage(message, resolve));
 async function setup(initial = {}) {
     const bus = createBus(initial);
-    bus.worker();
+    const worker = bus.worker();
     const popup = await bus.page('popup'), tools = await bus.page('tools');
-    return { bus, popup, tools };
+    return { bus, popup, tools, worker };
 }
 
 test('all common settings synchronize in both directions, without feedback writes', async t => {
@@ -326,4 +331,209 @@ test('the panel cancel button cancels the same task displayed in the popup', asy
     await flush();
     assert.equal(popup.window.document.querySelector(`[data-taskid="${response.id}"] .status-percent`).innerText, 'Cancelado');
     assert.equal(tools.window.document.querySelector(`#console_card_${response.id} .cancel-task-btn`).hidden, true);
+});
+
+const detectorInfo = { success: true, status: 'info', info: { formats: [
+    { format_id: 'low-real', height: 360, resolution: '640x360', ext: 'mp4', tbr: 500 },
+    { format_id: 'high-real', height: 1080, resolution: '1920x1080', ext: 'mp4', tbr: 2500 },
+    { format_id: 'low-real', height: 360, ext: 'mp4' }
+] } };
+
+test('fixed quality synchronizes, hides in audio mode and reaches the native host', async t => {
+    const { bus, popup, tools } = await setup({ autoEngine: false });
+    t.after(() => { popup.window.close(); tools.window.close(); });
+    setRadio(popup, 'qualitySetting', 'fixed');
+    setControl(popup, 'fixedQualitySelect', '720');
+    await flush();
+    assert.equal(tools.window.document.getElementById('fixedQualitySelect').value, '720');
+    assert.equal(tools.window.document.getElementById('fixedQualityWrap').style.display, 'block');
+    setControl(tools, 'fixedQualitySelect', '1080');
+    await flush();
+    assert.equal(popup.window.document.getElementById('fixedQualitySelect').value, '1080');
+    const result = await send(tools.window.chrome, { action: 'download', url: 'https://example.com/fixed.mp4', qualitySetting: 'fixed', engineSetting: 'native' });
+    await flush();
+    assert.equal(result.success, true);
+    assert.equal(bus.ports.at(-1).posted[0].engineSetting, 'ytdlp');
+    assert.equal(bus.ports.at(-1).posted[0].fixedQuality, '1080');
+    setRadio(tools, 'formatSetting', 'mp3');
+    await flush();
+    assert.equal(popup.window.document.getElementById('fixedQualityWrap').style.display, 'none');
+});
+
+test('switching an open popup to Detector loads real IDs and sends the selected ID', async t => {
+    const { bus, popup, tools } = await setup({ autoEngine: false });
+    t.after(() => { popup.window.close(); tools.window.close(); });
+    bus.formatResponses.set('https://example.com/video', detectorInfo);
+    setRadio(tools, 'qualitySetting', 'detect');
+    await flush();
+    const card = popup.window.document.querySelector('#cardsWrapper .detected-video-card:not([data-taskid])');
+    const selector = card.querySelector('.detect-dropdown');
+    assert.equal(selector.disabled, false);
+    assert.equal(selector.options.length, 2);
+    assert.equal(selector.value, 'high-real');
+    assert.match(selector.options[0].textContent, /2500 kb\/s/);
+    assert.doesNotMatch(selector.options[0].textContent, /MB\/s|KB\/s/);
+    selector.value = 'low-real';
+    const button = card.querySelector('.main-btn');
+    button.innerText = 'Descargar';
+    button.click();
+    await flush();
+    const download = bus.ports.flatMap(port => port.posted).find(message => message.command === 'download');
+    assert.ok(download);
+    assert.equal(download.customFormatId, 'low-real');
+    assert.equal(download.qualitySetting, 'detect');
+    assert.equal(download.engineSetting, 'ytdlp');
+});
+
+test('Detector errors can be retried without enabling an empty selection', async t => {
+    const { bus, popup, tools } = await setup();
+    t.after(() => { popup.window.close(); tools.window.close(); });
+    bus.formatResponses.set('https://example.com/video', { status: 'error', error: 'No se pudo consultar el origen' });
+    setRadio(tools, 'qualitySetting', 'detect');
+    await flush();
+    const selector = popup.window.document.querySelector('.detect-dropdown');
+    assert.equal(selector.disabled, true);
+    assert.match(selector.dataset.error, /consultar/);
+    bus.formatResponses.set('https://example.com/video', detectorInfo);
+    selector._retry.click();
+    await flush();
+    assert.equal(selector.disabled, false);
+    assert.equal(selector.value, 'high-real');
+});
+
+test('panel Detector asks for a real format before queuing a manual link', async t => {
+    const { bus, popup, tools } = await setup({ autoEngine: false });
+    t.after(() => { popup.window.close(); tools.window.close(); });
+    bus.formatResponses.set('https://example.com/dialog', detectorInfo);
+    let response;
+    tools.window.AppState.sendDownload({ action: 'download', qualitySetting: 'detect', url: 'https://example.com/dialog', title: 'Choose format', engineSetting: 'native' }, result => { response = result; });
+    await flush();
+    const dialog = tools.window.document.querySelector('.detector-format-dialog');
+    assert.ok(dialog);
+    assert.equal(bus.ports.flatMap(port => port.posted).filter(msg => msg.command === 'download').length, 0);
+    dialog.querySelector('select').value = 'low-real';
+    [...dialog.querySelectorAll('button')].find(button => button.textContent === 'Descargar').click();
+    await flush();
+    assert.equal(response.success, true);
+    assert.equal(bus.ports.flatMap(port => port.posted).find(msg => msg.command === 'download').customFormatId, 'low-real');
+});
+
+test('background rejects Detector downloads without a selected format', async () => {
+    const bus = createBus(); bus.worker(); await flush();
+    const response = await send(bus.client(), { action: 'download', url: 'https://example.com/video', qualitySetting: 'detect' });
+    assert.equal(response.success, false);
+    assert.match(response.error, /selecciona/);
+    assert.equal(bus.ports.length, 0);
+});
+
+test('format queries coalesce, ignore log frames, cache success and refresh on demand', async () => {
+    const bus = createBus(); bus.worker(); await flush();
+    const client = bus.client();
+    const a = send(client, { action: 'get_info', url: 'https://example.com/query' });
+    const b = send(client, { action: 'get_info', url: 'https://example.com/query' });
+    await flush();
+    assert.equal(bus.ports.length, 1);
+    bus.ports[0].onMessage.emit({ status: 'log', log: 'Working' });
+    bus.ports[0].onMessage.emit(detectorInfo);
+    assert.equal((await a).success, true);
+    assert.equal((await b).success, true);
+    assert.equal((await send(client, { action: 'get_info', url: 'https://example.com/query' })).success, true);
+    assert.equal(bus.ports.length, 1);
+    const refreshed = send(client, { action: 'get_info', url: 'https://example.com/query', refresh: true });
+    await flush();
+    assert.equal(bus.ports.length, 2);
+    bus.ports[1].onMessage.emit(detectorInfo);
+    assert.equal((await refreshed).success, true);
+});
+
+test('passive tracker includes DASH and signed links across sites, excludes segments and respects Off', async t => {
+    const { bus, popup, tools, worker } = await setup();
+    t.after(() => { popup.window.close(); tools.window.close(); });
+    await flush();
+    const emit = event => worker.chrome.webRequest.onBeforeRequest.emit({ tabId: 4, type: 'xmlhttprequest', ...event });
+    emit({ url: 'https://fbcdn.example/video.mp4?token=a&range=10' });
+    emit({ url: 'https://tiktokcdn.example/master.m3u8?sig=abc' });
+    emit({ url: 'https://media.example/manifest.mpd' });
+    emit({ url: 'https://media.example/segment.m4s' });
+    worker.chrome.webRequest.onHeadersReceived.emit({ tabId: 4, type: 'xmlhttprequest', url: 'https://media.example/opaque?id=123', responseHeaders: [{ name: 'Content-Type', value: 'video/mp4' }] });
+    await flush();
+    assert.equal(bus.data.sniffedUrls[4].length, 4);
+    assert.ok(bus.data.sniffedUrls[4].includes('https://fbcdn.example/video.mp4?token=a&range=10'));
+    setRadio(tools, 'snifferSetting', 'off');
+    await flush();
+    emit({ url: 'https://media.example/ignored.mp4' });
+    await flush();
+    assert.equal(bus.data.sniffedUrls[4], undefined);
+});
+
+test('stream scan really searches the page without reloading and merges iframe results', async t => {
+    const { bus, popup, tools } = await setup();
+    t.after(() => { popup.window.close(); tools.window.close(); });
+    bus.scanResults = [
+        { result: [{ url: 'https://media.example/master.m3u8?sig=ABC', kind: 'HLS' }] },
+        { result: [{ url: 'https://media.example/master.m3u8?sig=ABC', kind: 'HLS' }, { url: 'https://media.example/main.mpd', kind: 'DASH' }] }
+    ];
+    popup.window.document.getElementById('forceDetectBtn').click();
+    await flush();
+    assert.equal(bus.data.sniffedUrls[1].length, 2);
+    assert.match(popup.window.document.getElementById('forceDetectBtn').innerText, /2 enlaces/);
+    assert.equal(popup.window.document.getElementById('forceDetectBtn').disabled, false);
+});
+
+test('injected scanner preserves signed URLs and relative sources and ignores fragments and blobs', () => {
+    const dom = new JSDOM('<video src="/file.mp4?token=A&amp;range=10"></video><video src="blob:abc"></video><a href="/master.m3u8?sig=Z">Stream</a><script>var clip="https://cdn.example/movie.webm"</script>', { runScripts: 'outside-only', url: 'https://page.example/watch' });
+    Object.defineProperty(dom.window.performance, 'getEntriesByType', { value: () => [{ name: 'https://cdn.example/manifest.mpd' }, { name: 'https://cdn.example/segment.m4s' }] });
+    dom.window.eval(source('media-scan.js'));
+    const all = dom.window.scanMediaPage('html').map(item => item.url);
+    assert.ok(all.includes('https://page.example/file.mp4?token=A&range=10'));
+    assert.ok(all.includes('https://cdn.example/movie.webm'));
+    assert.equal(all.some(url => url.includes('blob:') || url.endsWith('.m4s')), false);
+    const streams = dom.window.scanMediaPage('streams');
+    assert.equal(streams.length, 2);
+    dom.window.close();
+});
+
+test('disabling the tracker removes its stale source cards from the popup', async t => {
+    const { bus, popup, tools, worker } = await setup();
+    t.after(() => { popup.window.close(); tools.window.close(); });
+    worker.chrome.webRequest.onBeforeRequest.emit({ tabId: 1, type: 'media', url: 'https://media.example/stream.mp4' });
+    await flush();
+    assert.ok([...popup.window.document.querySelectorAll('#cardsWrapper [data-url]')].some(card => card.getAttribute('data-url') === 'https://media.example/stream.mp4'));
+    setRadio(tools, 'snifferSetting', 'off');
+    await flush();
+    assert.equal([...popup.window.document.querySelectorAll('#cardsWrapper [data-url]')].some(card => card.getAttribute('data-url') === 'https://media.example/stream.mp4'), false);
+});
+
+test('automatic engine selection accounts for query strings, audio, quality, cookies and manual mode', () => {
+    const chrome = createBus().client();
+    const context = vm.createContext({ chrome, console, URL });
+    vm.runInContext(source('state.js'), context);
+    const base = context.AppState.defaults;
+    for (const [request, automatic, expected] of [
+        [{ url: 'https://cdn.example/movie.mp4?token=A' }, true, 'native'],
+        [{ url: 'https://cdn.example/master.m3u8?token=A' }, true, 'nm3u8'],
+        [{ url: 'https://cdn.example/main.mpd' }, true, 'nm3u8'],
+        [{ url: 'https://site.example/watch?next=master.m3u8' }, true, 'ytdlp'],
+        [{ url: 'https://site.example/watch' }, true, 'ytdlp'],
+        [{ url: 'https://cdn.example/movie.mp4', formatSetting: 'mp3' }, true, 'ytdlp'],
+        [{ url: 'https://cdn.example/master.m3u8', qualitySetting: 'fixed' }, true, 'ytdlp'],
+        [{ url: 'https://cdn.example/movie.mp4', qualitySetting: 'detect' }, true, 'ytdlp'],
+        [{ url: 'https://cdn.example/movie.mp4', cookiesSetting: 'chrome' }, true, 'ytdlp'],
+        [{ url: 'https://cdn.example/movie.mp4', ytSubs: 'on' }, true, 'ytdlp'],
+        [{ url: 'https://cdn.example/movie.mp4', engineSetting: 'aria2' }, false, 'aria2'],
+        [{ url: 'https://cdn.example/movie.mp4', engineSetting: 'native', formatSetting: 'mp3' }, false, 'ytdlp'],
+    ]) {
+        const choice = context.AppState.chooseEngine({ ...base, ...request }, automatic);
+        assert.equal(choice.engine, expected, JSON.stringify(request));
+        assert.ok(choice.reason.length > 0);
+    }
+});
+
+test('automatic audio download cannot use the direct-video motor and its reason is visible', async t => {
+    const { bus, popup, tools } = await setup({ autoEngine: true });
+    t.after(() => { popup.window.close(); tools.window.close(); });
+    await send(popup.window.chrome, { action: 'download', url: 'https://cdn.example/movie.mp4', formatSetting: 'mp3' });
+    await flush();
+    assert.equal(bus.ports.at(-1).posted[0].engineSetting, 'ytdlp');
+    assert.match(tools.window.document.getElementById('toolConsole').textContent, /procesamiento/);
 });

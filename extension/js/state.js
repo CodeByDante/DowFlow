@@ -2,7 +2,7 @@
 (function (root) {
     'use strict';
     const defaults = Object.freeze({
-        customSavePath: '', formatSetting: 'mp4', qualitySetting: 'max',
+        customSavePath: '', formatSetting: 'mp4', qualitySetting: 'max', fixedQuality: '1080',
         engineSetting: 'ytdlp', autoEngine: true, threadCount: 4,
         audioFormat: 'best', audioQuality: '0', audioConvert: 'mp3',
         videoFormatPref: 'legado', customMode: false, snifferEnabled: true,
@@ -18,7 +18,7 @@
         ytSubs: 'ytSubs', cookiesSetting: 'cookiesSetting'
     };
     const controlKeys = {
-        threadSlider: 'threadCount', concurrencySlider: 'maxConcurrentDownloads',
+        fixedQualitySelect: 'fixedQuality', threadSlider: 'threadCount', concurrencySlider: 'maxConcurrentDownloads',
         audioFormatSelect: 'audioFormat', audioQualitySelect: 'audioQuality',
         audioConvertSelect: 'audioConvert', popupBatchNamingSelect: 'batchNamingMode',
         batchNamingSelect: 'batchNamingMode', configBatchNamingSelect: 'batchNamingMode',
@@ -32,6 +32,7 @@
             const value = values[key];
             if (value === undefined || value === null) continue;
             if (booleanKeys.has(key)) state[key] = value === true || value === 'on';
+            else if (key === 'fixedQuality') state[key] = ['144','240','360','480','720','1080','1440','2160','4320'].includes(String(value)) ? String(value) : '1080';
             else if (key === 'ytSubs') state[key] = value === true || value === 'on' ? 'on' : 'off';
             else if (key === 'threadCount' || key === 'maxConcurrentDownloads') {
                 const limit = key === 'threadCount' ? 36 : 50;
@@ -39,6 +40,26 @@
             } else state[key] = String(value);
         }
         return state;
+    }
+    function chooseEngine(request, automatic = true) {
+        const manual = ['ytdlp', 'aria2', 'nm3u8', 'native'].includes(request.engineSetting) ? request.engineSetting : 'ytdlp';
+        const needsProcessing = request.formatSetting === 'mp3' || ['fixed', 'detect', 'ask', 'min'].includes(request.qualitySetting) || request.ytSubs === 'on';
+        if (needsProcessing) {
+            return { engine: !automatic && manual === 'aria2' ? 'aria2' : 'ytdlp',
+                reason: 'El formato, la calidad o los subtitulos solicitados necesitan seleccion o procesamiento con yt-dlp.' };
+        }
+        if (!automatic) return { engine: manual, reason: 'Se conserva el motor elegido manualmente.' };
+        let url;
+        try { url = new URL(request.url); } catch (_) { return { engine: 'ytdlp', reason: 'Enlace general: yt-dlp analizara el contenido.' }; }
+        const pathname = url.pathname.toLowerCase();
+        if (request.cookiesSetting === 'chrome' || (request.pageUrl && request.pageUrl !== request.url)) {
+            return { engine: 'ytdlp', reason: 'El enlace puede necesitar cookies o la pagina de origen.' };
+        }
+        if (/\.(m3u8|mpd)(?:$|\/)/.test(pathname) || pathname.includes('/m3u8/')) {
+            return { engine: 'nm3u8', reason: 'Lista HLS/DASH directa: motor especializado en segmentos.' };
+        }
+        if (/\.mp4$/.test(pathname)) return { engine: 'native', reason: 'Archivo MP4 directo sin conversion ni seleccion de calidad.' };
+        return { engine: 'ytdlp', reason: 'Pagina web u otro formato: yt-dlp analizara sus opciones.' };
     }
     function readSettings(callback) {
         chrome.storage.local.get(Object.keys(defaults), values => callback(normalize(values)));
@@ -98,6 +119,7 @@
             });
             byId('concurrencyCountLabel', el => { el.textContent = `Descargas a la vez: ${state.maxConcurrentDownloads}`; });
             const audioOnly = state.formatSetting === 'mp3';
+            byId('fixedQualityWrap', el => { el.style.display = !audioOnly && state.qualitySetting === 'fixed' ? 'block' : 'none'; });
             for (const id of ['qualitySettingContainer', 'videoPreferenceContainer']) byId(id, el => { el.style.display = audioOnly ? 'none' : 'block'; });
             byId('audioSettingsLabel', el => { el.textContent = audioOnly ? 'Ajustes de Audio' : 'Ajustes del Audio del Video'; });
             byId('manualCardContainer', el => { el.style.display = state.customMode ? 'block' : 'none'; });
@@ -144,6 +166,99 @@
             pending = [];
         });
         return () => chrome.runtime.onMessage.removeListener(listener);
+    }
+    function loadFormats(select, url, pageUrl = '', refresh = false) {
+        const key = `${url}\n${pageUrl}`;
+        if (!refresh && select.dataset.loadedUrl === key) return Promise.resolve(true);
+        if (select._loading) return select._loading;
+        const doc = select.ownerDocument;
+        select.disabled = true;
+        select.replaceChildren(new root.Option('Detectando formatos...', ''));
+        let retry = select._retry;
+        if (!retry) {
+            retry = doc.createElement('button');
+            retry.type = 'button'; retry.className = 'action-btn secondary detector-retry-btn';
+            retry.textContent = 'Reintentar'; retry.title = 'Volver a consultar los formatos';
+            retry.addEventListener('click', () => loadFormats(select, url, pageUrl, true));
+            select.insertAdjacentElement('afterend', retry);
+            select._retry = retry;
+        }
+        retry.hidden = false; retry.disabled = true;
+        select._loading = new Promise(resolve => {
+            chrome.runtime.sendMessage({ action: 'get_info', url, pageUrl, refresh }, response => {
+                const error = chrome.runtime.lastError?.message || response?.error;
+                const formats = response?.success ? response.info?.formats || [] : [];
+                select.replaceChildren();
+                if (error || !formats.length) {
+                    select.append(new root.Option('No se pudieron detectar formatos', ''));
+                    select.title = error || 'El origen no ofrece formatos de video detectables.';
+                    select.dataset.error = select.title;
+                    delete select.dataset.loadedUrl;
+                    select.disabled = true;
+                } else {
+                    const seen = new Set();
+                    const sorted = formats.slice().sort((a, b) => (Number(b.height) || 0) - (Number(a.height) || 0) || (Number(b.tbr) || 0) - (Number(a.tbr) || 0));
+                    for (const format of sorted) {
+                        const id = String(format.format_id || '');
+                        if (!/^[A-Za-z0-9_.-]+$/.test(id) || seen.has(id)) continue;
+                        seen.add(id);
+                        const resolution = format.resolution || (format.height ? `${format.height}p` : 'Resolucion no informada');
+                        const bitrate = Number(format.tbr) > 0 ? ` · ${Math.round(format.tbr)} kb/s` : '';
+                        select.append(new root.Option(`${resolution} · ${(format.ext || '').toUpperCase()}${bitrate} · ${id}`, id));
+                    }
+                    if (select.options.length) {
+                        select.dataset.loadedUrl = key; delete select.dataset.error;
+                        select.disabled = false; select.title = 'Elige el formato real que se descargara';
+                    } else {
+                        select.append(new root.Option('No hay formatos de video validos', ''));
+                        select.disabled = true;
+                    }
+                }
+                retry.disabled = false; select._loading = null;
+                resolve(!select.disabled);
+            });
+        });
+        return select._loading;
+    }
+    let dialogQueue = Promise.resolve();
+    function chooseFormat(url, title, pageUrl) {
+        const run = () => new Promise(resolve => {
+            const doc = root.document;
+            const dialog = doc.createElement('dialog');
+            dialog.className = 'detector-format-dialog';
+            dialog.style.cssText = 'max-width:440px;width:calc(100% - 48px);background:#202127;color:#eee;border:1px solid #9f58ef;border-radius:12px;padding:20px;';
+            const heading = doc.createElement('h3'); heading.textContent = 'Detector: elige la calidad';
+            const caption = doc.createElement('p'); caption.textContent = title || url;
+            const select = doc.createElement('select'); select.className = 'detector-format-select'; select.style.cssText = 'width:100%;margin-bottom:14px;';
+            const submit = doc.createElement('button'); submit.textContent = 'Descargar'; submit.className = 'action-btn'; submit.disabled = true;
+            const cancel = doc.createElement('button'); cancel.textContent = 'Cancelar'; cancel.className = 'action-btn secondary';
+            const finish = id => { dialog.remove(); resolve(id); };
+            submit.addEventListener('click', () => { if (!select.disabled && select.value) finish(select.value); });
+            cancel.addEventListener('click', () => finish(null));
+            dialog.addEventListener('cancel', event => { event.preventDefault(); finish(null); });
+            select.addEventListener('change', () => { submit.disabled = select.disabled || !select.value; });
+            dialog.append(heading, caption, select, submit, cancel); doc.body.append(dialog);
+            if (dialog.showModal) dialog.showModal(); else dialog.setAttribute('open', '');
+            loadFormats(select, url, pageUrl).then(ok => { submit.disabled = !ok; });
+            // Retrying may turn the selector back into a usable state without a change event.
+            const observer = new root.MutationObserver(() => { submit.disabled = select.disabled || !select.value; });
+            observer.observe(select, { attributes: true, childList: true });
+            const remove = dialog.remove.bind(dialog);
+            dialog.remove = () => { observer.disconnect(); remove(); };
+        });
+        const result = dialogQueue.then(run, run);
+        dialogQueue = result.catch(() => null);
+        return result;
+    }
+    function sendDownload(payload, callback = () => {}) {
+        readSettings(async settings => {
+            const request = { ...payload, fixedQuality: settings.fixedQuality };
+            if (request.formatSetting !== 'mp3' && request.qualitySetting === 'detect' && !request.customFormatId) {
+                request.customFormatId = await chooseFormat(request.url, request.title, request.pageUrl || '');
+                if (!request.customFormatId) { callback({ success: false, error: 'Seleccion de formato cancelada.' }); return; }
+            }
+            chrome.runtime.sendMessage(request, callback);
+        });
     }
     function bindHistory(element, clearButton, dashboard = false) {
         if (!element) return;
@@ -224,5 +339,5 @@
             element.scrollTop = element.scrollHeight;
         });
     }
-    root.AppState = { defaults, normalize, readSettings, watchLocal, bindSettings, watchConsole, bindConsole, bindHistory, watchTasks };
+    root.AppState = { defaults, normalize, chooseEngine, readSettings, watchLocal, bindSettings, watchConsole, bindConsole, bindHistory, watchTasks, loadFormats, sendDownload };
 })(globalThis);

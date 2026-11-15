@@ -7,6 +7,8 @@ import threading
 import re
 import shutil
 import time
+from engines import available_engine
+from video_quality import fixed_height, fixed_selector, detected_selector, enforce_height, clean_formats
 
 active_downloads = 0
 active_processes = []
@@ -74,12 +76,13 @@ def native_download(url, output_name, downloads_path, thread_count=1, format_typ
             headers['Referer'] = 'https://pimpbunny.com/es/videos/'
             
         req = urllib.request.Request(url, headers=headers)
-        ext = '.mp4'
-        if 'ext=' in url:
-            ext = '.' + url.split('ext=')[-1].split('&')[0]
-        elif format_type == 'mp3':
-            ext = '.mp3'
-            
+        from urllib.parse import urlsplit, parse_qs
+        parsed = urlsplit(url)
+        extension = os.path.splitext(parsed.path)[1].lower()
+        query_extension = parse_qs(parsed.query).get('ext', [''])[0].lower().lstrip('.')
+        allowed = {'.mp4', '.webm', '.mkv', '.mov', '.m4v'}
+        ext = '.' + query_extension if '.' + query_extension in allowed else extension if extension in allowed else '.mp4'
+
         dest = os.path.join(downloads_path, f"{output_name}{ext}")
         media_type = "Audio" if format_type == 'mp3' or ext == '.mp3' else "Video"
         
@@ -127,7 +130,7 @@ def native_download(url, output_name, downloads_path, thread_count=1, format_typ
                 active_processes.remove(proc)
             active_downloads -= 1
 
-def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None):
+def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None, fixed_limit=None):
     global active_downloads
     with lock:
         active_downloads += 1
@@ -293,6 +296,26 @@ def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None
                     
             if only_postprocessor_error:
                 send_message({"status": "log", "log": "[*] ADVERTENCIA: La miniatura/metadatos no se pudieron incrustar (formato no soportado), pero el video se descargó y guardó con éxito."})
+            if fixed_limit:
+                bin_dir = os.path.dirname(args[0])
+                def start_conversion(command):
+                    with lock:
+                        if getattr(process, 'is_cancelled', False):
+                            raise RuntimeError('Descarga cancelada antes del ajuste de calidad.')
+                        conversion = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                                      stderr=subprocess.STDOUT, creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+                        active_processes.append(conversion)
+                        return conversion
+                def finish_conversion(conversion):
+                    with lock:
+                        if conversion in active_processes:
+                            active_processes.remove(conversion)
+                final_file = enforce_height(final_file, fixed_limit,
+                    os.path.join(bin_dir, 'ffmpeg.exe'), os.path.join(bin_dir, 'ffprobe.exe'),
+                    start_conversion, finish_conversion,
+                    lambda text: send_message({'status': 'log', 'log': '[Calidad fija] ' + text}))
+                if getattr(process, 'is_cancelled', False):
+                    raise RuntimeError('Descarga cancelada durante el ajuste de calidad.')
             send_message({"status": "completed", "final_file": final_file})
         else:
             if not is_cancelled:
@@ -376,33 +399,38 @@ def main():
                     send_message({"status": "folder_selection_cancelled"})
                 
             elif msg.get('command') == 'get_info' and 'url' in msg:
-                url = msg['url']
-                script_dir = os.path.dirname(os.path.abspath(__file__))
-                bin_dir = os.path.join(script_dir, "bin")
-                ytdlp_path = os.path.join(bin_dir, "yt-dlp.exe")
-                
+                import tempfile
+                from urllib.parse import urlsplit
+                bin_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bin')
+                ytdlp_path = os.path.join(bin_dir, 'yt-dlp.exe')
                 try:
-                    create_no_window = getattr(subprocess, 'CREATE_NO_WINDOW', 0x08000000)
-                    result = subprocess.run([ytdlp_path, '--no-playlist', '--force-ipv4', '--no-warnings', '-j', url], capture_output=True, text=True, check=True, creationflags=create_no_window)
-                    info = json.loads(result.stdout)
-                    formats = info.get('formats', [])
-                    clean_formats = []
-                    for f in formats:
-                        if f.get('vcodec') != 'none':
-                            try:
-                                tbr = round(float(f.get('tbr', 0) or 0))
-                            except:
-                                tbr = 0
-                            clean_formats.append({
-                                'format_id': f.get('format_id'),
-                                'resolution': f.get('resolution', 'N/A'),
-                                'ext': f.get('ext'),
-                                'tbr': tbr
-                            })
-                    send_message({"status": "info", "info": {"title": info.get("title"), "formats": clean_formats}})
-                except Exception as e:
-                    send_message({"status": "error", "error": f"Error: {str(e)}"})
-                    
+                    if not os.path.isfile(ytdlp_path):
+                        raise FileNotFoundError('Falta yt-dlp.exe. Ejecuta actualizar_e_instalar_motores.bat.')
+                    with tempfile.TemporaryDirectory(prefix='nekodrop-info-') as temporary:
+                        args = [ytdlp_path, '--no-playlist', '--force-ipv4', '--no-warnings', '--js-runtimes', 'node', '-j', msg['url']]
+                        page_url = msg.get('pageUrl', '')
+                        if urlsplit(page_url).scheme in ('http', 'https'):
+                            args.extend(['--referer', page_url])
+                        cookies = msg.get('netscapeCookies', '')
+                        if cookies:
+                            cookie_file = os.path.join(temporary, 'cookies.txt')
+                            with open(cookie_file, 'w', encoding='utf-8') as target:
+                                target.write(cookies)
+                            args.extend(['--cookies', cookie_file])
+                        response = subprocess.run(args, capture_output=True, text=True, check=True, timeout=60,
+                                                  creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+                        info = json.loads(response.stdout)
+                        formats = clean_formats(info)
+                        if not formats:
+                            raise ValueError('No se encontraron formatos de video disponibles para este enlace.')
+                        send_message({'status': 'info', 'info': {'title': info.get('title'), 'formats': formats}})
+                except subprocess.TimeoutExpired:
+                    send_message({'status': 'error', 'error': 'La deteccion supero 60 segundos. Vuelve a intentarlo.'})
+                except subprocess.CalledProcessError as error:
+                    send_message({'status': 'error', 'error': (error.stderr or str(error))[-1200:]})
+                except Exception as error:
+                    send_message({'status': 'error', 'error': str(error)})
+
             elif msg.get('command') == 'get_playlist_info' and 'url' in msg:
                 url = msg['url']
                 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -441,10 +469,12 @@ def main():
                 custom_path = msg.get('savePath', '').strip()
                 format_type = msg.get('formatSetting', 'mp4')
                 quality_setting = msg.get('qualitySetting', 'max')
+                fixed_limit = fixed_height(msg.get('fixedQuality', 1080)) if quality_setting == 'fixed' and format_type != 'mp3' else None
                 engine_setting = msg.get('engineSetting', 'ytdlp')
                 
-                # El motor de descarga ahora se respeta tal como viene configurado por el usuario
-                pass
+                # Fixed/detected formats need yt-dlp rather than a motor that ignores format selection.
+                if (format_type == 'mp3' or quality_setting in ('fixed', 'detect', 'ask', 'min')) and engine_setting not in ('ytdlp', 'aria2'):
+                    engine_setting = 'ytdlp'
                     
                 thread_count = int(msg.get('threadCount', 4))
                 audio_format = msg.get('audioFormat', 'best')
@@ -452,6 +482,8 @@ def main():
                 audio_convert = msg.get('audioConvert', 'none')
                 video_format_pref = msg.get('videoFormatPref', 'legado')
                 custom_format_id = msg.get('customFormatId', '')
+                if quality_setting == 'detect' and format_type != 'mp3':
+                    detected_selector(custom_format_id)
                 netscape_cookies = msg.get('netscapeCookies', '')
                 yt_audio_lang = msg.get('ytAudioLang', 'es')
                 yt_subs = msg.get('ytSubs', 'off')
@@ -471,7 +503,7 @@ def main():
                     send_message({"status": "log", "log": f"[*] Formato: Video | Preferencia: {v_pref}"})
                     
                 if format_type != 'mp3':
-                    q_str = "Máxima" if quality_setting == 'max' else "Mínima" if quality_setting == 'min' else "Personalizada"
+                    q_str = "Fija (hasta {}p)".format(fixed_limit) if fixed_limit else "Detector" if quality_setting == "detect" else "Máxima" if quality_setting == 'max' else "Mínima" if quality_setting == 'min' else "Personalizada"
                     send_message({"status": "log", "log": f"[*] Calidad de Video: {q_str}"})
                 
                 cookies_status = "Activado" if (netscape_cookies and len(netscape_cookies) > 20) else "Desactivado"
@@ -486,6 +518,10 @@ def main():
                 script_dir = os.path.dirname(os.path.abspath(__file__))
                 bin_dir = os.path.join(script_dir, "bin")
                 ytdlp_path = os.path.join(bin_dir, "yt-dlp.exe")
+                engine_setting, engine_notice = available_engine(engine_setting, bin_dir, auto_engine_status is True or auto_engine_status == 'on')
+                if engine_notice:
+                    send_message({'status': 'log', 'log': '[Motor] ' + engine_notice})
+
                 
                 # Check updates only once every 24 hours to avoid blocking the download start
                 update_flag_file = os.path.join(script_dir, "last_update.txt")
@@ -685,7 +721,13 @@ def main():
                     if audio_quality != '0':
                         audio_selector += f"[abr<={audio_quality}]"
 
-                    if quality_setting == 'min':
+                    if quality_setting == 'fixed':
+                        args.extend(['-f', fixed_selector(fixed_limit, audio_selector),
+                                     '--merge-output-format', 'mp4' if video_format_pref == 'legado' else 'mkv', '-o', output_template])
+                    elif quality_setting == 'detect':
+                        args.extend(['-f', detected_selector(custom_format_id),
+                                     '--merge-output-format', 'mp4' if video_format_pref == 'legado' else 'mkv', '-o', output_template])
+                    elif quality_setting == 'min':
                         if video_format_pref == 'legado':
                             args.extend(['-f', f'worstvideo[ext=mp4]+{audio_selector.replace("best", "worst")}/worst[ext=mp4]/worst', '-o', output_template])
                         else:
@@ -702,12 +744,12 @@ def main():
                         else:
                             args.extend(['-f', f'bestvideo+{audio_selector}/best', '--merge-output-format', 'mkv', '-o', output_template])
                             
-                sort_directives = []
+                sort_directives = ['height'] if fixed_limit else []
                 if yt_audio_lang == 'es':
                     sort_directives.extend(['lang:es', 'lang:spa', 'lang:es-419'])
                     
                 if format_type != 'mp3' and video_format_pref == 'legado':
-                    sort_directives.extend(['vcodec:h264', 'res', 'acodec:m4a'])
+                    sort_directives.extend(['res', 'vcodec:h264', 'acodec:m4a'] if fixed_limit else ['vcodec:h264', 'res', 'acodec:m4a'])
                     
                 if sort_directives:
                     args.extend(['-S', ','.join(sort_directives)])
@@ -731,7 +773,7 @@ def main():
                 args.append('--newline')
                 args.append(url)
                 
-                threading.Thread(target=handle_download, args=(args, output_name, downloads_path, tmp_folder_ytdlp), daemon=False).start()
+                threading.Thread(target=handle_download, args=(args, output_name, downloads_path, tmp_folder_ytdlp, fixed_limit), daemon=False).start()
                 
             elif msg.get('command') == 'cancel':
                 cancel_active_processes()

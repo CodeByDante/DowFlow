@@ -6,6 +6,17 @@
 
 Extensión para navegadores Chromium conectada a un host local en Python mediante Native Messaging. Permite descargar video o audio, elegir formatos y calidad, consultar listas de reproducción y gestionar descargas. El procesamiento se realiza en el PC con yt-dlp, FFmpeg y motores opcionales.
 
+## Calidad y detección
+
+- **Calidad fija:** guarda una resolución máxima para todas las descargas. Elige el mejor formato hasta ese límite; conserva fuentes menores y reduce con FFmpeg si solo existe una fuente mayor.
+- **Detector:** muestra los formatos reales de cada video. La selección se respeta al descargar; permite reintentar una consulta fallida. En enlaces manuales o lotes, pide elegir formato antes de encolar.
+- **Buscar streams:** busca enlaces HLS/DASH ya expuestos en la página y recursos cargados, sin recargarla.
+- **Buscar en página:** revisa etiquetas de video, enlaces, HTML y recursos cargados, incluidos marcos accesibles.
+- **Rastreador:** captura enlaces multimedia mientras la página carga o reproduce. El interruptor detiene el rastreo y limpia sus tarjetas.
+- **Automatización de motor:** considera el enlace y las opciones solicitadas; la consola explica qué motor se utiliza y las alternativas por herramientas ausentes.
+
+Más detalles y límites en [Calidad y detección](docs/CALIDAD_Y_DETECCION.md).
+
 ## Instalación en Windows
 
 Los tres BAT de uso manual están en la raíz. Orden de instalación:
@@ -37,7 +48,7 @@ Los binarios, registros, cookies y la configuración generada para cada PC no se
 
 ## Actualizar una instalación existente
 
-Descargar los archivos nuevos o ejecutar `git pull` en la carpeta local. En la página de extensiones del navegador, pulsar **Recargar** y cerrar y abrir de nuevo el panel de herramientas. La versión debe indicar **1.1.1**. Los cambios de GitHub no actualizan automáticamente una extensión cargada como descomprimida.
+Descargar los archivos nuevos o ejecutar `git pull` en la carpeta local. En la página de extensiones del navegador, pulsar **Recargar** y cerrar y abrir de nuevo el panel de herramientas. La versión debe indicar **1.2.0**. Los cambios de GitHub no actualizan automáticamente una extensión cargada como descomprimida.
 
 Si cambió la ubicación de la carpeta o el ID de la extensión, volver a ejecutar `conectar_extension.bat`. No hace falta reinstalar los motores si siguen disponibles en `host/bin/`.
 

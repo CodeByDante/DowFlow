@@ -19,6 +19,7 @@ flowchart TD
 | `extension/popup.html` | Ventana que se abre al pulsar el icono de la extensión. | Sí. |
 | `extension/css/popup.css` | Apariencia del popup. | Sí. |
 | `extension/js/popup.js` | Opciones de descarga, detección, vista previa e historial del popup. | Sí. |
+| `extension/js/media-scan.js` | Búsqueda de enlaces multimedia inyectada en las páginas y marcos accesibles. | Sí. |
 | `extension/js/state.js` | Configuración y controles compartidos, historial, consola y suscripciones de tareas para ambas vistas. | Sí, esencial. |
 | `extension/js/background.js` | Coordina tareas, colas, cookies, detección de solicitudes y comunicación con Python. | Sí, esencial. |
 | `extension/tools.html` | Panel amplio de herramientas y gestión. Incluye sus estilos. | Sí. |
@@ -32,6 +33,8 @@ flowchart TD
 
 | Ruta | Función | ¿Se conserva? |
 |---|---|---|
+| `host/video_quality.py` | Selección de formatos y verificación/reducción del límite de resolución. | Sí. |
+| `host/engines.py` | Comprobación de motores instalados y alternativas compatibles. | Sí. |
 | `host/download_host.py` | Lee mensajes del navegador, prepara comandos, inicia descargas y comunica progreso y errores. | Sí, núcleo del backend. |
 | `host/download_host.bat` | Lanza Python desde el navegador y conserva el canal de entrada/salida. | Sí. |
 | `host/setup/register_host.py` | Valida el ID, genera el manifiesto con la ruta actual y registra el host en Windows. | Sí. |
@@ -39,6 +42,8 @@ flowchart TD
 | `host/setup/install_nm3u8dlre.py` | Instala un motor especializado en streams. | Sí. |
 | `host/setup/install_atomicparsley.py` | Instala una herramienta de metadatos. | Sí. |
 | `host/tests/test_registration.py` | Comprueba ID de extensión, ruta del lanzador y generación del manifiesto. | Sí. |
+| `host/tests/test_video_quality.py` | Pruebas de formatos, límites y conversiones con muestras locales. | Sí. |
+| `host/tests/test_engines.py` | Pruebas de disponibilidad y alternativas de motores. | Sí. |
 | `host/tests/test_host.py` | Pruebas automáticas del cierre del host y cancelación de procesos. No descargan contenido. | Sí. |
 | `host/tests/manual/test_download.py` | Ensayo manual de una descarga indicada mediante URL. | Sí, reorganizado. |
 | `host/tests/manual/test_batch_downloads.py` | Ensayo manual con varias URLs suministradas al ejecutar. | Sí, reorganizado. |
@@ -65,6 +70,7 @@ Estas rutas se crean en cada PC y no se deben subir al repositorio:
 | `.gitattributes` | Reglas de Git LFS para archivos grandes; los iconos pequeños se guardan directamente en Git. |
 | `README.md` | Instrucciones de instalación, uso y pruebas. |
 | `docs/ESTRUCTURA.md` | Este mapa. |
+| `docs/CALIDAD_Y_DETECCION.md` | Calidad fija, Detector, rastreador y selección de motores. |
 | `docs/SINCRONIZACION.md` | Cambios de sincronización, pruebas y pasos para actualizar. |
 | `extension/tests/sync.test.cjs` | Pruebas de integración del popup, panel y gestor, con navegador simulado. |
 | `package.json` y `package-lock.json` | Dependencias y comando de pruebas JavaScript; no se necesitan para usar la extensión. |

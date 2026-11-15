@@ -858,7 +858,23 @@
                 <label><input type="radio" name="qualitySetting" value="ask"><span>Preguntar</span></label>
                 <label title="Extrae resoluciones reales del servidor"><input type="radio" name="qualitySetting" value="detect"><span style="color: #ffb84d;">Detector</span></label>
               </div>
-              <p class="desc">Al dar en "Preguntar" podrás elegir la calidad manual. Con "Detector", la app interrogará al servidor para extraer la lista real (Requiere configuración del Host).</p>
+          <label class="radio-switch"><input type="radio" name="qualitySetting" value="fixed"><span>Calidad fija</span></label>
+          <div id="fixedQualityWrap" style="display:none;margin-top:10px;">
+            <label for="fixedQualitySelect">Resolución máxima</label>
+            <select id="fixedQualitySelect" style="background:#26272b;color:#eee;border:1px solid #555;border-radius:6px;padding:8px;">
+              <option value="144">144p</option>
+              <option value="240">240p</option>
+              <option value="360">360p</option>
+              <option value="480">480p</option>
+              <option value="720">720p</option>
+              <option value="1080">1080p</option>
+              <option value="1440">1440p</option>
+              <option value="2160">2160p</option>
+              <option value="4320">4320p</option>
+            </select>
+            <p style="font-size:12px;color:#aaa;">Usa la mejor calidad hasta este límite. Si la fuente es menor, la conserva. Si solo existe una mayor, la reduce con FFmpeg.</p>
+          </div>
+              <p class="desc">Preguntar permite elegir un límite por video. Detector consulta los formatos reales; necesita el host y yt-dlp instalados.</p>
             </div>
 
             <div class="setting-item" id="videoPreferenceContainer" style="border-top: 1px solid var(--border-color); padding-top: 20px;">
@@ -950,10 +966,10 @@
             <div class="setting-item">
               <label class="main-label">Automatización de Motor</label>
               <div class="radio-switch">
-                <label><input type="radio" name="autoEngine" value="off" checked><span>Desactivado</span></label>
-                <label><input type="radio" name="autoEngine" value="on"><span style="color: #64ffda;">Activado</span></label>
+                <label><input type="radio" name="autoEngine" value="off"><span>Desactivado</span></label>
+                <label><input type="radio" name="autoEngine" value="on" checked><span style="color: #64ffda;">Activado</span></label>
               </div>
-              <p class="desc">Detecta y selecciona automáticamente cuál es el mejor motor de descarga para cada enlace (p.ej. Motor Extremo para streaming, Nativo para descargas MP4, yt-dlp para redes sociales). <br><i style="color: #ffb84d;">Al activarlo, se ignora la selección manual de abajo.</i></p>
+              <p class="desc">Elige el motor según el enlace y las opciones solicitadas. Audio, calidad seleccionada y subtítulos usan yt-dlp. La consola explica la elección. Si desactivas esta opción, conserva el motor manual cuando sea compatible.</p>
             </div>
           </div>
           <div class="settings-card">
@@ -1076,13 +1092,13 @@
 
             <div class="setting-item" style="margin-top: 10px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label class="main-label">Rastreador de Streams (M3U8 / MP4)</label>
+                <label class="main-label">Rastreador de streams (M3U8 / MPD / MP4)</label>
                 <div class="radio-switch" style="width: auto;">
                   <label><input type="radio" name="snifferSetting" value="on" checked><span>Activado</span></label>
                   <label><input type="radio" name="snifferSetting" value="off"><span>Desactivado</span></label>
                 </div>
               </div>
-              <p class="desc">Detecta automáticamente segmentos de video directos ocultos en el tráfico de red de las páginas que visitas.</p>
+              <p class="desc">Busca enlaces de video y listas HLS/DASH mientras se cargan o reproducen. Encontrar un enlace no garantiza que se pueda descargar.</p>
             </div>
             
             <div class="setting-item" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">

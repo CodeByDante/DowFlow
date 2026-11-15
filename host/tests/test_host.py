@@ -10,6 +10,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 HOST_PATH = Path(__file__).resolve().parents[1] / 'download_host.py'
+sys.path.insert(0, str(HOST_PATH.parent))
 spec = importlib.util.spec_from_file_location('download_host', HOST_PATH)
 host = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(host)

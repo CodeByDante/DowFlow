@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             isAutoTitle: isAutoTitle
           };
           printToConsole(`>> Enviando a cola ${index+1}/${urls.length}: ${url} [Nombre: ${msg.title}]`, '#4ade80');
-          chrome.runtime.sendMessage(msg, (response) => {
+          AppState.sendDownload(msg, (response) => {
              if (response && response.success) {
                  printToConsole(`[COLA] ${msg.title} encolado correctamente.`, '#a1a1aa');
              } else {
@@ -458,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     videoFormatPref: config.videoFormatPref || 'legado',
                     isAutoTitle: isAutoTitle
                 };
-                chrome.runtime.sendMessage(msg);
+                AppState.sendDownload(msg);
             });
             
             // Switch to console

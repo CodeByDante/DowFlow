@@ -65,161 +65,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (forceDetectBtn) {
-        forceDetectBtn.addEventListener('click', () => {
-            forceDetectBtn.innerText = "Recargando...";
-            forceDetectBtn.disabled = true;
-            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                if (tabs.length > 0) {
-                    chrome.tabs.reload(tabs[0].id, () => {
-                        window.close(); // Cierra el popup para permitir que la página recargue y capture libremente
-                    });
+    function bindScanButton(button, mode, label) {
+        if (!button) return;
+        button.addEventListener('click', () => {
+            button.disabled = true; button.innerText = 'Buscando...';
+            chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+                if (!tabs?.[0] || !/^https?:/i.test(tabs[0].url || '')) {
+                    button.disabled = false; button.innerText = label;
+                    button.title = 'Abre una pagina web para buscar enlaces multimedia.';
+                    return;
                 }
+                chrome.runtime.sendMessage({ action: 'scan_page', tabId: tabs[0].id, mode }, response => {
+                    button.disabled = false;
+                    const error = chrome.runtime.lastError?.message || response?.error;
+                    button.innerText = error ? 'No se pudo buscar' : response?.count ? `${response.count} enlaces (${response.added} nuevos)` : 'Sin enlaces encontrados';
+                    button.title = error || (response?.count ? 'Enlaces encontrados; su descarga depende del origen.' : 'Reproduce el video y vuelve a buscar. Algunos reproductores no exponen enlaces directos.');
+                    setTimeout(() => { button.innerText = label; }, 4000);
+                });
             });
         });
     }
-
-    if (forceDetectHtmlBtn) {
-        forceDetectHtmlBtn.addEventListener('click', () => {
-            forceDetectHtmlBtn.innerText = "Buscando...";
-            forceDetectHtmlBtn.disabled = true;
-            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                if (tabs.length > 0) {
-                    chrome.scripting.executeScript({
-                        target: { tabId: tabs[0].id, allFrames: true },
-                        func: () => {
-                            let urls = [];
-
-                            // 1. Detección Inteligente del Video en Pantalla (Monitor de Red)
-                            try {
-                                let entries = performance.getEntriesByType('resource');
-                                entries.sort((a, b) => b.startTime - a.startTime); // Ordenar de más reciente a más antiguo
-                                let activeFound = 0;
-                                for (let entry of entries) {
-                                    let n = entry.name;
-                                    let low_n = n.toLowerCase();
-                                    if (low_n.includes('.mp4') || low_n.includes('.webm') || low_n.includes('.mkv') || low_n.includes('.m3u8') || low_n.includes('.mpd')) {
-                                        let cleanUrl = n;
-                                        // Remover fragmentos de byte para obtener la URL original
-                                        if (cleanUrl.includes('&bytestart=')) cleanUrl = cleanUrl.split('&bytestart=')[0];
-                                        if (cleanUrl.includes('?bytestart=')) cleanUrl = cleanUrl.split('?bytestart=')[0];
-                                        
-                                        if (!urls.includes(cleanUrl + "#ACTUAL")) {
-                                            urls.push(cleanUrl + "#ACTUAL");
-                                            activeFound++;
-                                        }
-                                        if (activeFound >= 3) break; // Tomar los 3 videos descargados más recientemente
-                                    }
-                                }
-                            } catch (e) {}
-
-                            // 2. Buscar en etiquetas <video> y <source> visibles
-                            document.querySelectorAll('video').forEach(v => {
-                                let tag = (v.offsetParent !== null && !v.paused) ? "#ACTUAL" : "";
-                                let src = v.currentSrc || v.src;
-                                if (src && src.startsWith('http')) urls.push(src + tag);
-                                v.querySelectorAll('source').forEach(s => {
-                                    if (s.src && s.src.startsWith('http')) urls.push(s.src + tag);
-                                });
-                            });
-                            // 3. Buscar enlaces <a>
-                            document.querySelectorAll('a[href]').forEach(a => {
-                                let h = a.href.toLowerCase();
-                                if (h.includes('.mp4') || h.includes('.webm') || h.includes('.mkv')) {
-                                    if (a.href.startsWith('http')) urls.push(a.href);
-                                }
-                            });
-                            // 3. Búsqueda profunda (Regex) en todo el código fuente de la página actual
-                            // Esto ayuda a encontrar enlaces de video ocultos en JSON o scripts de Facebook/Instagram
-                            try {
-                                let htmlString = document.documentElement.innerHTML;
-                                // Des-escapar barras invertidas, ampersands, porcentajes y signos de igual de JSON de Facebook
-                                let cleanHtml = htmlString.replace(/\\\//g, '/').replace(/\\u0026/g, '&').replace(/\\u0025/g, '%').replace(/\\u003d/ig, '=').replace(/\\"/g, '"');
-                                
-                                // Extract all URLs and filter them
-                                let allUrls = cleanHtml.match(/https?:\/\/[^"'\s<>\[\]\\\{\}]+/gi);
-                                if (allUrls) {
-                                    allUrls.forEach(m => {
-                                        let u = m.replace(/\\/g, '').replace(/&amp;/g, '&');
-                                        let low_u = u.toLowerCase();
-                                        if (low_u.includes('.mp4') || low_u.includes('.webm') || low_u.includes('.mkv') || low_u.includes('.m3u8') || low_u.includes('.mpd')) {
-                                            urls.push(u);
-                                        }
-                                    });
-                                }
-                                
-                                // 4. Buscar en el historial de red de la página (recursos cargados dinámicamente)
-                                // Esto es vital para Facebook porque cargan los videos por XHR/Fetch sin ponerlos en el HTML
-                                performance.getEntriesByType('resource').forEach(entry => {
-                                    let n = entry.name;
-                                    let low_n = n.toLowerCase();
-                                    if (low_n.includes('.mp4') || low_n.includes('.webm') || low_n.includes('.mkv') || low_n.includes('.m3u8') || low_n.includes('.mpd')) {
-                                        urls.push(n);
-                                    }
-                                });
-                            } catch (e) {}
-
-                            return [...new Set(urls)];
-                        }
-                    }, (results) => {
-                        forceDetectHtmlBtn.innerText = "Forzar HTML";
-                        forceDetectHtmlBtn.disabled = false;
-                        
-                        if (chrome.runtime.lastError) {
-                            forceDetectHtmlBtn.innerText = "Error: " + chrome.runtime.lastError.message.substring(0, 15);
-                            setTimeout(() => { forceDetectHtmlBtn.innerText = "Forzar HTML"; }, 3000);
-                            return;
-                        }
-
-                        if (results && results.length > 0) {
-                            let urls = [];
-                            results.forEach(frameResult => {
-                                if (frameResult.result) {
-                                    urls = urls.concat(frameResult.result);
-                                }
-                            });
-                            urls = [...new Set(urls)]; // Deduplicate after flattening
-
-                            if (urls.length > 0) {
-                                chrome.storage.local.get(['sniffedUrls'], (res) => {
-                                    let snifferDict = res.sniffedUrls || {};
-                                    let tabId = tabs[0].id;
-                                    if (!snifferDict[tabId]) snifferDict[tabId] = [];
-                                    
-                                    let newAdded = false;
-                                    let newCount = 0;
-                                    urls.forEach(u => {
-                                        if (!snifferDict[tabId].includes(u)) {
-                                            snifferDict[tabId].push(u);
-                                            newAdded = true;
-                                            newCount++;
-                                        }
-                                    });
-                                    
-                                    forceDetectHtmlBtn.innerText = `¡${urls.length} hallados! (${newCount} nuevos)`;
-                                    setTimeout(() => { forceDetectHtmlBtn.innerText = "Forzar HTML"; }, 3000);
-
-                                    if (newAdded) {
-                                        chrome.storage.local.set({ sniffedUrls: snifferDict }, () => {
-                                            if (typeof renderDetectorUI === 'function') {
-                                                renderDetectorUI();
-                                            }
-                                        });
-                                    }
-                                });
-                            } else {
-                                forceDetectHtmlBtn.innerText = "No se encontraron";
-                                setTimeout(() => { forceDetectHtmlBtn.innerText = "Forzar HTML"; }, 2000);
-                            }
-                        } else {
-                            forceDetectHtmlBtn.innerText = "No se encontraron";
-                            setTimeout(() => { forceDetectHtmlBtn.innerText = "Forzar HTML"; }, 2000);
-                        }
-                    });
-                }
-            });
-        });
-    }
+    bindScanButton(forceDetectBtn, 'streams', 'Buscar streams');
+    bindScanButton(forceDetectHtmlBtn, 'html', 'Buscar en página');
 
     if (forceDetectJavBtn) {
         forceDetectJavBtn.addEventListener('click', () => {
@@ -502,8 +369,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (detDrop) {
                     if (f === 'mp4' && q === 'detect') {
                         detDrop.classList.remove('hidden');
+                        if (!card.hasAttribute('data-taskid')) AppState.loadFormats(detDrop, card.getAttribute('data-url'), card.dataset.pageUrl || '');
                     } else {
                         detDrop.classList.add('hidden');
+                        if (detDrop._retry) detDrop._retry.hidden = true;
                     }
                 }
             });
@@ -546,104 +415,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const template = document.getElementById('videoCardTemplate');
 
     function deduplicateSniffs(urls) {
-        let urlGroups = {};
-        urls.forEach(u => {
-            if (u.includes('tiktok') || u.includes('tiktokcdn')) return;
-            // Ignorar segmentos y fragmentos
-            if (u.includes('.ts') || u.includes('.m4s') || u.includes('.vtt')) return;
-            // Ignorar imágenes que a veces caen en media
-            if (u.match(/\.(jpg|jpeg|png|gif|webp|svg|css|js)$/i)) return;
-
+        return [...new Set(urls.filter(url => {
             try {
-                let p = new URL(u);
-                let parts = p.pathname.split('/').filter(Boolean);
-                
-                // Group key based on the first directory name if it looks like an ID
-                let groupKey = p.hostname;
-                
-                // Extraer ID real de videos (ej. xHamster usa /028/893/409/) para agrupar m3u8 maestros y sub-listas
-                let xhMatch = p.pathname.match(/\/(\d{3}\/\d{3}\/\d{3})\//);
-                
-                if (xhMatch) {
-                    groupKey += '_' + xhMatch[1]; // Todos los m3u8 de este video tendrán el mismo ID y se fusionarán
-                } else if (parts.length > 1 && (parts[0].includes('==') || parts[0].includes(','))) {
-                    groupKey += '_' + parts.slice(1).join('/'); // Usamos el resto de la ruta como ID real
-                } else if (parts.length > 0) {
-                     // Try to use the last part (filename) if it's long enough, or a combination
-                     let lastPart = parts[parts.length - 1];
-                     if (lastPart && lastPart.length > 10) {
-                         groupKey += '_' + lastPart.split('.')[0].substring(0, 30);
-                     } else if (parts[0].length > 5) {
-                         groupKey += '_' + parts[0];
-                     } else {
-                         groupKey += '_' + p.pathname; // fallback to full path
-                     }
-                }
-                
-                // For googlevideo or urls with id parameter:
-                if (p.searchParams.has('id')) {
-                     groupKey += '_' + p.searchParams.get('id');
-                } else if (p.searchParams.has('v')) {
-                     groupKey += '_' + p.searchParams.get('v');
-                }
-
-                if (!urlGroups[groupKey]) urlGroups[groupKey] = [];
-                urlGroups[groupKey].push(u);
-            } catch(e) {
-                if (!urlGroups[u]) urlGroups[u] = [];
-                urlGroups[u].push(u);
-            }
-        });
-
-        let finalUrls = [];
-        
-        // Pick the BEST url for each group
-        Object.keys(urlGroups).forEach(key => {
-            let groupUrls = urlGroups[key];
-            let bestUrl = null;
-            let score = -1;
-
-            groupUrls.forEach(u => {
-                let currentScore = 0;
-                
-                if (u.includes('#ACTUAL')) currentScore += 500; // El video en pantalla siempre gana su grupo
-                
-                let cleanU = u.replace('#ACTUAL', '');
-
-                if (cleanU.includes('playlist') || cleanU.includes('master') || cleanU.includes('index.m3u8') || cleanU.includes('multi=')) {
-                    currentScore += 100;
-                } else if (cleanU.includes('.m3u8') || cleanU.includes('/m3u8/')) {
-                    currentScore += 50;
-                } else if (cleanU.includes('.mp4')) {
-                    // Avoid previews and trailers
-                    if (cleanU.includes('preview') || cleanU.includes('trailer') || cleanU.includes('thumb')) {
-                        currentScore += 10;
-                    } else {
-                        currentScore += 30; // Solid MP4
-                    }
-                } else {
-                    currentScore = 5;
-                }
-
-                if (currentScore > score) {
-                    score = currentScore;
-                    bestUrl = u;
-                } else if (currentScore === score && bestUrl) {
-                    // Si son igual de buenos, preferimos el que tenga "1080" o el más corto
-                    if (u.includes('1080') && !bestUrl.includes('1080')) {
-                        bestUrl = u;
-                    } else if (u.length < bestUrl.length && !bestUrl.includes('1080')) {
-                        bestUrl = u;
-                    }
-                }
-            });
-
-            if (bestUrl) {
-                finalUrls.push(bestUrl); // Only one best link per video
-            }
-        });
-        
-        return finalUrls;
+                const parsed = new URL(url.replace('#ACTUAL', ''));
+                return /^https?:$/.test(parsed.protocol) && !/\.(ts|m4s|vtt|jpg|jpeg|png|gif|webp|svg|css|js)$/i.test(parsed.pathname);
+            } catch (_) { return false; }
+        }))];
     }
 
     function startDownloadTask(btn, title, url, dropdownValue, pageUrl, isAutoTitle = false) {
@@ -652,7 +429,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         chrome.storage.local.get(['customSavePath', 'formatSetting', 'qualitySetting', 'engineSetting', 'threadCount', 'audioFormat', 'audioQuality', 'audioConvert', 'videoFormatPref', 'ytAudioLang', 'ytSubs', 'cookiesSetting'], (result) => {
             let customFormatId = '';
-            if (result.qualitySetting === 'ask') {
+            if (result.qualitySetting === 'detect' && btn.closest('.detected-video-card')) {
+                const detector = btn.closest('.detected-video-card').querySelector('.detect-dropdown');
+                const saved = btn.closest('.detected-video-card').dataset.formatId;
+                if ((!detector || detector.disabled || !detector.value) && !saved) {
+                    btn.disabled = false; btn.innerText = 'Descargar';
+                    const status = btn.closest('.detected-video-card').querySelector('.status-msg');
+                    if (status) { status.style.display = 'block'; status.innerText = detector?.dataset.error || 'Espera a que termine la deteccion y selecciona un formato.'; }
+                    return;
+                }
+                customFormatId = !detector?.disabled && detector?.value ? detector.value : saved;
+            } else if (result.qualitySetting === 'ask') {
                 customFormatId = dropdownValue;
                 if (!customFormatId) customFormatId = "1080";
             }
@@ -677,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ytSubs: result.ytSubs || "off",
                 isAutoTitle: isAutoTitle
             };
-            chrome.runtime.sendMessage(payload, (response) => {
+            AppState.sendDownload(payload, (response) => {
                 if (chrome.runtime.lastError) {
                     btn.innerText = "Error Host";
                     btn.disabled = false;
@@ -711,6 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
             el = template.content.cloneNode(true).querySelector('.detected-video-card');
             el.id = id;
             el.setAttribute('data-url', url);
+            el.dataset.pageUrl = pageUrl || '';
             
             let badge = el.querySelector('.type-badge');
             if (badge) {
@@ -811,102 +599,12 @@ document.addEventListener('DOMContentLoaded', () => {
             let btn = el.querySelector('.main-btn');
             let drop = el.querySelector('.quality-dropdown');
 
-            chrome.storage.local.get(['formatSetting', 'qualitySetting'], (res) => {
-                const f = res.formatSetting || 'mp4';
-                const q = res.qualitySetting || 'max';
-                if (f === 'mp4' && q === 'ask') drop.classList.remove('hidden');
-                
-                let detDrop = el.querySelector('.detect-dropdown');
-                
-                if (f === 'mp4' && q === 'detect' && detDrop) {
-                    detDrop.classList.remove('hidden');
-                    
-                    if (detDrop.options.length === 0) {
-                        detDrop.innerHTML = '<option value="">⏳ Detectando...</option>';
-                        detDrop.disabled = true;
-                        
-                        chrome.storage.local.get(['prefetchedQualities'], (cacheRes) => {
-                            let cache = cacheRes.prefetchedQualities || {};
-                            
-                            function populateDropdown(formats) {
-                                detDrop.innerHTML = '';
-                                detDrop.disabled = false;
-                                let sortedFormats = formats.reverse();
-                                sortedFormats.forEach(fmt => {
-                                    let ext = (fmt.ext || "MP4").toUpperCase();
-                                    let res = fmt.resolution || "Audio/Desconocido";
-                                    // Video DownloadHelper muestra directamente el TBR (en kbps) como si fueran KB/s.
-                                    let bitrate = fmt.tbr ? Math.round(fmt.tbr) : 0;
-                                    let bitrateText = bitrate >= 1000 ? Math.round(bitrate / 1000) + "MB/s" : bitrate + "KB/s";
-                                    
-                                    let opt = document.createElement('option');
-                                    opt.value = fmt.format_id;
-                                    opt.innerText = `${ext} - ${res} - ${bitrateText}`;
-                                    opt.style.backgroundColor = "#26272b";
-                                    opt.style.color = "#e5e5e5";
-                                    detDrop.appendChild(opt);
-                                });
-                            }
-                            
-                            let cacheKey = url;
-                            if (url.includes('youtube.com/watch')) {
-                                let match = url.match(/([?&]v=[^&]+)/);
-                                if (match) cacheKey = "yt_" + match[1];
-                            }
-                            
-                            if (cache[cacheKey] && (Date.now() - cache[cacheKey].timestamp < 300000)) {
-                                populateDropdown(cache[cacheKey].formats);
-                            } else if (url.includes('.m3u8') || url.includes('/m3u8/')) {
-                                fetch(url).then(r => r.text()).then(text => {
-                                    let lines = text.split('\n');
-                                    let formats = [];
-                                    for (let i = 0; i < lines.length; i++) {
-                                        if (lines[i].includes('RESOLUTION=')) {
-                                            let resMatch = lines[i].match(/RESOLUTION=(\d+)x(\d+)/);
-                                            let bwMatch = lines[i].match(/BANDWIDTH=(\d+)/);
-                                            if (resMatch) {
-                                                formats.push({
-                                                    format_id: resMatch[2],
-                                                    resolution: resMatch[1] + "x" + resMatch[2],
-                                                    ext: "MP4",
-                                                    tbr: bwMatch ? parseInt(bwMatch[1]) / 1000 : 0
-                                                });
-                                            }
-                                        }
-                                    }
-                                    if (formats.length > 0) {
-                                        formats.sort((a, b) => parseInt(a.format_id) - parseInt(b.format_id));
-                                        populateDropdown(formats);
-                                    } else {
-                                        throw new Error("No formats");
-                                    }
-                                }).catch(() => {
-                                    // Fallback a yt-dlp nativo
-                                    chrome.runtime.sendMessage({ action: "get_info", url: url }, (response) => {
-                                        if (response && response.success && response.info && response.info.formats) {
-                                            populateDropdown(response.info.formats);
-                                        } else {
-                                            detDrop.innerHTML = '<option value="">⚠️ Error al detectar</option>';
-                                            detDrop.disabled = false;
-                                        }
-                                    });
-                                });
-                            } else {
-                                chrome.runtime.sendMessage({ action: "get_info", url: url }, (response) => {
-                                    if (response && response.success && response.info && response.info.formats) {
-                                        populateDropdown(response.info.formats);
-                                    } else {
-                                        detDrop.innerHTML = '';
-                                        detDrop.disabled = false;
-                                        let opt = document.createElement('option');
-                                        opt.value = "";
-                                        opt.innerText = "⚠️ Error al detectar";
-                                        detDrop.appendChild(opt);
-                                    }
-                                });
-                            }
-                        });
-                    }
+            AppState.readSettings(settings => {
+                if (settings.formatSetting === 'mp4' && settings.qualitySetting === 'ask') drop.classList.remove('hidden');
+                const detector = el.querySelector('.detect-dropdown');
+                if (!isTask && settings.formatSetting === 'mp4' && settings.qualitySetting === 'detect' && detector) {
+                    detector.classList.remove('hidden');
+                    AppState.loadFormats(detector, url, pageUrl);
                 }
             });
 
@@ -943,6 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isTask && taskState) {
             el.setAttribute('data-taskid', taskState.id);
+            el.dataset.formatId = taskState.customFormatId || '';
 
             if (taskState.status === "progress" || taskState.status === "started") {
                 progCtx.classList.remove('hidden');
@@ -1211,6 +910,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         let rawSniffs = (result.sniffedUrls || {})[tabId] || [];
                         let sniffs = deduplicateSniffs(rawSniffs);
+                        const visibleUrls = new Set(sniffs.map(url => url.replace('#ACTUAL', '')));
+                        if (currentUrl.startsWith('http') && !isHomepage) visibleUrls.add(currentUrl);
+                        cardsWrapper.querySelectorAll('.detected-video-card:not([data-taskid])').forEach(card => {
+                            if (!visibleUrls.has(card.getAttribute('data-url'))) card.remove();
+                        });
                         
                         if (snifferCountBadge) {
                             snifferCountBadge.innerText = `${sniffs.length} enlaces`;
@@ -1220,7 +924,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             let cleanTabTitle = currentTab.title ? currentTab.title.replace(/^\(\d+\)\s*/, '').replace(/ - YouTube$/, '').trim() : "Stream de Video";
                             let baseTitle = cleanTabTitle;
                             
-                            let streamType = (s_url.includes('.m3u8') || s_url.includes('/m3u8/')) ? " [HLS]" : " [MP4]";
+                            let streamType = /\.m3u8|\/m3u8\//i.test(s_url) ? " [HLS]" : /\.mpd/i.test(s_url) ? " [DASH]" : " [Video]";
                             
                             if (s_url.includes('#ACTUAL')) {
                                 streamType = " ⭐ [ACTUAL]" + streamType;

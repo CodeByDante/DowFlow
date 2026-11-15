@@ -1,4 +1,4 @@
-importScripts('state.js');
+importScripts('state.js', 'media-scan.js');
 let activeTasks = {};
 let activePorts = {};
 let snifferEnabled = true;
@@ -80,94 +80,119 @@ AppState.watchLocal(['snifferEnabled', 'maxConcurrentDownloads'], (values, keys)
     const settings = AppState.normalize(values);
     snifferEnabled = settings.snifferEnabled;
     maxConcurrentDownloadsLimit = settings.maxConcurrentDownloads;
-    if (keys.includes('snifferEnabled') && !snifferEnabled) chrome.storage.local.set({ sniffedUrls: {} });
+    if (keys.includes('snifferEnabled') && !snifferEnabled) updateSniffs(urls => { for (const id of Object.keys(urls)) delete urls[id]; });
     processDownloadQueue();
 });
 
-function prefetchQuality(videoUrl) {
-    let cacheKey = videoUrl;
-    if (videoUrl.includes('youtube.com/watch')) {
-        let match = videoUrl.match(/([?&]v=[^&]+)/);
-        if (match) cacheKey = "yt_" + match[1];
-    }
-    
-    chrome.storage.local.get(['qualitySetting', 'prefetchedQualities'], function(result) {
-        if (result.qualitySetting === 'detect') {
-            let cache = result.prefetchedQualities || {};
-            if (cache[cacheKey] && (Date.now() - cache[cacheKey].timestamp < 300000)) return;
-            
-            try {
-                let port = chrome.runtime.connectNative("com.gonzalo.videodownloader");
-                port.onMessage.addListener((message) => {
-                    if (message.status === "info") {
-                        chrome.storage.local.get(['prefetchedQualities'], (r2) => {
-                            let freshCache = r2.prefetchedQualities || {};
-                            freshCache[cacheKey] = { timestamp: Date.now(), formats: message.info.formats };
-                            chrome.storage.local.set({ prefetchedQualities: freshCache });
-                        });
-                    }
-                    port.disconnect();
-                });
-                port.postMessage({ command: "get_info", url: videoUrl });
-            } catch(e) {}
+const formatRequests = new Map();
+const formatCache = new Map();
+function fetchVideoInfo(url, pageUrl, callback, refresh = false) {
+    const key = `${url}\n${pageUrl || ''}`;
+    if (refresh) formatCache.delete(key);
+    const cached = formatCache.get(key);
+    if (cached && Date.now() - cached.time < 300000) { callback(cached.response); return; }
+    if (formatRequests.has(key)) { formatRequests.get(key).push(callback); return; }
+    formatRequests.set(key, [callback]);
+    let port, timer, finished = false;
+    function finish(response) {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+        if (response.success && response.status === 'info' && response.info?.formats?.length) {
+            formatCache.set(key, { time: Date.now(), response });
+            if (formatCache.size > 50) formatCache.delete(formatCache.keys().next().value);
         }
+        const callbacks = formatRequests.get(key) || [];
+        formatRequests.delete(key);
+        try { port?.disconnect(); } catch (_) {}
+        callbacks.forEach(fn => fn(response));
+    }
+    function launch(cookies) {
+        try {
+            port = chrome.runtime.connectNative('com.gonzalo.videodownloader');
+            port.onMessage.addListener(message => {
+                if (message.status === 'info' || message.status === 'error') finish({ success: message.status === 'info', ...message });
+            });
+            port.onDisconnect.addListener(() => finish({ success: false, error: chrome.runtime.lastError?.message || 'El host se desconecto durante la deteccion.' }));
+            timer = setTimeout(() => finish({ success: false, error: 'La deteccion tardo demasiado. Vuelve a intentarlo.' }), 65000);
+            port.postMessage({ command: 'get_info', url, pageUrl: pageUrl || '', netscapeCookies: cookies || '' });
+        } catch (error) { finish({ success: false, error: error.message }); }
+    }
+    AppState.readSettings(settings => {
+        let host = '';
+        try { host = new URL(url).hostname; } catch (_) {}
+        if (settings.cookiesSetting === 'chrome' || /(^|\.)(youtube\.com|youtu\.be|instagram\.com|tiktok\.com)$/.test(host)) {
+            getCookiesForDomain(pageUrl || url, null, launch);
+        } else launch('');
+    });
+}
+function prefetchQuality(videoUrl) {
+    AppState.readSettings(settings => {
+        if (settings.qualitySetting === 'detect') fetchVideoInfo(videoUrl, '', () => {});
     });
 }
 
-chrome.webRequest.onBeforeRequest.addListener(
-  function(details) {
-    if (!snifferEnabled) return;
-    if (details.tabId >= 0) {
-      const url = details.url;
-      const isMedia = details.type === "media";
-      const isDirectVideo = url.includes(".m3u8") || url.includes("/m3u8/") || url.includes(".mp4");
-      
-      if (isDirectVideo || isMedia) {
-        if (url.includes('tiktok') || url.includes('tiktokcdn') || url.includes('facebook') || url.includes('fbcdn')) return;
-        
-        chrome.storage.local.get(['sniffedUrls'], function(result) {
-          let urls = result.sniffedUrls || {};
-          if (!urls[details.tabId]) urls[details.tabId] = [];
-          
-          if (!urls[details.tabId].includes(url)) {
-             urls[details.tabId].push(url);
-             chrome.storage.local.set({ sniffedUrls: urls });
-             
-             // Disparar precarga automáticamente apenas un nuevo video sea detectado (M3U8, MP4, etc)
-             prefetchQuality(url);
-          }
+let snifferQueue = Promise.resolve();
+function updateSniffs(transform) {
+    snifferQueue = snifferQueue.then(() => new Promise(resolve => {
+        chrome.storage.local.get(['sniffedUrls'], result => {
+            const urls = result.sniffedUrls || {};
+            transform(urls);
+            chrome.storage.local.set({ sniffedUrls: urls }, () => resolve(urls));
         });
-      }
-    }
-  },
-  { urls: ["<all_urls>"] }
-);
-
+    }));
+    return snifferQueue;
+}
+function rememberMedia(details, fromHeader = false) {
+    if (!snifferEnabled || details.tabId < 0) return;
+    let pathname;
+    try {
+        const parsed = new URL(details.url);
+        if (!['http:', 'https:'].includes(parsed.protocol)) return;
+        pathname = parsed.pathname.toLowerCase();
+    } catch (_) { return; }
+    if (/\.(ts|m4s|vtt|jpg|jpeg|png|gif|webp|svg|css|js)$/.test(pathname)) return;
+    const recognized = /\.(m3u8|mpd|mp4|webm|mkv|mov|m4v)(?:$|\/)/.test(pathname) || pathname.includes('/m3u8/');
+    if (!recognized && details.type !== 'media' && !fromHeader) return;
+    updateSniffs(urls => {
+        const list = urls[details.tabId] || [];
+        if (!list.includes(details.url)) urls[details.tabId] = [...list, details.url].slice(-100);
+    });
+}
+chrome.webRequest.onBeforeRequest.addListener(details => rememberMedia(details), { urls: ['<all_urls>'] });
+chrome.webRequest.onHeadersReceived?.addListener(details => {
+    const type = details.responseHeaders?.find(header => header.name.toLowerCase() === 'content-type')?.value || '';
+    if (/^(video\/|application\/(vnd\.apple\.mpegurl|x-mpegurl|dash\+xml))/i.test(type)) rememberMedia(details, true);
+}, { urls: ['<all_urls>'] }, ['responseHeaders']);
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     if (changeInfo.url) {
-         chrome.storage.local.get(['sniffedUrls'], function(result) {
-             let urls = result.sniffedUrls || {};
-             delete urls[tabId];
-             chrome.storage.local.set({ sniffedUrls: urls });
-             
-             // Disparar precarga para YouTube (ya que YouTube oculta sus streams directos)
-             if (changeInfo.url.includes('youtube.com/watch') || changeInfo.url.includes('youtu.be/')) {
-                 prefetchQuality(changeInfo.url);
-             }
-         });
+        updateSniffs(urls => { delete urls[tabId]; });
+        if (/youtube\.com|youtu\.be/.test(changeInfo.url)) prefetchQuality(changeInfo.url);
     }
 });
-
-chrome.tabs.onRemoved.addListener((tabId) => {
-    chrome.storage.local.get(['sniffedUrls'], function(result) {
-        let urls = result.sniffedUrls || {};
-        delete urls[tabId];
-        chrome.storage.local.set({ sniffedUrls: urls });
+chrome.tabs.onRemoved.addListener(tabId => updateSniffs(urls => { delete urls[tabId]; }));
+function scanPage(tabId, mode, callback) {
+    if (!Number.isInteger(tabId)) { callback({ success: false, error: 'No hay una pestaña web activa.' }); return; }
+    chrome.scripting.executeScript({ target: { tabId, allFrames: true }, func: scanMediaPage, args: [mode] }, results => {
+        if (chrome.runtime.lastError) { callback({ success: false, error: chrome.runtime.lastError.message }); return; }
+        const found = new Set((results || []).flatMap(frame => (frame.result || []).map(item => item.url)));
+        chrome.storage.local.get(['sniffedUrls'], result => {
+            const previous = result.sniffedUrls?.[tabId] || [];
+            if (mode === 'streams') previous.filter(url => /\.m3u8|\.mpd|\/m3u8\//i.test(url)).forEach(url => found.add(url));
+            const added = [...found].filter(url => !previous.includes(url)).length;
+            updateSniffs(urls => { urls[tabId] = [...new Set([...(urls[tabId] || []), ...found])].slice(-100); })
+                .then(() => callback({ success: true, count: found.size, added, urls: [...found] }));
+        });
     });
-});
+}
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // Manejador del Método 1 (eliminado)
+
+  if (request.action === 'scan_page') {
+      scanPage(request.tabId, request.mode === 'streams' ? 'streams' : 'html', sendResponse);
+      return true;
+  }
 
   if (request.action === "emergency_stop") {
       // 1. Cancel all queued downloads in downloadQueue
@@ -285,9 +310,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       return true;
   }
 
-  if (request.action === "download" || request.action === "open_folder" || request.action === "get_info" || request.action === "get_playlist_info" || request.action === "select_folder") {
+  if (request.action === 'get_info') {
+      fetchVideoInfo(request.url, request.pageUrl, sendResponse, request.refresh === true);
+      return true;
+  }
+
+  if (request.action === "download" || request.action === "open_folder" || request.action === "get_playlist_info" || request.action === "select_folder") {
     
-    if (request.action === "open_folder" || request.action === "get_info" || request.action === "get_playlist_info" || request.action === "select_folder") {
+    if (request.action === "open_folder" || request.action === "get_playlist_info" || request.action === "select_folder") {
         const hostName = "com.gonzalo.videodownloader";
         let port;
         try {
@@ -324,20 +354,13 @@ function queueDownload(request, sendResponse = () => {}) {
         const normalized = AppState.normalize({ ...res, ...request });
         Object.assign(request, normalized);
         request.savePath = request.savePath ?? normalized.customSavePath;
-        let autoEngine = res.autoEngine !== undefined ? res.autoEngine : true; // Activado por defecto
-        let engineSetting = request.engineSetting || "ytdlp";
-        
-        if (autoEngine === "on" || autoEngine === true) {
-            let urlLower = (request.url || "").toLowerCase();
-            if (urlLower.includes(".m3u8") || urlLower.includes(".mpd")) {
-                engineSetting = "nm3u8";
-            } else if (urlLower.endsWith(".mp4") || urlLower.endsWith(".webm") || urlLower.includes("pimpbunny.com")) {
-                engineSetting = "native";
-            } else {
-                engineSetting = "ytdlp";
-            }
-            request.engineSetting = engineSetting;
+        const autoEngine = res.autoEngine;
+        if (request.formatSetting !== 'mp3' && request.qualitySetting === 'detect' && !/^[A-Za-z0-9_.-]+$/.test(request.customFormatId || '')) {
+            sendResponse({ success: false, error: 'Detector: selecciona un formato antes de descargar.' });
+            return;
         }
+        const decision = AppState.chooseEngine(request, autoEngine);
+        request.engineSetting = decision.engine;
         request.autoEngine = autoEngine;
 
         let downloadId = "dl_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
@@ -347,9 +370,15 @@ function queueDownload(request, sendResponse = () => {}) {
             title: request.title || "Video",
             url: request.url,
             percent: "0",
+            qualitySetting: request.qualitySetting,
+            engineSetting: request.engineSetting,
+            engineReason: decision.reason,
+            customFormatId: request.customFormatId || "",
+            pageUrl: request.pageUrl || "",
             status: "queued"
         };
 
+        broadcastLog(downloadId, request.title, `[Motor] ${request.engineSetting}: ${decision.reason}`);
         downloadQueue.push({
             downloadId: downloadId,
             request: request
@@ -566,6 +595,7 @@ function launchNativeDownload(downloadId, request) {
         savePath: request.savePath,
         formatSetting: request.formatSetting,
         qualitySetting: request.qualitySetting,
+        fixedQuality: request.fixedQuality,
         engineSetting: request.engineSetting,
         threadCount: request.threadCount,
         audioFormat: request.audioFormat,
