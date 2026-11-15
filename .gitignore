@@ -27,3 +27,15 @@ host/*.webm
 # OS
 .DS_Store
 Thumbs.db
+
+# Generated host registration, engine logs, and installer leftovers
+host/com.gonzalo.videodownloader.json
+host/bin/Logs/
+*.log
+host/setup/*.zip
+ffmpeg.zip
+nm3u8dlre.zip
+m3u8_results.json
+.env
+.env.*
+!.env.example

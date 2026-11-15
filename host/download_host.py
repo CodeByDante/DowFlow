@@ -31,6 +31,27 @@ def send_message(message):
     except Exception:
         pass
 
+def cancel_active_processes():
+    # Copy under the lock; stopping subprocesses must not block worker cleanup.
+    with lock:
+        processes = list(active_processes)
+    for proc in processes:
+        proc.is_cancelled = True
+        # Native Python downloads have a cancellation flag but no subprocess PID.
+        if not hasattr(proc, 'pid'):
+            continue
+        try:
+            if os.name == 'nt':
+                subprocess.run(
+                    ['taskkill', '/F', '/T', '/PID', str(proc.pid)],
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                    creationflags=subprocess.CREATE_NO_WINDOW,
+                )
+            else:
+                proc.terminate()
+        except OSError:
+            pass
+
 def native_download(url, output_name, downloads_path, thread_count=1, format_type='video', base_title='Video'):
     global active_downloads
     with lock:
@@ -713,29 +734,11 @@ def main():
                 threading.Thread(target=handle_download, args=(args, output_name, downloads_path, tmp_folder_ytdlp), daemon=False).start()
                 
             elif msg.get('command') == 'cancel':
-                with lock:
-                    for proc in list(active_processes):
-                        try:
-                            proc.is_cancelled = True
-                            if os.name == 'nt':
-                                subprocess.run(['taskkill', '/F', '/T', '/PID', str(proc.pid)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=0x08000000)
-                            else:
-                                proc.terminate()
-                        except Exception:
-                            pass
+                cancel_active_processes()
                 send_message({"status": "cancelled"})
                 
         except EOFError:
-            with lock:
-                if active_process is not None:
-                    try:
-                        active_process.is_cancelled = True
-                        if os.name == 'nt':
-                            subprocess.run(['taskkill', '/F', '/T', '/PID', str(active_process.pid)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=0x08000000)
-                        else:
-                            active_process.terminate()
-                    except:
-                        pass
+            cancel_active_processes()
             break
         except Exception as e:
             send_message({"status": "error", "error": str(e)})

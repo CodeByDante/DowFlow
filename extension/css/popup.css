@@ -506,3 +506,14 @@ body {
 body {
   padding-bottom: 55px;
 }
+/* App identity: share one mark with the browser toolbar and tools panel. */
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px 8px;
+}
+.app-brand img { flex-shrink: 0; object-fit: contain; }
+.app-brand strong { display: block; color: #f4efff; font-size: 15px; font-weight: 650; }
+.app-brand span { display: block; color: #aba4b8; margin-top: 3px; font-size: 11px; }
+.about-logo { display: block; margin: 0 auto 16px; object-fit: contain; }

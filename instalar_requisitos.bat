@@ -33,7 +33,7 @@ if %errorlevel% neq 0 (
 :: (Actualmente el proyecto usa librerias estandar para evitar dependencias,
 :: pero aqui se pueden añadir en el futuro si usas 'pip install')
 echo [*] Verificando entorno de Python...
-python -m tkinter >nul 2>&1
+python -c "import tkinter" >nul 2>&1
 if %errorlevel% neq 0 (
     echo [!] ADVERTENCIA: Tkinter no parece estar instalado. 
     echo Esto es necesario para el selector de carpetas.
@@ -45,6 +45,6 @@ if %errorlevel% neq 0 (
 echo.
 echo =======================================================
 echo Verificacion de requisitos completada.
-echo Ya puedes ejecutar 'actualizar_motores.bat'.
+echo Ya puedes ejecutar 'scripts\actualizar_motores.bat'.
 echo =======================================================
 pause

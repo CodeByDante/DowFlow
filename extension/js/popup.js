@@ -30,13 +30,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const div = document.createElement('div');
                 div.className = 'history-item';
                 div.innerHTML = `
-          <div class="history-title" title="${item.title}">${item.title}</div>
-          <div class="history-date">${new Date(item.date).toLocaleString()}</div>
+          <div class="history-title" title=""></div>
+          <div class="history-date"></div>
           <div class="history-actions">
-            <button class="action-btn secondary btn-small open-url-btn" data-url="${item.url}">Ver Origen</button>
-            <button class="action-btn secondary btn-small open-folder-btn" data-file="${item.final_file || ''}">Abrir Ubicación</button>
+            <button class="action-btn secondary btn-small open-url-btn" data-url="">Ver Origen</button>
+            <button class="action-btn secondary btn-small open-folder-btn" data-file="">Abrir Ubicación</button>
           </div>
         `;
+                const titleElement = div.querySelector('.history-title');
+                titleElement.textContent = item.title || '';
+                titleElement.title = item.title || '';
+                div.querySelector('.history-date').textContent = new Date(item.date).toLocaleString();
+                div.querySelector('.open-url-btn').setAttribute('data-url', item.url || '');
+                div.querySelector('.open-folder-btn').setAttribute('data-file', item.final_file || '');
                 div.querySelector('.open-url-btn').addEventListener('click', (e) => {
                     window.open(e.target.getAttribute('data-url'), '_blank');
                 });

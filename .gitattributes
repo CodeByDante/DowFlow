@@ -64,3 +64,6 @@ host/bin/ffmpeg.exe filter=lfs diff=lfs merge=lfs -text
 host/bin/ffprobe.exe filter=lfs diff=lfs merge=lfs -text
 host/bin/N_m3u8DL-RE.exe filter=lfs diff=lfs merge=lfs -text
 host/bin/yt-dlp.exe filter=lfs diff=lfs merge=lfs -text
+
+# Small extension icons ship directly in Git and source ZIP downloads.
+extension/icons/*.png -filter -diff -merge

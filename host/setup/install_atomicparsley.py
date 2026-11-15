@@ -5,10 +5,8 @@ import os
 import ssl
 
 def install_atomicparsley():
-    # Bypass strict SSL if needed
+    # Validate HTTPS certificates for downloaded executables.
     ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
 
     print("Fetching latest AtomicParsley release...")
     api_url = "https://api.github.com/repos/wez/atomicparsley/releases/latest"
