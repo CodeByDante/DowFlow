@@ -1,7 +1,7 @@
 @echo off
 setlocal
 echo =======================================================
-echo Registro del host - NekoDrop
+echo Registro del host - DowFlow
 echo =======================================================
 echo Carga la carpeta extension en el modo desarrollador del navegador.
 echo Chrome: chrome://extensions  Edge: edge://extensions  Brave: brave://extensions

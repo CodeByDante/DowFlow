@@ -1,4 +1,4 @@
-# Calidad y detección — NekoDrop 1.3.0
+# Calidad y detección — DowFlow 1.3.0
 
 ## Calidad fija
 

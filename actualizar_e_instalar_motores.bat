@@ -2,7 +2,7 @@
 setlocal
 for %%I in ("%~dp0.") do set "PROJECT_ROOT=%%~fI"
 echo =======================================================
-echo Instalador y Actualizador de Motores - NekoDrop
+echo Instalador y Actualizador de Motores - DowFlow
 echo =======================================================
 echo.
 

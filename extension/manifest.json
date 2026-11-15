@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "NekoDrop",
+  "name": "DowFlow",
   "version": "1.3.0",
   "description": "Descarga videos directamente a tu PC usando Native Messaging.",
   "permissions": [

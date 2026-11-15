@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="extension/icons/logo-512.png" alt="Logo de NekoDrop: gato violeta con avión y símbolo de descarga" width="160" height="160">
+  <img src="extension/icons/logo-512.png" alt="Logo de DowFlow: gato violeta con avión y símbolo de descarga" width="160" height="160">
 </p>
 
-# NekoDrop
+# DowFlow
 
 Extensión para navegadores Chromium conectada a un host local en Python mediante Native Messaging. Permite descargar video o audio, elegir formatos y calidad, consultar listas de reproducción y gestionar descargas. El procesamiento se realiza en el PC con yt-dlp, FFmpeg y motores opcionales.
 
@@ -54,7 +54,7 @@ Los binarios, registros, cookies y la configuración generada para cada PC no se
 
 ## Actualizar una instalación existente
 
-Descargar los archivos nuevos o ejecutar `git pull` en la carpeta local. En la página de extensiones del navegador, pulsar **Recargar** y cerrar y abrir de nuevo el panel de herramientas. La versión debe indicar **1.3.0**. Los cambios de GitHub no actualizan automáticamente una extensión cargada como descomprimida.
+Descargar los archivos nuevos o ejecutar `git pull` en la carpeta local. En la página de extensiones del navegador, pulsar **Recargar** y cerrar y abrir de nuevo el panel de herramientas. La extensión debe aparecer como **DowFlow**, versión **1.3.0**. Los cambios de GitHub no actualizan automáticamente una extensión cargada como descomprimida.
 
 Si cambió la ubicación de la carpeta o el ID de la extensión, volver a ejecutar `conectar_extension.bat`. No hace falta reinstalar los motores si siguen disponibles en `host/bin/`.
 

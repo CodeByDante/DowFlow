@@ -21,7 +21,7 @@ def build_manifest(project_root, extension_id):
         raise FileNotFoundError('No se encontro el lanzador: {}'.format(launcher))
     return {
         'name': HOST_NAME,
-        'description': 'NekoDrop - Descargador multimedia',
+        'description': 'DowFlow - Descargador multimedia',
         'path': str(launcher),
         'type': 'stdio',
         'allowed_origins': ['chrome-extension://{}/'.format(extension_id)],

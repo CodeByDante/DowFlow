@@ -40,7 +40,7 @@ function broadcastLog(id, title, log) {
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "download_video_link",
-        title: "Descargar con NekoDrop",
+        title: "Descargar con DowFlow",
         contexts: ["video", "link", "page"]
     });
 });

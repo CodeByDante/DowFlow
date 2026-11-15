@@ -1,7 +1,7 @@
 @echo off
 setlocal
 echo =======================================================
-echo Requisitos - NekoDrop
+echo Requisitos - DowFlow
 echo =======================================================
 python -c "import sys; sys.exit(0 if sys.version_info >= (3, 8) else 1)" >nul 2>&1
 if errorlevel 1 goto install_python
