@@ -1,4 +1,4 @@
-# Sincronización del popup y panel — 1.1.0
+# Sincronización del popup y panel — 1.1.1
 
 Ambas vistas usan `js/state.js` para leer valores iniciales, escuchar cambios y representar los mismos controles. Los valores predeterminados, los booleanos y los subtítulos se normalizan de la misma manera. Las actualizaciones visuales no vuelven a escribir en el almacenamiento.
 
@@ -35,7 +35,7 @@ Los motores se instalan con `actualizar_e_instalar_motores.bat` y se guardan en 
 
 1. Descargar o actualizar la carpeta del proyecto.
 2. En la página de extensiones del navegador, pulsar Recargar.
-3. Cerrar el panel antiguo y abrirlo otra vez. Comprobar versión 1.1.0.
+3. Cerrar el panel antiguo y abrirlo otra vez. Comprobar versión 1.1.1.
 4. Si cambió la ruta del proyecto o el ID de la extensión, volver a ejecutar `conectar_extension.bat`.
 
 La sincronización corresponde a vistas de la misma instalación y perfil del navegador. No sincroniza configuraciones entre Chrome y Edge, otros perfiles o distintos equipos. Los registros y tareas del gestor viven durante la sesión del proceso de fondo; no constituyen un sistema de recuperación de descargas tras reiniciar el navegador.
