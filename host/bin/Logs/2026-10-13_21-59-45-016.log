@@ -1,0 +1,31 @@
+﻿LOG 2026/10/13
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\Logs
+Task Start: 2026/10/13 21:59:45
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\N_m3u8DL-RE.exe" https://dash-s24-n50-nl-cdn.eporner.com/hls/srv2/18264360-1080p-av1.mp4/index-v1-a1.m3u8?hash=rUpU0H9aSQVPuQ7FjP75zg&expires=1792032742&ip=2001:1388:74a3:62a7:6448:8c8a:1f67:e644&id=18264360 --save-dir C:/Users/Gonzalo/Downloads --save-name "Lote_1 (4)" --auto-select --thread-count 10 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\Lote_1 (4)_9897447c_tmp" --mux-after-done mp4 -H "Referer: https://dash-s24-n50-nl-cdn.eporner.com/" -H "Origin: https://dash-s24-n50-nl-cdn.eporner.com"
+
+21:59:45.017 INFO : N_m3u8DL-RE (Beta version) 20251029
+21:59:45.018 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\ffmpeg.exe
+21:59:45.019 EXTRA: User-Defined Header => referer: https://dash-s24-n50-nl-cdn.eporner.com/
+21:59:45.019 EXTRA: User-Defined Header => origin: https://dash-s24-n50-nl-cdn.eporner.com
+21:59:45.019 INFO : Loading URL: https://dash-s24-n50-nl-cdn.eporner.com/hls/srv2/18264360-1080p-av1.mp4/index-v1-a1.m3u8?hash=rUpU0H9aSQVPuQ7FjP75zg&expires=1792032742&ip=2001:1388:74a3:62a7:6448:8c8a:1f67:e644&id=18264360
+21:59:45.615 INFO : New version detected! v0.6.0-beta
+21:59:45.909 INFO : Content Matched: HTTP Live Streaming
+21:59:45.911 INFO : Parsing streams...
+21:59:45.947 WARN : Writing meta json
+21:59:45.951 INFO : Extracted, there are 1 streams, with 1 basic streams, 0 audio streams, 0 subtitle streams
+21:59:45.951 INFO : Vid Kbps | 85 Segments | ~05m42s
+21:59:45.953 INFO : Selected streams:
+21:59:45.954 INFO : Vid Kbps | 85 Segments | ~05m42s
+21:59:45.954 WARN : Writing meta json
+21:59:45.958 INFO : Save Name: Lote_1 (4)
+21:59:45.962 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+21:59:45.968 INFO : Start downloading...Vid Kbps
+21:59:46.200 WARN : Reading media info...
+21:59:46.336 INFO : [0x1]: Video, av1 (libdav1d) (Main) (av01), 844x1080
+21:59:46.337 INFO : [0x2]: Audio, aac (mp4a), 124 kb/s
+21:59:50.721 INFO : Binary merging...
+21:59:51.089 WARN : Lote_1 (4).mp4
+21:59:51.090 WARN : Muxing to Lote_1 (4).MUX.mp4
+21:59:51.538 WARN : Cleaning files...
+21:59:51.549 WARN : Rename to Lote_1 (4).mp4
+21:59:51.551 INFO : Done

@@ -31,7 +31,7 @@ def send_message(message):
     except Exception:
         pass
 
-def native_download(url, output_name, downloads_path):
+def native_download(url, output_name, downloads_path, thread_count=1, format_type='video', base_title='Video'):
     global active_downloads
     with lock:
         active_downloads += 1
@@ -56,9 +56,17 @@ def native_download(url, output_name, downloads_path):
         ext = '.mp4'
         if 'ext=' in url:
             ext = '.' + url.split('ext=')[-1].split('&')[0]
+        elif format_type == 'mp3':
+            ext = '.mp3'
+            
         dest = os.path.join(downloads_path, f"{output_name}{ext}")
+        media_type = "Audio" if format_type == 'mp3' or ext == '.mp3' else "Video"
         
-        send_message({"status": "log", "log": f"[*] Iniciando descarga nativa directa a {dest}...", "output_name": output_name})
+        send_message({"status": "log", "log": "[*] Motor de descarga: Python (Descarga Nativa)", "output_name": output_name})
+        send_message({"status": "log", "log": "[*] No se usarán los hilos, motor nativo no lo permite", "output_name": output_name})
+        send_message({"status": "log", "log": f"[*] Formato a descargar: {ext.upper().replace('.', '')} ({media_type})", "output_name": output_name})
+        send_message({"status": "log", "log": f"[*] Título original: {base_title}", "output_name": output_name})
+        send_message({"status": "log", "log": f"[*] Guardando en: {dest}", "output_name": output_name})
         
         with urllib.request.urlopen(req, timeout=15) as response, open(dest, 'wb') as out_file:
             chunk_size = 8192
@@ -77,6 +85,8 @@ def native_download(url, output_name, downloads_path):
                     if downloaded % (chunk_size * 256) == 0:
                         send_message({"status": "progress", "percent": str(percent), "output_name": output_name})
                         send_message({"status": "log", "log": f"[Descarga Nativa] {percent:.1f}% ({downloaded / 1024 / 1024:.2f} MB / {total / 1024 / 1024:.2f} MB)", "output_name": output_name})
+                if total and downloaded >= total:
+                    break
                         
         if proc.is_cancelled:
             send_message({"status": "log", "log": "[-] Descarga nativa cancelada.", "output_name": output_name})
@@ -85,7 +95,7 @@ def native_download(url, output_name, downloads_path):
             send_message({"status": "progress", "percent": "100", "output_name": output_name})
             send_message({"status": "log", "log": f"[Descarga Nativa] 100.0% ({downloaded / 1024 / 1024:.2f} MB Completados)", "output_name": output_name})
             send_message({"status": "log", "log": "[*] Descarga nativa completada con éxito.", "output_name": output_name})
-            send_message({"status": "complete", "output_name": output_name})
+            send_message({"status": "completed", "output_name": output_name})
             
     except Exception as e:
         send_message({"status": "log", "log": f"[ERROR] {str(e)}", "output_name": output_name})
@@ -134,7 +144,38 @@ def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None
                     is_fragment_progress = True
                 
                 if not is_fragment_progress:
-                    send_message({"status": "log", "log": clean_line})
+                    display_line = clean_line
+                    # Traducciones comunes de yt-dlp a español
+                    tr = [
+                        ('Extracting URL:', 'Extrayendo URL:'),
+                        ('Downloading just the video', 'Descargando solo el video'),
+                        ('because of --no-playlist', 'debido a --no-playlist'),
+                        ('Downloading webpage', 'Descargando página web'),
+                        ('Downloading web embedded client config', 'Descargando configuración web'),
+                        ('Downloading player', 'Descargando reproductor'),
+                        ('Downloading tv downgraded player API JSON', 'Descargando API JSON de TV'),
+                        ('Downloading web embedded player API JSON', 'Descargando API JSON web'),
+                        ('Solving JS challenges using node', 'Resolviendo desafíos JS con Node.js'),
+                        ('Downloading', 'Descargando'),
+                        ('format(s):', 'formato(s):'),
+                        ('Writing video thumbnail', 'Guardando miniatura en'),
+                        ('video thumbnail', 'miniatura del video'),
+                        ('Converting thumbnail', 'Convirtiendo miniatura'),
+                        ('Deleting original file', 'Eliminando archivo original'),
+                        ('(pass -k to keep)', ''),
+                        ('[download] Destination:', '[descarga] Destino:'),
+                        ('[download]', '[descarga]'),
+                        ('to:', 'en:'),
+                        ('has already been downloaded', 'ya ha sido descargado'),
+                        ('[Metadata] Adding metadata to', '[Metadatos] Añadiendo metadatos a'),
+                        ('[EmbedThumbnail] mutagen: Adding thumbnail to', '[Miniatura] Añadiendo miniatura a'),
+                        ('[MoveFiles] Moving file', '[Mover] Moviendo archivo'),
+                        ('to "', 'a "')
+                    ]
+                    for eng, spa in tr:
+                        display_line = display_line.replace(eng, spa)
+                    
+                    send_message({"status": "log", "log": display_line})
                     
                 if clean_line.startswith("ERROR:") or "oserror:" in clean_line.lower() or "error:" in clean_line.lower():
                     last_errors.append(clean_line)
@@ -281,7 +322,8 @@ def main():
                 file_path = msg.get('file', '')
                 if os.name == 'nt':
                     if file_path and os.path.exists(file_path):
-                        subprocess.Popen(['explorer', '/select,', file_path])
+                        norm_path = os.path.normpath(file_path)
+                        subprocess.Popen(f'explorer /select,"{norm_path}"')
                     else:
                         downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
                         subprocess.Popen(['explorer', downloads_path])
@@ -366,15 +408,14 @@ def main():
                         with urllib.request.urlopen(req, timeout=10) as response:
                             html = response.read().decode('utf-8')
                             urls = re.findall(r'(?:video_url|video_alt_url\d*):\s*\'([^\']+)\'', html)
+                            urls = [u for u in urls if 'upgrade=' not in u and '.mp4' in u]
                             if urls:
                                 url = urls[-1] # El último suele ser la mejor calidad
                                 send_message({"status": "log", "log": "[*] Enlace MP4 extraído exitosamente."})
                             else:
-                                send_message({"status": "error", "error": "No se pudo encontrar el video en esta página de Pimpbunny."})
-                                continue
+                                send_message({"status": "log", "log": "[-] No se pudo encontrar el video MP4 en Pimpbunny. Se intentará con el enlace original."})
                     except Exception as e:
-                        send_message({"status": "error", "error": f"Error extrayendo video de Pimpbunny: {e}"})
-                        continue
+                        send_message({"status": "log", "log": f"[-] Error en el extractor interno de Pimpbunny: {e}. Se intentará descargar con el motor seleccionado."})
 
                 custom_path = msg.get('savePath', '').strip()
                 format_type = msg.get('formatSetting', 'mp4')
@@ -393,12 +434,33 @@ def main():
                 netscape_cookies = msg.get('netscapeCookies', '')
                 yt_audio_lang = msg.get('ytAudioLang', 'es')
                 yt_subs = msg.get('ytSubs', 'off')
+                auto_engine_status = msg.get('autoEngine', True)
                 
                 global tracked_files
                 with lock:
                     tracked_files = []
                 
                 send_message({"status": "started"})
+                
+                send_message({"status": "log", "log": "[*] --- Configuración de Descarga ---"})
+                if format_type == 'mp3':
+                    send_message({"status": "log", "log": "[*] Formato: Audio (MP3)"})
+                else:
+                    v_pref = "Legado (MP4/H.264)" if video_format_pref == 'legado' else "Calidad (AV1/VP9/H.265)"
+                    send_message({"status": "log", "log": f"[*] Formato: Video | Preferencia: {v_pref}"})
+                    
+                if format_type != 'mp3':
+                    q_str = "Máxima" if quality_setting == 'max' else "Mínima" if quality_setting == 'min' else "Personalizada"
+                    send_message({"status": "log", "log": f"[*] Calidad de Video: {q_str}"})
+                
+                cookies_status = "Activado" if (netscape_cookies and len(netscape_cookies) > 20) else "Desactivado"
+                send_message({"status": "log", "log": f"[*] Cookies del navegador: {cookies_status}"})
+                
+                auto_str = "Activado" if (auto_engine_status is True or auto_engine_status == "on") else "Desactivado"
+                send_message({"status": "log", "log": f"[*] Automatización de Motor: {auto_str}"})
+                eng_name = {"ytdlp": "Por defecto (yt-dlp)", "aria2": "Acelerador (aria2)", "nm3u8": "Extremo (N_m3u8DL)", "native": "Nativo (Directo)"}.get(engine_setting, engine_setting)
+                send_message({"status": "log", "log": f"[*] Motor elegido: {eng_name} | Hilos: {thread_count}"})
+                send_message({"status": "log", "log": "[*] ---------------------------------"})
                 
                 script_dir = os.path.dirname(os.path.abspath(__file__))
                 bin_dir = os.path.join(script_dir, "bin")
@@ -474,7 +536,7 @@ def main():
                     output_template = f"{safe_output_name_ytdlp}.{ext_str}"
                 
                 if engine_setting == 'native':
-                    threading.Thread(target=native_download, args=(url, output_name, downloads_path), daemon=False).start()
+                    threading.Thread(target=native_download, args=(url, output_name, downloads_path, thread_count, format_type, base_title), daemon=False).start()
                     continue
                 
                 if engine_setting == 'nm3u8':
@@ -497,7 +559,7 @@ def main():
                         
                     args = [nm3u8_path, url, '--save-dir', downloads_path, '--save-name', output_name, '--auto-select', '--thread-count', str(thread_count), '--tmp-dir', tmp_folder_nm, '--mux-after-done', mux_ext]
                     
-                    send_message({"status": "log", "log": f"[*] Motor Extremo (N_m3u8DL) activado usando {thread_count} hilo(s)."})
+                    send_message({"status": "log", "log": f"[*] Numero de hilos motor Extremo (N_m3u8DL): {thread_count}"})
                     
                     page_url = msg.get('pageUrl', '')
                     try:
@@ -636,16 +698,15 @@ def main():
                     aria2c_path = os.path.join(bin_dir, "aria2c.exe")
                     if os.path.exists(aria2c_path):
                         args.extend(['--downloader', 'aria2c', '--downloader-args', f'aria2c:-x {thread_count} -s {thread_count} -k 1M'])
-                        send_message({"status": "log", "log": f"[*] Acelerador Aria2 activado ({thread_count} conexiones simultáneas)."})
+                        send_message({"status": "log", "log": f"[*] Numero de hilos motor Acelerador (aria2): {thread_count}"})
                     else:
                         send_message({"status": "log", "log": "[-] Aria2c.exe no encontrado, usando descargador nativo."})
                 else:
-                    send_message({"status": "log", "log": f"[*] Motor predeterminado (yt-dlp) activado usando {thread_count} hilo(s)."})
+                    send_message({"status": "log", "log": f"[*] Numero de hilos motor por defecto (yt-dlp): {thread_count}"})
                     if thread_count > 1:
                         args.extend(['-N', str(thread_count)])
                         
                 args.extend(['--embed-thumbnail', '--embed-metadata', '--convert-thumbnails', 'jpg'])
-                args.append('-v')
                 args.append('--newline')
                 args.append(url)
                 

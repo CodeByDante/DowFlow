@@ -394,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    chrome.storage.local.get(['customSavePath', 'formatSetting', 'qualitySetting', 'engineSetting', 'threadCount', 'audioFormat', 'audioQuality', 'audioConvert', 'videoFormatPref', 'customMode', 'snifferEnabled', 'ytAudioLang', 'ytSubs', 'cookiesSetting', 'maxConcurrentDownloads', 'batchNamingMode', 'batchCustomPrefix'], (result) => {
+    chrome.storage.local.get(['customSavePath', 'formatSetting', 'qualitySetting', 'engineSetting', 'autoEngine', 'threadCount', 'audioFormat', 'audioQuality', 'audioConvert', 'videoFormatPref', 'customMode', 'snifferEnabled', 'ytAudioLang', 'ytSubs', 'cookiesSetting', 'maxConcurrentDownloads', 'batchNamingMode', 'batchCustomPrefix'], (result) => {
         if (result.customSavePath) { savePathDisplay.innerText = result.customSavePath; }
         else { savePathDisplay.innerText = "Ninguna seleccionada (Descargas)"; }
 
@@ -503,6 +503,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (qRadio) qRadio.checked = true;
         const eRadio = document.querySelector(`input[name="engineSetting"][value="${e}"]`);
         if (eRadio) eRadio.checked = true;
+        const ae = result.autoEngine !== false ? 'on' : 'off';
+        const aeRadio = document.querySelector(`input[name="autoEngine"][value="${ae}"]`);
+        if (aeRadio) aeRadio.checked = true;
         const vfpRadio = document.querySelector(`input[name="videoFormatPref"][value="${vfp}"]`);
         if (vfpRadio) vfpRadio.checked = true;
         if (threadSlider) {
@@ -588,6 +591,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 desc.innerHTML = "<b>Nativo (Directo):</b> Motor escrito en Python puro. Salta intermediarios y bloqueos HTTP 403.<br><b>Recomendación:</b> Ignora los hilos (baja a máxima velocidad de forma monolítica). Úsalo solo para enlaces directos (.mp4) rebeldes.";
             }
         }
+    }));
+    
+    const autoEngineRadios = document.querySelectorAll('input[name="autoEngine"]');
+    autoEngineRadios.forEach(r => r.addEventListener('change', (e) => {
+        const val = e.target.value === 'on';
+        chrome.storage.local.set({ autoEngine: val });
     }));
 
     videoFormatPrefRadios.forEach(r => r.addEventListener('change', (e) => {
@@ -1531,21 +1540,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderDetectorUI();
 
-    const debugConsole = document.getElementById('debugConsole');
+    renderDetectorUI();
 
 
     chrome.runtime.onMessage.addListener((request) => {
-        if (request.action === "download_log") {
-            if (debugConsole) {
-                if (debugConsole.textContent.includes("Esperando logs")) debugConsole.textContent = "";
-                let prefix = request.title ? `[${request.title}] ` : "";
-                debugConsole.textContent += `${prefix}${request.log}\n`;
-                if (debugConsole.textContent.length > 50000) {
-                    debugConsole.textContent = debugConsole.textContent.slice(-30000);
-                }
-                debugConsole.scrollTop = debugConsole.scrollHeight;
-            }
-        }
         if (request.action === "download_update" && request.task) {
             emptyState.style.display = "none";
             createOrUpdateCard(request.task.url, request.task.title, true, request.task);

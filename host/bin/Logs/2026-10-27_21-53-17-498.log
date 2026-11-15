@@ -1,0 +1,30 @@
+﻿LOG 2026/10/27
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\Logs
+Task Start: 2026/10/27 21:53:17
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\N_m3u8DL-RE.exe" https://hv-h.phncdn.com/hls/videos/202312/17/444954571/1080P_4000K_444954571.mp4/index-v1-a1.m3u8?h=rQelj0q3uPPZsC%2FZV9SEhz6GLsA%3D&e=1793159447&f=1 --save-dir C:/Users/Gonzalo/Downloads --save-name "Busty Blonde Follada Como Nunca Antes! - Pornhub.com (3)" --auto-select --thread-count 10 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\Busty Blonde Follada Como Nunca Antes! - Pornhub.com (3)_877dac40_tmp" --mux-after-done mp4 -H "Referer: https://es.pornhub.com/view_video.php?viewkey=657f85a5450a4" -H "Origin: https://es.pornhub.com"
+
+21:53:17.499 INFO : N_m3u8DL-RE (Beta version) 20251029
+21:53:17.500 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\ffmpeg.exe
+21:53:17.501 EXTRA: User-Defined Header => referer: https://es.pornhub.com/view_video.php?viewkey=657f85a5450a4
+21:53:17.501 EXTRA: User-Defined Header => origin: https://es.pornhub.com
+21:53:17.502 INFO : Loading URL: https://hv-h.phncdn.com/hls/videos/202312/17/444954571/1080P_4000K_444954571.mp4/index-v1-a1.m3u8?h=rQelj0q3uPPZsC%2FZV9SEhz6GLsA%3D&e=1793159447&f=1
+21:53:18.006 INFO : New version detected! v0.6.0-beta
+21:53:18.079 WARN : Response status code does not indicate success: 410 (Gone). (1/10)
+21:53:19.583 INFO : Loading URL: https://hv-h.phncdn.com/hls/videos/202312/17/444954571/1080P_4000K_444954571.mp4/index-v1-a1.m3u8?h=rQelj0q3uPPZsC%2FZV9SEhz6GLsA%3D&e=1793159447&f=1
+21:53:20.020 WARN : Response status code does not indicate success: 410 (Gone). (2/10)
+21:53:21.541 INFO : Loading URL: https://hv-h.phncdn.com/hls/videos/202312/17/444954571/1080P_4000K_444954571.mp4/index-v1-a1.m3u8?h=rQelj0q3uPPZsC%2FZV9SEhz6GLsA%3D&e=1793159447&f=1
+21:53:22.011 WARN : Response status code does not indicate success: 410 (Gone). (3/10)
+21:53:23.525 INFO : Loading URL: https://hv-h.phncdn.com/hls/videos/202312/17/444954571/1080P_4000K_444954571.mp4/index-v1-a1.m3u8?h=rQelj0q3uPPZsC%2FZV9SEhz6GLsA%3D&e=1793159447&f=1
+21:53:23.969 WARN : Response status code does not indicate success: 410 (Gone). (4/10)
+21:53:25.481 INFO : Loading URL: https://hv-h.phncdn.com/hls/videos/202312/17/444954571/1080P_4000K_444954571.mp4/index-v1-a1.m3u8?h=rQelj0q3uPPZsC%2FZV9SEhz6GLsA%3D&e=1793159447&f=1
+21:53:25.905 WARN : Response status code does not indicate success: 410 (Gone). (5/10)
+21:53:27.409 INFO : Loading URL: https://hv-h.phncdn.com/hls/videos/202312/17/444954571/1080P_4000K_444954571.mp4/index-v1-a1.m3u8?h=rQelj0q3uPPZsC%2FZV9SEhz6GLsA%3D&e=1793159447&f=1
+21:53:27.833 WARN : Response status code does not indicate success: 410 (Gone). (6/10)
+21:53:29.341 INFO : Loading URL: https://hv-h.phncdn.com/hls/videos/202312/17/444954571/1080P_4000K_444954571.mp4/index-v1-a1.m3u8?h=rQelj0q3uPPZsC%2FZV9SEhz6GLsA%3D&e=1793159447&f=1
+21:53:29.759 WARN : Response status code does not indicate success: 410 (Gone). (7/10)
+21:53:31.269 INFO : Loading URL: https://hv-h.phncdn.com/hls/videos/202312/17/444954571/1080P_4000K_444954571.mp4/index-v1-a1.m3u8?h=rQelj0q3uPPZsC%2FZV9SEhz6GLsA%3D&e=1793159447&f=1
+21:53:31.705 WARN : Response status code does not indicate success: 410 (Gone). (8/10)
+21:53:33.213 INFO : Loading URL: https://hv-h.phncdn.com/hls/videos/202312/17/444954571/1080P_4000K_444954571.mp4/index-v1-a1.m3u8?h=rQelj0q3uPPZsC%2FZV9SEhz6GLsA%3D&e=1793159447&f=1
+21:53:33.627 WARN : Response status code does not indicate success: 410 (Gone). (9/10)
+21:53:35.131 INFO : Loading URL: https://hv-h.phncdn.com/hls/videos/202312/17/444954571/1080P_4000K_444954571.mp4/index-v1-a1.m3u8?h=rQelj0q3uPPZsC%2FZV9SEhz6GLsA%3D&e=1793159447&f=1
+21:53:35.581 WARN : Response status code does not indicate success: 410 (Gone). (10/10)

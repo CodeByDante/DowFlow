@@ -1,0 +1,36 @@
+﻿LOG 2026/11/03
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\Logs
+Task Start: 2026/11/03 13:59:46
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\N_m3u8DL-RE.exe" https://abxxx.com/get_file/1/25d45655755c0b2ce02866d93801a42622188c8e86/351000/351282/351282.mp4/?d=2206&br=256&ti=1793732101&f=video.m3u8 --save-dir C:/Users/Gonzalo/Downloads --save-name "ABXXX Lena Paul Doggy with the Dean—No Panties Allowed Porn Video" --auto-select --thread-count 10 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\ABXXX Lena Paul Doggy with the Dean—No Panties Allowed Porn Video_8eb1b46e_tmp" --mux-after-done mp4 -H "Referer: https://abxxx.com/video/351282/doggy-with-the-dean-with-lena-paul/?campaign_id=520379779&subid1=79779" -H "Origin: https://abxxx.com"
+
+13:59:46.745 INFO : N_m3u8DL-RE (Beta version) 20251029
+13:59:46.757 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\ffmpeg.exe
+13:59:46.757 EXTRA: User-Defined Header => referer: https://abxxx.com/video/351282/doggy-with-the-dean-with-lena-paul/?campaign_id=520379779&subid1=79779
+13:59:46.757 EXTRA: User-Defined Header => origin: https://abxxx.com
+13:59:46.758 INFO : Loading URL: https://abxxx.com/get_file/1/25d45655755c0b2ce02866d93801a42622188c8e86/351000/351282/351282.mp4/?d=2206&br=256&ti=1793732101&f=video.m3u8
+13:59:47.256 INFO : New version detected! v0.6.0-beta
+13:59:47.527 EXTRA: Redirected => https://ahcdn.abxxx.com/key=bRgrrTodbrLgFI5VSTaUJA,end=1793818787,limit=3/media=hlsA/referer=none,.abxxx.com,.gstatic.com/multi=1280x720:351282/c1/videos/351000/351282/_TPL_.mp4
+13:59:48.107 INFO : Content Matched: HTTP Live Streaming
+13:59:48.109 INFO : Parsing streams...
+13:59:48.110 WARN : Master List detected, try parse all streams
+13:59:48.129 WARN : Writing meta json
+13:59:48.131 INFO : Extracted, there are 1 streams, with 1 basic streams, 0 audio streams, 0 subtitle streams
+13:59:48.131 INFO : Vid 1280x720 | 1366 Kbps | mp4a.40.2,avc1.4d4015
+13:59:48.132 INFO : Parsing streams...
+13:59:48.392 INFO : Selected streams:
+13:59:48.393 INFO : Vid 1280x720 | 1366 Kbps | mp4a.40.2,avc1.4d4015 | 221 Segments | ~36m45s
+13:59:48.393 WARN : Writing meta json
+13:59:48.396 INFO : Save Name: ABXXX Lena Paul Doggy with the Dean—No Panties Allowed Porn Video
+13:59:48.396 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+13:59:48.400 INFO : Start downloading...Vid 1280x720 | 1366 Kbps | mp4a.40.2,avc1.4d4015
+13:59:49.223 WARN : Reading media info...
+13:59:49.317 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 1280x720, 25 fps
+13:59:49.318 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 62 kb/s
+13:59:49.321 INFO : [0x102]: Data, timed_id3 (ID3 )
+13:59:56.622 INFO : Binary merging...
+13:59:58.413 WARN : ABXXX Lena Paul Doggy with the Dean—No Panties Allowed Porn Video.ts
+13:59:58.414 WARN : Muxing to ABXXX Lena Paul Doggy with the Dean—No Panties Allowed Porn Video.MUX.mp4
+13:59:58.557 WARN : [in#0/mpegts @ 000002537c27a7c0] start time for stream 2 is not set in estimate_timings_from_pts
+14:00:00.881 WARN : Cleaning files...
+14:00:00.915 WARN : Rename to ABXXX Lena Paul Doggy with the Dean—No Panties Allowed Porn Video.mp4
+14:00:01.196 INFO : Done

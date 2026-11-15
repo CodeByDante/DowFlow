@@ -1,0 +1,31 @@
+﻿LOG 2026/10/06
+Save Path: C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\Logs
+Task Start: 2026/10/06 13:06:05
+Task CommandLine: "C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\N_m3u8DL-RE.exe" https://vz-821f980e-cd8.b-cdn.net/3fda1bff-0656-4d33-9b66-6d83bf13dcd2/240p/video.m3u8 --save-dir C:/Users/Gonzalo/Downloads --save-name "Verito Aguas, Giselle Montes’ sister, debuts at FAKings with Tommy Cabrio Mexica" --auto-select --thread-count 10 --tmp-dir "C:\Users\Gonzalo\AppData\Local\Temp\Verito Aguas, Giselle Montes’ sister, debuts at FAKings with Tommy Cabrio Mexica_0a7a1cba_tmp" --mux-after-done mp4 -H "Referer: https://fakings.com/en/video/verito-aguas-giselle-montes-sister-debuts-at-fakings-with-tommy-cabrio-mexican-fat-ass-deep-blowjob-and-cum-in-mouth" -H "Origin: https://fakings.com"
+
+13:06:05.927 INFO : N_m3u8DL-RE (Beta version) 20251029
+13:06:05.942 EXTRA: ffmpeg => C:\Users\Gonzalo\Desktop\extesione sherrameitnas\local-video-downloader - copia (2) - copia\host\bin\ffmpeg.exe
+13:06:05.942 EXTRA: User-Defined Header => referer: https://fakings.com/en/video/verito-aguas-giselle-montes-sister-debuts-at-fakings-with-tommy-cabrio-mexican-fat-ass-deep-blowjob-and-cum-in-mouth
+13:06:05.943 EXTRA: User-Defined Header => origin: https://fakings.com
+13:06:05.944 INFO : Loading URL: https://vz-821f980e-cd8.b-cdn.net/3fda1bff-0656-4d33-9b66-6d83bf13dcd2/240p/video.m3u8
+13:06:06.428 INFO : New version detected! v0.6.0-beta
+13:06:06.736 INFO : Content Matched: HTTP Live Streaming
+13:06:06.739 INFO : Parsing streams...
+13:06:06.838 WARN : Writing meta json
+13:06:06.841 INFO : Extracted, there are 1 streams, with 1 basic streams, 0 audio streams, 0 subtitle streams
+13:06:06.842 INFO : Vid *AES_128 Kbps | 47 Segments | ~03m05s
+13:06:06.843 INFO : Selected streams:
+13:06:06.844 INFO : Vid *AES_128 Kbps | 47 Segments | ~03m05s
+13:06:06.845 WARN : Writing meta json
+13:06:06.847 INFO : Save Name: Verito Aguas, Giselle Montes’ sister, debuts at FAKings with Tommy Cabrio Mexica
+13:06:06.848 WARN : MuxAfterDone is detected, binary merging is automatically enabled
+13:06:06.861 INFO : Start downloading...Vid Kbps
+13:06:07.265 WARN : Reading media info...
+13:06:08.527 INFO : [0x100]: Video, h264 (High) ([27][0][0][0]), 426x240, 25 fps
+13:06:08.528 INFO : [0x101]: Audio, aac (LC) ([15][0][0][0]), 100 kb/s
+13:06:09.829 INFO : Binary merging...
+13:06:09.897 WARN : Verito Aguas, Giselle Montes’ sister, debuts at FAKings with Tommy Cabrio Mexica.ts
+13:06:09.897 WARN : Muxing to Verito Aguas, Giselle Montes’ sister, debuts at FAKings with Tommy Cabrio Mexica.MUX.mp4
+13:06:10.125 WARN : Cleaning files...
+13:06:10.128 WARN : Rename to Verito Aguas, Giselle Montes’ sister, debuts at FAKings with Tommy Cabrio Mexica.mp4
+13:06:10.130 INFO : Done

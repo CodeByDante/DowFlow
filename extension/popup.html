@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="css/popup.css">
 </head>
 <body>
   <div class="tabs-container">
@@ -253,11 +253,24 @@
       </div>
 
       <div class="settings-card" style="margin-bottom: 15px;">
-        <div class="setting-item">
-          <label>Motor de Descarga</label>
-          <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;">
-            <label class="radio-switch">
-              <input type="radio" name="engineSetting" value="ytdlp" checked>
+          <div class="setting-item">
+            <label>Automatización de Motor</label>
+            <div class="radio-switch">
+              <label>
+                <input type="radio" name="autoEngine" value="off" checked>
+                <span class="radio-btn">Desactivado</span>
+              </label>
+              <label>
+                <input type="radio" name="autoEngine" value="on">
+                <span class="radio-btn" style="color: #64ffda;">Activado</span>
+              </label>
+            </div>
+          </div>
+          <div class="setting-item" style="margin-top: 10px;">
+            <label>Motor de Descarga</label>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;">
+              <label class="radio-switch">
+                <input type="radio" name="engineSetting" value="ytdlp" checked>
               <span class="radio-btn">Por defecto (yt-dlp)</span>
             </label>
             <label class="radio-switch">
@@ -449,6 +462,6 @@
   </div>
 
   <script src="lib/hls.light.min.js"></script>
-  <script src="popup.js"></script>
+  <script src="js/popup.js"></script>
 </body>
 </html>

@@ -2,6 +2,24 @@ let activeTasks = {};
 let activePorts = {};
 let snifferEnabled = true;
 let maxConcurrentDownloadsLimit = 1;
+let consoleLogsCache = [];
+
+function broadcastLog(id, title, log) {
+    let prefix = title ? `[${title}] ` : "";
+    let formattedLog = `${prefix}${log}`;
+    consoleLogsCache.push({ title: title, log: log });
+    if (consoleLogsCache.length > 500) {
+        consoleLogsCache.shift();
+    }
+    try {
+        chrome.runtime.sendMessage({
+            action: "download_log",
+            id: id,
+            title: title,
+            log: log
+        }, () => { let _ = chrome.runtime.lastError; });
+    } catch(err) {}
+}
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
@@ -201,12 +219,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       activeDownloadsCount = 0;
 
       // Broadcast emergency log
-      try {
-          chrome.runtime.sendMessage({
-              action: "download_log",
-              log: "[EMERGENCIA] Parada de emergencia activada. Se han cancelado y eliminado todas las descargas activas y en cola."
-          }, () => { let _ = chrome.runtime.lastError; });
-      } catch(err) {}
+      broadcastLog(null, null, "[EMERGENCIA] Parada de emergencia activada. Se han cancelado y eliminado todas las descargas activas y en cola.");
 
       sendResponse({ success: true });
       return true;
@@ -214,6 +227,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.action === "get_active_downloads") {
       sendResponse({ success: true, tasks: activeTasks });
+      return true;
+  }
+
+  if (request.action === "get_console_logs") {
+      sendResponse({ success: true, logs: consoleLogsCache });
+      return true;
+  }
+
+  if (request.action === "clear_console_logs") {
+      consoleLogsCache = [];
+      sendResponse({ success: true });
       return true;
   }
 
@@ -274,7 +298,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     responded = true;
                 }
             });
-            port.postMessage({ command: request.action, url: request.url });
+            port.postMessage({ command: request.action, url: request.url, file: request.file || request.final_file });
         } catch(e) {
             sendResponse({ success: false, error: e.message });
         }
@@ -282,25 +306,43 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 
     // Action === "download"
-    let downloadId = "dl_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
-    
-    activeTasks[downloadId] = {
-        id: downloadId,
-        title: request.title || "Video",
-        url: request.url,
-        percent: "0",
-        status: "queued"
-    };
+    chrome.storage.local.get(['autoEngine'], (res) => {
+        let autoEngine = res.autoEngine !== undefined ? res.autoEngine : true; // Activado por defecto
+        let engineSetting = request.engineSetting || "ytdlp";
+        
+        if (autoEngine === "on" || autoEngine === true) {
+            let urlLower = (request.url || "").toLowerCase();
+            if (urlLower.includes(".m3u8") || urlLower.includes(".mpd")) {
+                engineSetting = "nm3u8";
+            } else if (urlLower.endsWith(".mp4") || urlLower.endsWith(".webm") || urlLower.includes("pimpbunny.com")) {
+                engineSetting = "native";
+            } else {
+                engineSetting = "ytdlp";
+            }
+            request.engineSetting = engineSetting;
+        }
+        request.autoEngine = autoEngine;
 
-    downloadQueue.push({
-        downloadId: downloadId,
-        request: request
+        let downloadId = "dl_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+        
+        activeTasks[downloadId] = {
+            id: downloadId,
+            title: request.title || "Video",
+            url: request.url,
+            percent: "0",
+            status: "queued"
+        };
+
+        downloadQueue.push({
+            downloadId: downloadId,
+            request: request
+        });
+        
+        sendResponse({ success: true, queued: true, id: downloadId });
+        try { chrome.runtime.sendMessage({ action: "download_update", task: activeTasks[downloadId] }, () => { let _ = chrome.runtime.lastError; }); } catch(err) {}
+
+        processDownloadQueue();
     });
-    
-    sendResponse({ success: true, queued: true, id: downloadId });
-    try { chrome.runtime.sendMessage({ action: "download_update", task: activeTasks[downloadId] }, () => { let _ = chrome.runtime.lastError; }); } catch(err) {}
-
-    processDownloadQueue();
     return true; // Asynchronous response
   }
 });
@@ -311,13 +353,7 @@ let activeDownloadsCount = 0;
 function getCookiesForDomain(targetUrl, downloadId, callback) {
     function logMsg(msg) {
         console.log(msg);
-        try {
-            chrome.runtime.sendMessage({
-                action: "download_log",
-                id: downloadId,
-                log: msg
-            }, () => { let _ = chrome.runtime.lastError; });
-        } catch(err) {}
+        broadcastLog(downloadId, null, msg);
     }
 
     if (!chrome.cookies) {
@@ -376,13 +412,7 @@ function processDownloadQueue() {
 
     activeDownloadsCount++;
     activeTasks[downloadId].status = "started";
-    try {
-        chrome.runtime.sendMessage({
-            action: "download_log",
-            id: downloadId,
-            log: `[COLA] Iniciando descarga de "${activeTasks[downloadId].title}". (Simultáneas activas: ${activeDownloadsCount}/${maxConcurrentDownloadsLimit})`
-        }, () => { let _ = chrome.runtime.lastError; });
-    } catch(err) {}
+    broadcastLog(downloadId, null, `[COLA] Iniciando descarga de "${activeTasks[downloadId].title}". Numero de descargas paralelas: ${activeDownloadsCount} (Límite: ${maxConcurrentDownloadsLimit})`);
 
     // Extraer cookies de forma centralizada en background.js antes de conectar con el host nativo
     chrome.storage.local.get(['cookiesSetting'], (storageRes) => {
@@ -439,23 +469,15 @@ function launchNativeDownload(downloadId, request) {
         try { chrome.runtime.sendMessage({ action: "download_update", task: activeTasks[downloadId] }, () => { let _ = chrome.runtime.lastError; }); } catch(err) {}
         
         activeDownloadsCount--;
-        try {
-            chrome.runtime.sendMessage({
-                action: "download_log",
-                id: downloadId,
-                log: `[COLA] Error al conectar con el host para "${activeTasks[downloadId].title}". (Simultáneas activas restantes: ${activeDownloadsCount}/${maxConcurrentDownloadsLimit})`
-            }, () => { let _ = chrome.runtime.lastError; });
-        } catch(err) {}
+        broadcastLog(downloadId, null, `[COLA] Error al conectar con el host para "${activeTasks[downloadId].title}". (Simultáneas activas restantes: ${activeDownloadsCount}/${maxConcurrentDownloadsLimit})`);
         setTimeout(processDownloadQueue, 500);
         return;
     }
 
     port.onMessage.addListener((message) => {
         if (message.status === "log") {
-            try {
-                let title = activeTasks[downloadId] ? activeTasks[downloadId].title : "Descarga";
-                chrome.runtime.sendMessage({ action: "download_log", id: downloadId, title: title, log: message.log }, () => { let _ = chrome.runtime.lastError; });
-            } catch(err) {}
+            let title = activeTasks[downloadId] ? activeTasks[downloadId].title : "Descarga";
+            broadcastLog(downloadId, title, message.log);
         }
         else if (message.status === "progress" || message.status === "completed" || message.status === "error" || message.status === "cancelled" || message.status === "started") {
             
@@ -486,14 +508,8 @@ function launchNativeDownload(downloadId, request) {
                     try { port.disconnect(); } catch(e) {}
                 }
 
-                try {
-                    let taskName = activeTasks[downloadId] ? activeTasks[downloadId].title : "Descarga";
-                    chrome.runtime.sendMessage({
-                        action: "download_log",
-                        id: downloadId,
-                        log: `[COLA] Finalizó "${taskName}" con estado: ${message.status}. (Simultáneas activas restantes: ${activeDownloadsCount}/${maxConcurrentDownloadsLimit})`
-                    }, () => { let _ = chrome.runtime.lastError; });
-                } catch(err) {}
+                let taskName = activeTasks[downloadId] ? activeTasks[downloadId].title : "Descarga";
+                broadcastLog(downloadId, null, `[COLA] Finalizó "${taskName}" con estado: ${message.status}. (Simultáneas activas restantes: ${activeDownloadsCount}/${maxConcurrentDownloadsLimit})`);
                 setTimeout(processDownloadQueue, 1500); // 1.5s delay to cool down between sequential downloads
 
                 if (message.status !== "error") {
@@ -519,14 +535,8 @@ function launchNativeDownload(downloadId, request) {
                 try { chrome.runtime.sendMessage({ action: "download_update", task: activeTasks[downloadId] }, () => {}); } catch(e) {}
                 
                 activeDownloadsCount--;
-                try {
-                    let taskName = activeTasks[downloadId] ? activeTasks[downloadId].title : "Descarga";
-                    chrome.runtime.sendMessage({
-                        action: "download_log",
-                        id: downloadId,
-                        log: `[COLA] Error en "${taskName}": Desconectado inesperadamente. (Simultáneas activas restantes: ${activeDownloadsCount}/${maxConcurrentDownloadsLimit})`
-                    }, () => { let _ = chrome.runtime.lastError; });
-                } catch(err) {}
+                let taskName = activeTasks[downloadId] ? activeTasks[downloadId].title : "Descarga";
+                broadcastLog(downloadId, null, `[COLA] Error en "${taskName}": Desconectado inesperadamente. (Simultáneas activas restantes: ${activeDownloadsCount}/${maxConcurrentDownloadsLimit})`);
                 setTimeout(processDownloadQueue, 1000);
             }
         }

@@ -69,6 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
     cardSettings.addEventListener('click', () => window.switchTab('view-settings'));
   }
 
+  const cardHistory = document.getElementById('card-history');
+  if (cardHistory) {
+    cardHistory.addEventListener('click', () => window.switchTab('view-history'));
+  }
+
   window.addEventListener('resize', () => {
     if (window.innerWidth >= 900) {
       sidebar.classList.remove('active');
@@ -97,6 +102,28 @@ document.addEventListener('DOMContentLoaded', () => {
       scrollContainer.scrollTop = scrollContainer.scrollHeight;
     }
   }
+
+  // Console Initialization
+  if (toolConsole) {
+      chrome.runtime.sendMessage({ action: "get_console_logs" }, (response) => {
+          if (response && response.success && response.logs && response.logs.length > 0) {
+              response.logs.forEach(item => {
+                  let prefix = item.title ? `[${item.title}] ` : "";
+                  printToConsole(`${prefix}${item.log}`, '#4da6ff');
+              });
+          }
+      });
+  }
+
+  // Background Messages listener
+  chrome.runtime.onMessage.addListener((request) => {
+      if (request.action === "download_log") {
+          if (toolConsole) {
+              let prefix = request.title ? `[${request.title}] ` : "";
+              printToConsole(`${prefix}${request.log}`, '#4da6ff');
+          }
+      }
+  });
 
   if (startBulkDownloadBtn && bulkUrlsInput && toolConsole) {
     startBulkDownloadBtn.addEventListener('click', () => {
@@ -527,7 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'customSavePath', 'formatSetting', 'qualitySetting', 'engineSetting', 
     'threadCount', 'audioFormat', 'audioQuality', 'audioConvert', 
     'videoFormatPref', 'customMode', 'snifferEnabled', 'ytAudioLang', 'ytSubs', 'cookiesSetting',
-    'maxConcurrentDownloads', 'batchNamingMode', 'batchCustomPrefix'
+    'maxConcurrentDownloads', 'batchNamingMode', 'batchCustomPrefix', 'autoEngine'
   ];
 
   const selectFolderBtn = document.getElementById('selectFolderBtn');
@@ -548,6 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setRadio('formatSetting', result.formatSetting || 'mp4');
         setRadio('qualitySetting', result.qualitySetting || 'max');
         setRadio('engineSetting', result.engineSetting || 'ytdlp');
+        setRadio('autoEngine', result.autoEngine !== false ? 'on' : 'off');
         setRadio('videoFormatPref', result.videoFormatPref || 'legado');
         setRadio('customModeSetting', result.customMode === true ? 'on' : 'off');
         setRadio('snifferSetting', result.snifferEnabled !== false ? 'on' : 'off');
@@ -617,6 +645,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       bindRadio('formatSetting', 'formatSetting', (val) => updateUIBasedOnFormat(val));
       bindRadio('qualitySetting', 'qualitySetting');
+      bindRadio('autoEngine', 'autoEngine');
       bindRadio('engineSetting', 'engineSetting', (val) => {
           const t = document.getElementById('threadSettingContainer');
           if (t) t.style.display = 'block';
@@ -860,6 +889,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (clearConsoleBtn && toolConsole) {
       clearConsoleBtn.addEventListener('click', () => {
           toolConsole.innerHTML = '';
+          chrome.runtime.sendMessage({ action: "clear_console_logs" });
       });
   }
 
@@ -894,4 +924,69 @@ document.addEventListener('DOMContentLoaded', () => {
           }
       });
   }
+
+  // --- HISTORIAL LOGIC ---
+  const historyListDashboard = document.getElementById('historyListDashboard');
+  const clearHistoryBtnDashboard = document.getElementById('clearHistoryBtnDashboard');
+
+  function loadHistoryDashboard() {
+      if (!historyListDashboard) return;
+      chrome.storage.local.get(['downloadHistory'], (result) => {
+          const history = result.downloadHistory || [];
+          historyListDashboard.innerHTML = '';
+          
+          if (history.length === 0) {
+              historyListDashboard.innerHTML = '<div style="color: var(--text-muted); text-align: center; margin-top: 20px;">No hay descargas recientes.</div>';
+              return;
+          }
+          
+          history.slice().reverse().forEach(item => {
+              const div = document.createElement('div');
+              div.className = 'history-item-popup';
+              div.innerHTML = `
+                  <div class="history-title-popup" title="${item.title}">${item.title}</div>
+                  <div class="history-date-popup">${new Date(item.date).toLocaleString()}</div>
+                  <div class="history-actions-popup">
+                    <button class="action-btn secondary btn-small open-url-btn" data-url="${item.url}">Ver Origen</button>
+                    <button class="action-btn secondary btn-small open-folder-btn" data-file="${item.final_file || ''}">Abrir Ubicación</button>
+                  </div>
+              `;
+              
+              div.querySelector('.open-url-btn').addEventListener('click', (e) => {
+                  window.open(e.target.getAttribute('data-url'), '_blank');
+              });
+              
+              div.querySelector('.open-folder-btn').addEventListener('click', (e) => {
+                  let file = e.target.getAttribute('data-file');
+                  if (file) {
+                      chrome.runtime.sendMessage({ action: "open_folder", file: file }, () => { });
+                  } else {
+                      chrome.runtime.sendMessage({ action: "open_folder" }, () => { });
+                  }
+              });
+
+              historyListDashboard.appendChild(div);
+          });
+      });
+  }
+
+  if (clearHistoryBtnDashboard) {
+      clearHistoryBtnDashboard.addEventListener('click', () => {
+          chrome.storage.local.set({ downloadHistory: [] }, () => {
+              loadHistoryDashboard();
+          });
+      });
+  }
+
+  // Load history whenever the tab is clicked
+  const navHistory = document.querySelector('.nav-item[data-target="view-history"]');
+  if (navHistory) {
+      navHistory.addEventListener('click', loadHistoryDashboard);
+  }
+  if (cardHistory) {
+      cardHistory.addEventListener('click', loadHistoryDashboard);
+  }
+
+  // Also load initially just in case
+  loadHistoryDashboard();
 });
