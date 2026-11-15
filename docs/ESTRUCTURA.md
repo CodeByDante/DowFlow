@@ -33,6 +33,7 @@ flowchart TD
 
 | Ruta | Función | ¿Se conserva? |
 |---|---|---|
+| `host/audio_tracks.py` | Consulta y selección explícita de pistas de audio, idioma y preparación de la mezcla. | Sí. |
 | `host/video_quality.py` | Selección de formatos y verificación/reducción del límite de resolución. | Sí. |
 | `host/engines.py` | Comprobación de motores instalados y alternativas compatibles. | Sí. |
 | `host/download_host.py` | Lee mensajes del navegador, prepara comandos, inicia descargas y comunica progreso y errores. | Sí, núcleo del backend. |
@@ -42,6 +43,7 @@ flowchart TD
 | `host/setup/install_nm3u8dlre.py` | Instala un motor especializado en streams. | Sí. |
 | `host/setup/install_atomicparsley.py` | Instala una herramienta de metadatos. | Sí. |
 | `host/tests/test_registration.py` | Comprueba ID de extensión, ruta del lanzador y generación del manifiesto. | Sí. |
+| `host/tests/test_audio_tracks.py` | Pruebas de idiomas, fallback, roles de mezcla y comprobación opcional con audio sintético real. | Sí. |
 | `host/tests/test_video_quality.py` | Pruebas de formatos, límites y conversiones con muestras locales. | Sí. |
 | `host/tests/test_engines.py` | Pruebas de disponibilidad y alternativas de motores. | Sí. |
 | `host/tests/test_host.py` | Pruebas automáticas del cierre del host y cancelación de procesos. No descargan contenido. | Sí. |
@@ -70,6 +72,7 @@ Estas rutas se crean en cada PC y no se deben subir al repositorio:
 | `.gitattributes` | Reglas de Git LFS para archivos grandes; los iconos pequeños se guardan directamente en Git. |
 | `README.md` | Instrucciones de instalación, uso y pruebas. |
 | `docs/ESTRUCTURA.md` | Este mapa. |
+| `docs/IDIOMAS_AUDIO.md` | Selección de español, original y audio del sitio en fuentes compatibles. |
 | `docs/CALIDAD_Y_DETECCION.md` | Calidad fija, Detector, rastreador y selección de motores. |
 | `docs/SINCRONIZACION.md` | Cambios de sincronización, pruebas y pasos para actualizar. |
 | `extension/tests/sync.test.cjs` | Pruebas de integración del popup, panel y gestor, con navegador simulado. |

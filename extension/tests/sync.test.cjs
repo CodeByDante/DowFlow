@@ -508,7 +508,7 @@ test('automatic engine selection accounts for query strings, audio, quality, coo
     const chrome = createBus().client();
     const context = vm.createContext({ chrome, console, URL });
     vm.runInContext(source('state.js'), context);
-    const base = context.AppState.defaults;
+    const base = { ...context.AppState.defaults, ytAudioLang: 'auto' };
     for (const [request, automatic, expected] of [
         [{ url: 'https://cdn.example/movie.mp4?token=A' }, true, 'native'],
         [{ url: 'https://cdn.example/master.m3u8?token=A' }, true, 'nm3u8'],
@@ -536,4 +536,23 @@ test('automatic audio download cannot use the direct-video motor and its reason 
     await flush();
     assert.equal(bus.ports.at(-1).posted[0].engineSetting, 'ytdlp');
     assert.match(tools.window.document.getElementById('toolConsole').textContent, /procesamiento/);
+});
+
+test('site-neutral audio preferences synchronize and are forwarded unchanged', async t => {
+    const { bus, popup, tools } = await setup({ autoEngine: false });
+    t.after(() => { popup.window.close(); tools.window.close(); });
+    for (const value of ['es', 'orig', 'auto']) {
+        setRadio(tools, 'ytAudioLang', value);
+        await flush();
+        assert.equal(popup.window.document.querySelector('input[name="ytAudioLang"]:checked').value, value);
+    }
+    setRadio(popup, 'ytAudioLang', 'es');
+    await flush();
+    assert.equal(tools.window.document.querySelector('input[name="ytAudioLang"]:checked').value, 'es');
+    await send(tools.window.chrome, { action: 'download', url: 'https://other-site.example/video.m3u8', engineSetting: 'nm3u8' });
+    await flush();
+    assert.equal(bus.ports.at(-1).posted[0].ytAudioLang, 'es');
+    assert.equal(bus.ports.at(-1).posted[0].engineSetting, 'ytdlp');
+    assert.equal(popup.window.document.body.textContent.includes('Exclusivo de YouTube'), false);
+    assert.equal(tools.window.document.body.textContent.includes('Exclusivo de YouTube'), false);
 });

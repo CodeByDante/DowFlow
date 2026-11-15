@@ -8,6 +8,7 @@ import re
 import shutil
 import time
 from engines import available_engine
+from audio_tracks import metadata_command, apply_audio_plan
 from video_quality import fixed_height, fixed_selector, detected_selector, enforce_height, clean_formats
 
 active_downloads = 0
@@ -37,8 +38,9 @@ def cancel_active_processes():
     # Copy under the lock; stopping subprocesses must not block worker cleanup.
     with lock:
         processes = list(active_processes)
+        for proc in processes:
+            proc.is_cancelled = True
     for proc in processes:
-        proc.is_cancelled = True
         # Native Python downloads have a cancellation flag but no subprocess PID.
         if not hasattr(proc, 'pid'):
             continue
@@ -130,11 +132,22 @@ def native_download(url, output_name, downloads_path, thread_count=1, format_typ
                 active_processes.remove(proc)
             active_downloads -= 1
 
-def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None, fixed_limit=None):
+def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None, fixed_limit=None, audio_options=None):
     global active_downloads
+    from types import SimpleNamespace
+    job = SimpleNamespace(is_cancelled=False)
     with lock:
         active_downloads += 1
-        
+        active_processes.append(job)
+
+    def launch(command, **kwargs):
+        with lock:
+            if job.is_cancelled:
+                raise RuntimeError('Descarga cancelada.')
+            child = subprocess.Popen(command, **kwargs)
+            active_processes.append(child)
+            return child
+
     task_tracked_files = []
     process = None
     
@@ -146,11 +159,33 @@ def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None
         
         env = os.environ.copy()
         env["PYTHONUNBUFFERED"] = "1"
+        env["PYTHONIOENCODING"] = "utf-8"
         
-        process = subprocess.Popen(args, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1, creationflags=create_no_window, env=env)
-        with lock:
-            active_processes.append(process)
-            
+        if audio_options:
+            send_message({'status': 'log', 'log': '[Audio] Consultando pistas e idiomas disponibles...'})
+            process = launch(metadata_command(args), stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE, text=True, encoding='utf-8', errors='replace', creationflags=create_no_window, env=env)
+            try:
+                raw_info, errors = process.communicate(timeout=90)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.communicate()
+                raise RuntimeError('La consulta de pistas de audio supero 90 segundos. Vuelve a intentarlo.')
+            finally:
+                with lock:
+                    if process in active_processes:
+                        active_processes.remove(process)
+            if job.is_cancelled:
+                raise RuntimeError('Descarga cancelada al consultar idiomas.')
+            if process.returncode:
+                raise RuntimeError('No se pudieron consultar las pistas de audio: ' + (errors or '')[-1500:])
+            info = json.loads(raw_info)
+            os.makedirs(tmp_folder, exist_ok=True)
+            args, notice = apply_audio_plan(args, info, audio_options, os.path.join(tmp_folder, 'audio-selection.json'))
+            send_message({'status': 'log', 'log': '[Audio] ' + notice})
+        process = launch(args, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                         text=True, encoding='utf-8', errors='replace', bufsize=1, creationflags=create_no_window, env=env)
+
         send_message({"status": "log", "log": "[*] Subproceso creado, leyendo respuestas..."})
         
         last_errors = []
@@ -243,7 +278,7 @@ def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None
                     
         process.wait()
         
-        is_cancelled = getattr(process, 'is_cancelled', False)
+        is_cancelled = job.is_cancelled or getattr(process, 'is_cancelled', False)
         
         final_file = ""
         import tempfile
@@ -300,7 +335,7 @@ def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None
                 bin_dir = os.path.dirname(args[0])
                 def start_conversion(command):
                     with lock:
-                        if getattr(process, 'is_cancelled', False):
+                        if job.is_cancelled or getattr(process, 'is_cancelled', False):
                             raise RuntimeError('Descarga cancelada antes del ajuste de calidad.')
                         conversion = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                                                       stderr=subprocess.STDOUT, creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
@@ -314,7 +349,7 @@ def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None
                     os.path.join(bin_dir, 'ffmpeg.exe'), os.path.join(bin_dir, 'ffprobe.exe'),
                     start_conversion, finish_conversion,
                     lambda text: send_message({'status': 'log', 'log': '[Calidad fija] ' + text}))
-                if getattr(process, 'is_cancelled', False):
+                if job.is_cancelled or getattr(process, 'is_cancelled', False):
                     raise RuntimeError('Descarga cancelada durante el ajuste de calidad.')
             send_message({"status": "completed", "final_file": final_file})
         else:
@@ -346,6 +381,8 @@ def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None
     finally:
         with lock:
             active_downloads -= 1
+            if job in active_processes:
+                active_processes.remove(job)
             if process in active_processes:
                 active_processes.remove(process)
             if output_name and output_name in active_output_names:
@@ -473,7 +510,7 @@ def main():
                 engine_setting = msg.get('engineSetting', 'ytdlp')
                 
                 # Fixed/detected formats need yt-dlp rather than a motor that ignores format selection.
-                if (format_type == 'mp3' or quality_setting in ('fixed', 'detect', 'ask', 'min')) and engine_setting not in ('ytdlp', 'aria2'):
+                if (format_type == 'mp3' or quality_setting in ('fixed', 'detect', 'ask', 'min') or msg.get('ytAudioLang', 'es') in ('es', 'orig')) and engine_setting not in ('ytdlp', 'aria2'):
                     engine_setting = 'ytdlp'
                     
                 thread_count = int(msg.get('threadCount', 4))
@@ -687,7 +724,8 @@ def main():
                     args.extend(['--replace-in-metadata', 'url', '.php', '.mp4'])
                 
                 if netscape_cookies and len(netscape_cookies) > 20:
-                    cookie_path = os.path.join(script_dir, "youtube_cookies.txt")
+                    os.makedirs(tmp_folder_ytdlp, exist_ok=True)
+                    cookie_path = os.path.join(tmp_folder_ytdlp, "session-cookies.txt")
                     try:
                         with open(cookie_path, "w", encoding="utf-8") as f:
                             f.write(netscape_cookies)
@@ -745,8 +783,6 @@ def main():
                             args.extend(['-f', f'bestvideo+{audio_selector}/best', '--merge-output-format', 'mkv', '-o', output_template])
                             
                 sort_directives = ['height'] if fixed_limit else []
-                if yt_audio_lang == 'es':
-                    sort_directives.extend(['lang:es', 'lang:spa', 'lang:es-419'])
                     
                 if format_type != 'mp3' and video_format_pref == 'legado':
                     sort_directives.extend(['res', 'vcodec:h264', 'acodec:m4a'] if fixed_limit else ['vcodec:h264', 'res', 'acodec:m4a'])
@@ -773,7 +809,13 @@ def main():
                 args.append('--newline')
                 args.append(url)
                 
-                threading.Thread(target=handle_download, args=(args, output_name, downloads_path, tmp_folder_ytdlp, fixed_limit), daemon=False).start()
+                audio_options = None
+                if yt_audio_lang in ('es', 'orig'):
+                    audio_options = {'preference': yt_audio_lang, 'audio_format': audio_format,
+                        'audio_quality': audio_quality, 'format_type': format_type,
+                        'quality': quality_setting, 'video_preference': video_format_pref,
+                        'fixed_limit': fixed_limit, 'custom_id': custom_format_id}
+                threading.Thread(target=handle_download, args=(args, output_name, downloads_path, tmp_folder_ytdlp, fixed_limit, audio_options), daemon=False).start()
                 
             elif msg.get('command') == 'cancel':
                 cancel_active_processes()

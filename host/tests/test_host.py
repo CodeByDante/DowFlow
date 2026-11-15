@@ -54,6 +54,26 @@ class HostShutdownTests(unittest.TestCase):
         gone.terminate.assert_called_once()
         process.terminate.assert_called_once()
 
+    def test_cancel_during_language_query_does_not_start_a_download(self):
+        import tempfile
+        metadata = SimpleNamespace(pid=123, returncode=-15, terminate=Mock())
+        def query_result(**kwargs):
+            host.cancel_active_processes()
+            return '{}', ''
+        metadata.communicate = query_result
+        with tempfile.TemporaryDirectory() as directory, \
+             patch.object(host.os, 'name', 'posix'), \
+             patch.object(host.subprocess, 'Popen', return_value=metadata) as start, \
+             patch.object(host, 'send_message') as send:
+            host.handle_download(['yt-dlp.exe', '-f', 'best', 'https://example.com/video'],
+                downloads_path=directory, tmp_folder=directory + '/temporary',
+                audio_options={'preference': 'es'})
+        self.assertEqual(start.call_count, 1)
+        metadata.terminate.assert_called_once()
+        self.assertEqual(host.active_downloads, 0)
+        self.assertEqual(host.active_processes, [])
+        self.assertTrue(any(message.args[0].get('status') == 'error' for message in send.call_args_list))
+
     def test_windows_cancel_targets_owned_pid(self):
         process = SimpleNamespace(pid=123)
         host.active_processes.append(process)

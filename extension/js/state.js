@@ -33,6 +33,7 @@
             if (value === undefined || value === null) continue;
             if (booleanKeys.has(key)) state[key] = value === true || value === 'on';
             else if (key === 'fixedQuality') state[key] = ['144','240','360','480','720','1080','1440','2160','4320'].includes(String(value)) ? String(value) : '1080';
+            else if (key === 'ytAudioLang') state[key] = ['es', 'orig', 'auto'].includes(value) ? value : 'es';
             else if (key === 'ytSubs') state[key] = value === true || value === 'on' ? 'on' : 'off';
             else if (key === 'threadCount' || key === 'maxConcurrentDownloads') {
                 const limit = key === 'threadCount' ? 36 : 50;
@@ -43,10 +44,10 @@
     }
     function chooseEngine(request, automatic = true) {
         const manual = ['ytdlp', 'aria2', 'nm3u8', 'native'].includes(request.engineSetting) ? request.engineSetting : 'ytdlp';
-        const needsProcessing = request.formatSetting === 'mp3' || ['fixed', 'detect', 'ask', 'min'].includes(request.qualitySetting) || request.ytSubs === 'on';
+        const needsProcessing = request.formatSetting === 'mp3' || ['fixed', 'detect', 'ask', 'min'].includes(request.qualitySetting) || request.ytSubs === 'on' || ['es', 'orig'].includes(request.ytAudioLang);
         if (needsProcessing) {
             return { engine: !automatic && manual === 'aria2' ? 'aria2' : 'ytdlp',
-                reason: 'El formato, la calidad o los subtitulos solicitados necesitan seleccion o procesamiento con yt-dlp.' };
+                reason: 'El idioma, formato, calidad o subtitulos solicitados necesitan seleccion o procesamiento con yt-dlp.' };
         }
         if (!automatic) return { engine: manual, reason: 'Se conserva el motor elegido manualmente.' };
         let url;

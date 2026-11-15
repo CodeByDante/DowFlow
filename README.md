@@ -17,6 +17,12 @@ Extensión para navegadores Chromium conectada a un host local en Python mediant
 
 Más detalles y límites en [Calidad y detección](docs/CALIDAD_Y_DETECCION.md).
 
+## Pistas de audio e idiomas
+
+En **Audio e idiomas**, Español selecciona una pista española ofrecida por el origen; si no existe, elige la original identificada. Original prioriza la pista marcada como original. Si el sitio no identifica esa pista, se utiliza su preferencia predeterminada y se informa en la consola. Del sitio mantiene la elección habitual del origen.
+
+Funciona con los sitios compatibles que exponen sus pistas mediante yt-dlp, no solo con YouTube. No genera traducciones ni doblajes. La consola muestra el idioma y la pista elegida. Más detalles en [Idiomas de audio](docs/IDIOMAS_AUDIO.md).
+
 ## Instalación en Windows
 
 Los tres BAT de uso manual están en la raíz. Orden de instalación:
@@ -48,7 +54,7 @@ Los binarios, registros, cookies y la configuración generada para cada PC no se
 
 ## Actualizar una instalación existente
 
-Descargar los archivos nuevos o ejecutar `git pull` en la carpeta local. En la página de extensiones del navegador, pulsar **Recargar** y cerrar y abrir de nuevo el panel de herramientas. La versión debe indicar **1.2.0**. Los cambios de GitHub no actualizan automáticamente una extensión cargada como descomprimida.
+Descargar los archivos nuevos o ejecutar `git pull` en la carpeta local. En la página de extensiones del navegador, pulsar **Recargar** y cerrar y abrir de nuevo el panel de herramientas. La versión debe indicar **1.3.0**. Los cambios de GitHub no actualizan automáticamente una extensión cargada como descomprimida.
 
 Si cambió la ubicación de la carpeta o el ID de la extensión, volver a ejecutar `conectar_extension.bat`. No hace falta reinstalar los motores si siguen disponibles en `host/bin/`.
 
@@ -74,6 +80,8 @@ npm test
 ```
 
 Node y las dependencias de desarrollo solo son necesarios para estas pruebas; no para utilizar la extensión.
+
+La prueba adicional de mezcla multilingüe real utiliza el paquete Python opcional `yt-dlp==2026.10.26` y FFmpeg/ffprobe en PATH. Sin ellos, esa prueba se omite. La aplicación sigue usando `host/bin/yt-dlp.exe`; no necesita instalar ese paquete Python.
 
 Las pruebas manuales en `host/tests/manual/` requieren Windows, motores instalados y URLs elegidas por el usuario. Realizan descargas en la carpeta Downloads y no se ejecutan con la batería automática:
 
