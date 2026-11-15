@@ -944,13 +944,19 @@ document.addEventListener('DOMContentLoaded', () => {
               const div = document.createElement('div');
               div.className = 'history-item-popup';
               div.innerHTML = `
-                  <div class="history-title-popup" title="${item.title}">${item.title}</div>
-                  <div class="history-date-popup">${new Date(item.date).toLocaleString()}</div>
+                  <div class="history-title-popup" title=""></div>
+                  <div class="history-date-popup"></div>
                   <div class="history-actions-popup">
-                    <button class="action-btn secondary btn-small open-url-btn" data-url="${item.url}">Ver Origen</button>
-                    <button class="action-btn secondary btn-small open-folder-btn" data-file="${item.final_file || ''}">Abrir Ubicación</button>
+                    <button class="action-btn secondary btn-small open-url-btn" data-url="">Ver Origen</button>
+                    <button class="action-btn secondary btn-small open-folder-btn" data-file="">Abrir Ubicación</button>
                   </div>
               `;
+                const titleElement = div.querySelector('.history-title-popup');
+                titleElement.textContent = item.title || '';
+                titleElement.title = item.title || '';
+                div.querySelector('.history-date-popup').textContent = new Date(item.date).toLocaleString();
+                div.querySelector('.open-url-btn').setAttribute('data-url', item.url || '');
+                div.querySelector('.open-folder-btn').setAttribute('data-file', item.final_file || '');
               
               div.querySelector('.open-url-btn').addEventListener('click', (e) => {
                   window.open(e.target.getAttribute('data-url'), '_blank');

@@ -14,4 +14,11 @@ def resize_icon(input_path, output_path, size=(128, 128)):
     
     new_img.save(output_path, "PNG")
 
-resize_icon(r"c:\Users\Gonzalo\Desktop\Nueva carpeta (5)\descargador de videos\icons\@twistedbrody.png", r"c:\Users\Gonzalo\Desktop\Nueva carpeta (5)\descargador de videos\extension\icons\icon.png")
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Crea un icono PNG centrado de 128 x 128.")
+    parser.add_argument("input_path")
+    parser.add_argument("output_path")
+    args = parser.parse_args()
+    resize_icon(args.input_path, args.output_path)
