@@ -23,7 +23,7 @@ def install_atomicparsley():
             
     if not download_url:
         print("Could not find Windows asset.")
-        return
+        raise RuntimeError("No Windows asset available")
         
     script_dir = os.path.dirname(os.path.abspath(__file__))
     zip_path = os.path.join(script_dir, "ap.zip")

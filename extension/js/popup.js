@@ -18,54 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadsList = document.getElementById('downloadsList');
     const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 
-    function loadHistory() {
-        chrome.storage.local.get(['downloadHistory'], (result) => {
-            const history = result.downloadHistory || [];
-            downloadsList.innerHTML = '';
-            if (history.length === 0) {
-                downloadsList.innerHTML = '<div style="text-align:center; color:#6a6b70; padding:20px 0;">No hay historial en caché</div>';
-                return;
-            }
-            history.slice().reverse().forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerHTML = `
-          <div class="history-title" title=""></div>
-          <div class="history-date"></div>
-          <div class="history-actions">
-            <button class="action-btn secondary btn-small open-url-btn" data-url="">Ver Origen</button>
-            <button class="action-btn secondary btn-small open-folder-btn" data-file="">Abrir Ubicación</button>
-          </div>
-        `;
-                const titleElement = div.querySelector('.history-title');
-                titleElement.textContent = item.title || '';
-                titleElement.title = item.title || '';
-                div.querySelector('.history-date').textContent = new Date(item.date).toLocaleString();
-                div.querySelector('.open-url-btn').setAttribute('data-url', item.url || '');
-                div.querySelector('.open-folder-btn').setAttribute('data-file', item.final_file || '');
-                div.querySelector('.open-url-btn').addEventListener('click', (e) => {
-                    window.open(e.target.getAttribute('data-url'), '_blank');
-                });
-                div.querySelector('.open-folder-btn').addEventListener('click', (e) => {
-                    let file = e.target.getAttribute('data-file');
-                    if (file) {
-                        chrome.runtime.sendMessage({ action: "open_folder", file: file }, () => { });
-                    } else {
-                        chrome.runtime.sendMessage({ action: "open_folder" }, () => { });
-                    }
-                });
-                downloadsList.appendChild(div);
-            });
-        });
-    }
-
-    clearHistoryBtn.addEventListener('click', () => {
-        chrome.storage.local.set({ downloadHistory: [] }, () => {
-            loadHistory();
-        });
-    });
-
-    loadHistory();
+    AppState.bindHistory(downloadsList, clearHistoryBtn);
 
     // Settings Logic
     const openFolderBtn = document.getElementById('openFolderBtn');
@@ -78,9 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const savePathDisplay = document.getElementById('savePathDisplay');
     const savePathStatus = document.getElementById('savePathStatus');
 
-    const formatRadios = document.querySelectorAll('input[name="formatSetting"]');
-    const qualityRadios = document.querySelectorAll('input[name="qualitySetting"]');
-    const engineRadios = document.querySelectorAll('input[name="engineSetting"]');
     const qualitySettingContainer = document.getElementById('qualitySettingContainer');
     const videoPreferenceContainer = document.getElementById('videoPreferenceContainer');
     const audioSettingsContainer = document.getElementById('audioSettingsContainer');
@@ -93,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const threadSettingContainer = document.getElementById('threadSettingContainer');
     const concurrencySlider = document.getElementById('concurrencySlider');
     const concurrencyCountLabel = document.getElementById('concurrencyCountLabel');
-    const videoFormatPrefRadios = document.querySelectorAll('input[name="videoFormatPref"]');
 
     const customModeToggle = document.getElementById('customModeToggle');
     const snifferToggle = document.getElementById('snifferToggle');
@@ -400,247 +349,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    chrome.storage.local.get(['customSavePath', 'formatSetting', 'qualitySetting', 'engineSetting', 'autoEngine', 'threadCount', 'audioFormat', 'audioQuality', 'audioConvert', 'videoFormatPref', 'customMode', 'snifferEnabled', 'ytAudioLang', 'ytSubs', 'cookiesSetting', 'maxConcurrentDownloads', 'batchNamingMode', 'batchCustomPrefix'], (result) => {
-        if (result.customSavePath) { savePathDisplay.innerText = result.customSavePath; }
-        else { savePathDisplay.innerText = "Ninguna seleccionada (Descargas)"; }
-
-        const popupBatchNamingSelect = document.getElementById('popupBatchNamingSelect');
-        const popupBatchCustomPrefixInput = document.getElementById('popupBatchCustomPrefixInput');
-        const popupBatchCustomPrefixWrap = document.getElementById('popupBatchCustomPrefixWrap');
-
-        if (popupBatchNamingSelect) {
-            const mode = result.batchNamingMode || 'original';
-            popupBatchNamingSelect.value = mode;
-            if (popupBatchCustomPrefixWrap) {
-                popupBatchCustomPrefixWrap.style.display = (mode === 'custom') ? 'block' : 'none';
-            }
-            popupBatchNamingSelect.addEventListener('change', (e) => {
-                const newMode = e.target.value;
-                if (popupBatchCustomPrefixWrap) {
-                    popupBatchCustomPrefixWrap.style.display = (newMode === 'custom') ? 'block' : 'none';
-                }
-                chrome.storage.local.set({ batchNamingMode: newMode });
-            });
-        }
-
-        if (popupBatchCustomPrefixInput) {
-            popupBatchCustomPrefixInput.value = result.batchCustomPrefix || '';
-            popupBatchCustomPrefixInput.addEventListener('input', (e) => {
-                chrome.storage.local.set({ batchCustomPrefix: e.target.value });
-            });
-        }
-
-        const f = result.formatSetting || 'mp4';
-        const q = result.qualitySetting || 'max';
-        const e = result.engineSetting || 'ytdlp';
-        const t = result.threadCount || 4;
-        const mc = result.maxConcurrentDownloads || 1;
-        const vfp = result.videoFormatPref || 'legado';
-        const isCustomMode = result.customMode === true;
-        const isSnifferEnabled = result.snifferEnabled !== false; // Default true
-
-        const customModeRadios = document.querySelectorAll('input[name="customModeSetting"]');
-        customModeRadios.forEach(r => {
-            if (isCustomMode && r.value === 'on') r.checked = true;
-            else if (!isCustomMode && r.value === 'off') r.checked = true;
-
-            r.addEventListener('change', (e) => {
-                const isChecked = e.target.value === 'on';
-                chrome.storage.local.set({ customMode: isChecked });
-                if (manualCardContainer) manualCardContainer.style.display = isChecked ? 'block' : 'none';
-                if (isChecked && emptyState) emptyState.style.display = 'none';
-            });
-        });
-
-        const snifferRadios = document.querySelectorAll('input[name="snifferSetting"]');
-        snifferRadios.forEach(r => {
-            if (isSnifferEnabled && r.value === 'on') r.checked = true;
-            else if (!isSnifferEnabled && r.value === 'off') r.checked = true;
-
-            r.addEventListener('change', (e) => {
-                const isChecked = e.target.value === 'on';
-                chrome.storage.local.set({ snifferEnabled: isChecked });
-                const dot = document.querySelector('.status-dot');
-                if (!isChecked) {
-                    if (dot) dot.style.backgroundColor = '#6a6b70';
-                    chrome.storage.local.set({ sniffedUrls: {} }, () => {
-                        renderDetectorUI();
-                    });
-                } else {
-                    if (dot) dot.style.backgroundColor = '#00e676';
-                    renderDetectorUI();
-                }
-            });
-        });
-
-        if (manualCardContainer) manualCardContainer.style.display = isCustomMode ? 'block' : 'none';
-
-        const ytl = result.ytAudioLang || 'es';
-        const yts = result.ytSubs || 'off';
-
-        const ytAudioRadios = document.querySelectorAll('input[name="ytAudioLang"]');
-        ytAudioRadios.forEach(r => {
-            if (r.value === ytl) r.checked = true;
-            r.addEventListener('change', (e) => {
-                chrome.storage.local.set({ ytAudioLang: e.target.value });
-            });
-        });
-
-        const ytSubsRadios = document.querySelectorAll('input[name="ytSubs"]');
-        ytSubsRadios.forEach(r => {
-            if (r.value === yts) r.checked = true;
-            r.addEventListener('change', (e) => {
-                chrome.storage.local.set({ ytSubs: e.target.value });
-            });
-        });
-
-        const cs = result.cookiesSetting || 'none';
-        const cookiesRadios = document.querySelectorAll('input[name="cookiesSetting"]');
-        cookiesRadios.forEach(r => {
-            if (r.value === cs) r.checked = true;
-            r.addEventListener('change', (e) => {
-                chrome.storage.local.set({ cookiesSetting: e.target.value });
-            });
-        });
-
-        const fRadio = document.querySelector(`input[name="formatSetting"][value="${f}"]`);
-        if (fRadio) fRadio.checked = true;
-        const qRadio = document.querySelector(`input[name="qualitySetting"][value="${q}"]`);
-        if (qRadio) qRadio.checked = true;
-        const eRadio = document.querySelector(`input[name="engineSetting"][value="${e}"]`);
-        if (eRadio) eRadio.checked = true;
-        const ae = result.autoEngine !== false ? 'on' : 'off';
-        const aeRadio = document.querySelector(`input[name="autoEngine"][value="${ae}"]`);
-        if (aeRadio) aeRadio.checked = true;
-        const vfpRadio = document.querySelector(`input[name="videoFormatPref"][value="${vfp}"]`);
-        if (vfpRadio) vfpRadio.checked = true;
-        if (threadSlider) {
-            threadSlider.value = t;
-            threadCountLabel.innerText = `Hilos: ${t}`;
-            threadCountLabel.style.color = t > 24 ? '#ff4d4d' : '#e5e5e5';
-        }
-        if (threadSettingContainer) {
-            threadSettingContainer.style.display = 'block';
-        }
-        if (concurrencySlider) {
-            concurrencySlider.value = mc;
-            concurrencyCountLabel.innerText = `Descargas a la vez: ${mc}`;
-        }
-
-        function updateThreadDescription(engine) {
-            const desc = document.getElementById('threadDescription');
-            if (!desc) return;
-            if (engine === 'ytdlp') {
-                desc.innerHTML = "<b>Motor por defecto (yt-dlp):</b> Seguro y confiable. Divide el archivo en partes. <br><b>Recomendación:</b> 4 a 8 hilos. Valores mayores (10+) pueden causar bloqueos en servidores comunes.";
-            } else if (engine === 'aria2') {
-                desc.innerHTML = "<b>Acelerador (aria2):</b> Motor agresivo. Abre múltiples conexiones simultáneas.<br><b>Recomendación:</b> 8 a 16 hilos. Ideal para exprimir tu ancho de banda en descargas directas.";
-            } else if (engine === 'nm3u8') {
-                desc.innerHTML = "<b>Motor Extremo (N_m3u8DL):</b> Especializado en streaming (.m3u8). Procesa fragmentos en paralelo.<br><b>Recomendación:</b> 8 a 24 hilos. Valores extremos (+24) bajo tu propia responsabilidad.";
-            } else if (engine === 'native') {
-                desc.innerHTML = "<b>Nativo (Directo):</b> Motor escrito en Python puro. Salta intermediarios y bloqueos HTTP 403.<br><b>Recomendación:</b> Ignora los hilos (baja a máxima velocidad de forma monolítica). Úsalo solo para enlaces directos (.mp4) rebeldes.";
-            }
-        }
-        updateThreadDescription(e);
-
-
-        if (audioFormatSelect) audioFormatSelect.value = result.audioFormat || 'best';
-        if (audioQualitySelect) audioQualitySelect.value = result.audioQuality || '0';
-        if (audioConvertSelect) audioConvertSelect.value = result.audioConvert || 'mp3';
-
-        if (f === 'mp3') {
-            if (qualitySettingContainer) qualitySettingContainer.style.display = 'none';
-            if (videoPreferenceContainer) videoPreferenceContainer.style.display = 'none';
-            // audio is always visible, but label changes
-            if (audioSettingsLabel) audioSettingsLabel.innerText = 'Ajustes de Audio';
-        } else {
-            if (qualitySettingContainer) qualitySettingContainer.style.display = 'block';
-            if (videoPreferenceContainer) videoPreferenceContainer.style.display = 'block';
-            if (audioSettingsLabel) audioSettingsLabel.innerText = 'Ajustes del Audio del Video';
-        }
+    AppState.bindSettings(document, (state, keys) => {
+        if (keys.includes('formatSetting') || keys.includes('qualitySetting')) updateAllDropdowns();
+        if (keys.includes('customMode') || keys.includes('snifferEnabled')) renderDetectorUI();
     });
-
-    formatRadios.forEach(r => r.addEventListener('change', (e) => {
-        chrome.storage.local.set({ formatSetting: e.target.value }, () => {
-            if (qualitySettingContainer) {
-                qualitySettingContainer.style.display = e.target.value === 'mp3' ? 'none' : 'block';
-            }
-            if (videoPreferenceContainer) {
-                videoPreferenceContainer.style.display = e.target.value === 'mp3' ? 'none' : 'block';
-            }
-            if (audioSettingsLabel) {
-                audioSettingsLabel.innerText = e.target.value === 'mp3' ? 'Ajustes de Audio' : 'Ajustes del Audio del Video';
-            }
-            updateAllDropdowns();
-        });
-    }));
-    qualityRadios.forEach(r => r.addEventListener('change', (e) => {
-        chrome.storage.local.set({ qualitySetting: e.target.value }, () => {
-            updateAllDropdowns();
-        });
-    }));
-    engineRadios.forEach(r => r.addEventListener('change', (e) => {
-        chrome.storage.local.set({ engineSetting: e.target.value });
-        if (threadSettingContainer) {
-            threadSettingContainer.style.display = 'block';
-        }
-        
-        const desc = document.getElementById('threadDescription');
-        if (desc) {
-            let engine = e.target.value;
-            if (engine === 'ytdlp') {
-                desc.innerHTML = "<b>Motor por defecto (yt-dlp):</b> Seguro y confiable. Divide el archivo en partes. <br><b>Recomendación:</b> 4 a 8 hilos. Valores mayores (10+) pueden causar bloqueos en servidores comunes.";
-            } else if (engine === 'aria2') {
-                desc.innerHTML = "<b>Acelerador (aria2):</b> Motor agresivo. Abre múltiples conexiones simultáneas.<br><b>Recomendación:</b> 8 a 16 hilos. Ideal para exprimir tu ancho de banda en descargas directas.";
-            } else if (engine === 'nm3u8') {
-                desc.innerHTML = "<b>Motor Extremo (N_m3u8DL):</b> Especializado en streaming (.m3u8). Procesa fragmentos en paralelo.<br><b>Recomendación:</b> 8 a 24 hilos. Valores extremos (+24) bajo tu propia responsabilidad.";
-            } else if (engine === 'native') {
-                desc.innerHTML = "<b>Nativo (Directo):</b> Motor escrito en Python puro. Salta intermediarios y bloqueos HTTP 403.<br><b>Recomendación:</b> Ignora los hilos (baja a máxima velocidad de forma monolítica). Úsalo solo para enlaces directos (.mp4) rebeldes.";
-            }
-        }
-    }));
-    
-    const autoEngineRadios = document.querySelectorAll('input[name="autoEngine"]');
-    autoEngineRadios.forEach(r => r.addEventListener('change', (e) => {
-        const val = e.target.value === 'on';
-        chrome.storage.local.set({ autoEngine: val });
-    }));
-
-    videoFormatPrefRadios.forEach(r => r.addEventListener('change', (e) => {
-        chrome.storage.local.set({ videoFormatPref: e.target.value });
-    }));
-
-    if (threadSlider) {
-        threadSlider.addEventListener('input', (e) => {
-            let val = parseInt(e.target.value);
-            threadCountLabel.innerText = `Hilos: ${val}`;
-            threadCountLabel.style.color = val > 24 ? '#ff4d4d' : '#e5e5e5';
-        });
-        threadSlider.addEventListener('change', (e) => {
-            chrome.storage.local.set({ threadCount: parseInt(e.target.value) });
-        });
-    }
-
-    if (concurrencySlider) {
-        concurrencySlider.addEventListener('input', (e) => {
-            let val = parseInt(e.target.value);
-            concurrencyCountLabel.innerText = `Descargas a la vez: ${val}`;
-        });
-        concurrencySlider.addEventListener('change', (e) => {
-            chrome.storage.local.set({ maxConcurrentDownloads: parseInt(e.target.value) });
-        });
-    }
-
-    ['audioFormatSelect', 'audioQualitySelect', 'audioConvertSelect'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', (e) => {
-                const key = id.replace('Select', '');
-                chrome.storage.local.set({ [key]: e.target.value });
-            });
-        }
-    });
-
-
+    AppState.watchLocal(['sniffedUrls'], () => renderDetectorUI());
+    AppState.bindConsole(document.getElementById('debugConsole'));
 
     if (clearErrorsBtn) {
         clearErrorsBtn.addEventListener('click', () => {
@@ -987,10 +701,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 1 Video = 1 Card logic
+    // One card per detected URL or queued task.
     function createOrUpdateCard(url, title, isTask, taskState, pageUrl) {
-        // Create a unique ID strictly stringified from the URL to prevent ANY duplicate cards
-        let id = "vid_" + btoa(unescape(encodeURIComponent(url))).replace(/[^a-zA-Z0-9]/g, '');
+        // Task IDs distinguish concurrent downloads of the same URL.
+        let id = isTask && taskState?.id ? "vid_task_" + taskState.id : "vid_" + btoa(unescape(encodeURIComponent(url))).replace(/[^a-zA-Z0-9]/g, '');
         let el = document.getElementById(id);
 
         if (!el) {
@@ -1325,16 +1039,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    let sharedTasks = {};
+    let detectorRevision = 0;
     function renderDetectorUI() {
-        chrome.storage.local.get(['downloadHistory'], (hisResult) => {
-            const history = hisResult.downloadHistory || [];
-            const historyUrls = new Set(history.map(item => item.url));
-
-            chrome.runtime.sendMessage({ action: "get_active_downloads" }, (response) => {
-                let activeTasks = (response && response.success && response.tasks) ? response.tasks : {};
-
+        const revision = ++detectorRevision;
                 chrome.tabs.query({ active: true, currentWindow: true }, (tabsResponse) => {
-                    if (!tabsResponse || tabsResponse.length === 0) return;
+                    if (revision !== detectorRevision || !tabsResponse || tabsResponse.length === 0) return;
                     const currentTab = tabsResponse[0];
                     const currentUrl = currentTab.url;
                     const tabId = currentTab.id;
@@ -1494,6 +1204,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Sniffed (TikTok, Streams) Cards
                     chrome.storage.local.get(['sniffedUrls', 'snifferEnabled'], function (result) {
+                        if (revision !== detectorRevision) return;
                         const isSnifferEnabled = result.snifferEnabled !== false;
                         const dot = document.querySelector('.status-dot');
                         if (dot) dot.style.backgroundColor = isSnifferEnabled ? '#00e676' : '#6a6b70';
@@ -1523,9 +1234,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
 
                         // Render active tasks at the bottom
-                        Object.values(activeTasks).forEach(task => {
+                        Object.values(sharedTasks).forEach(task => {
                             createOrUpdateCard(task.url, task.title, true, task);
-                            let taskId = "vid_" + btoa(unescape(encodeURIComponent(task.url))).replace(/[^a-zA-Z0-9]/g, '');
+                            let taskId = "vid_task_" + task.id;
                             let taskEl = document.getElementById(taskId);
                             if (taskEl && taskEl.parentElement) {
                                 taskEl.parentElement.appendChild(taskEl); // Forzar que las descargas activas vayan al final
@@ -1533,45 +1244,21 @@ document.addEventListener('DOMContentLoaded', () => {
                             hasAny = true;
                         });
 
-                        if (!hasAny) {
+                        if (!hasAny && !document.querySelector('input[name="customModeSetting"][value="on"]')?.checked) {
                             emptyState.style.display = "flex";
                         } else {
                             emptyState.style.display = "none";
                         }
                     });
                 });
-            });
-        });
     }
 
-    renderDetectorUI();
-
-    renderDetectorUI();
-
-
-    chrome.runtime.onMessage.addListener((request) => {
-        if (request.action === "download_update" && request.task) {
-            emptyState.style.display = "none";
-            createOrUpdateCard(request.task.url, request.task.title, true, request.task);
-        }
-        if (request.action === "download_remove" && request.id) {
-            // Find the card where data-taskid matches the request.id and remove it entirely
-            let cards = document.querySelectorAll('.detected-video-card');
-            cards.forEach(card => {
-                if (card.getAttribute('data-taskid') === request.id) {
-                    card.remove();
-                    if (cardsWrapper.children.length === 0) emptyState.style.display = "flex";
-                }
-            });
-        }
-    });
-
-    chrome.storage.onChanged.addListener((changes, namespace) => {
-        if (namespace !== 'local') return;
-        if (changes.maxConcurrentDownloads && concurrencySlider && concurrencyCountLabel) {
-            let val = parseInt(changes.maxConcurrentDownloads.newValue || 1);
-            concurrencySlider.value = val;
-            concurrencyCountLabel.innerText = `Descargas a la vez: ${val}`;
-        }
+    AppState.watchTasks((tasks, event) => {
+        sharedTasks = tasks;
+        cardsWrapper.querySelectorAll('[data-taskid]').forEach(card => {
+            if (!tasks[card.getAttribute('data-taskid')]) card.remove();
+        });
+        Object.values(tasks).forEach(task => createOrUpdateCard(task.url, task.title, true, task));
+        if (!event) renderDetectorUI();
     });
 });

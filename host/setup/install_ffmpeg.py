@@ -24,3 +24,4 @@ try:
     print("FFmpeg instalado correctamente en modo silencioso.")
 except Exception as e:
     print(f"Error descargando ffmpeg: {e}")
+    raise SystemExit(1)

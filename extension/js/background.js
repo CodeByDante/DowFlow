@@ -1,13 +1,26 @@
+importScripts('state.js');
 let activeTasks = {};
 let activePorts = {};
 let snifferEnabled = true;
 let maxConcurrentDownloadsLimit = 1;
 let consoleLogsCache = [];
+let consoleRevision = 0;
+const consoleEpoch = `${Date.now()}_${Math.random()}`;
+// Serialize history mutations so concurrent completions and clears cannot lose entries.
+let historyQueue = Promise.resolve();
+function updateHistory(transform) {
+    historyQueue = historyQueue.then(() => new Promise(resolve => {
+        chrome.storage.local.get(['downloadHistory'], result => {
+            chrome.storage.local.set({ downloadHistory: transform(result.downloadHistory || []) }, resolve);
+        });
+    }));
+    return historyQueue;
+}
+
 
 function broadcastLog(id, title, log) {
-    let prefix = title ? `[${title}] ` : "";
-    let formattedLog = `${prefix}${log}`;
-    consoleLogsCache.push({ title: title, log: log });
+    const entry = { title, log, sequence: ++consoleRevision };
+    consoleLogsCache.push(entry);
     if (consoleLogsCache.length > 500) {
         consoleLogsCache.shift();
     }
@@ -16,7 +29,10 @@ function broadcastLog(id, title, log) {
             action: "download_log",
             id: id,
             title: title,
-            log: log
+            log: log,
+            entry,
+            revision: consoleRevision,
+            epoch: consoleEpoch
         }, () => { let _ = chrome.runtime.lastError; });
     } catch(err) {}
 }
@@ -36,7 +52,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         
         let title = (tab && tab.title) ? tab.title.replace(/^\(\d+\)\s*/, '').replace(/ - YouTube$/, '').trim() : "Video Descargado (Menú)";
         
-        chrome.storage.local.get(['customSavePath', 'formatSetting', 'qualitySetting', 'engineSetting', 'threadCount', 'audioFormat', 'audioQuality', 'audioConvert', 'videoFormatPref', 'ytAudioLang', 'ytSubs'], (result) => {
+        AppState.readSettings(result => {
             let request = {
                 action: "download",
                 url: targetUrl,
@@ -55,43 +71,17 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 isAutoTitle: false
             };
             
-            let downloadId = "dl_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
-            
-            activeTasks[downloadId] = {
-                id: downloadId,
-                title: title,
-                url: targetUrl,
-                percent: "0",
-                status: "queued"
-            };
-
-            downloadQueue.push({
-                downloadId: downloadId,
-                request: request
-            });
-            
-            try { chrome.runtime.sendMessage({ action: "download_update", task: activeTasks[downloadId] }, () => { let _ = chrome.runtime.lastError; }); } catch(err) {}
-
-            processDownloadQueue();
+            queueDownload(request);
         });
     }
 });
 
-chrome.storage.local.get(['snifferEnabled', 'maxConcurrentDownloads'], (res) => {
-    if (res.snifferEnabled === false) snifferEnabled = false;
-    if (res.maxConcurrentDownloads) {
-        maxConcurrentDownloadsLimit = parseInt(res.maxConcurrentDownloads);
-    }
-});
-
-chrome.storage.onChanged.addListener((changes, namespace) => {
-    if (changes.snifferEnabled) {
-        snifferEnabled = changes.snifferEnabled.newValue;
-    }
-    if (changes.maxConcurrentDownloads) {
-        maxConcurrentDownloadsLimit = parseInt(changes.maxConcurrentDownloads.newValue || 1);
-        processDownloadQueue();
-    }
+AppState.watchLocal(['snifferEnabled', 'maxConcurrentDownloads'], (values, keys) => {
+    const settings = AppState.normalize(values);
+    snifferEnabled = settings.snifferEnabled;
+    maxConcurrentDownloadsLimit = settings.maxConcurrentDownloads;
+    if (keys.includes('snifferEnabled') && !snifferEnabled) chrome.storage.local.set({ sniffedUrls: {} });
+    processDownloadQueue();
 });
 
 function prefetchQuality(videoUrl) {
@@ -216,7 +206,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       });
 
       // Reset active count
-      activeDownloadsCount = 0;
+      runningSlots.clear();
 
       // Broadcast emergency log
       broadcastLog(null, null, "[EMERGENCIA] Parada de emergencia activada. Se han cancelado y eliminado todas las descargas activas y en cola.");
@@ -231,34 +221,51 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.action === "get_console_logs") {
-      sendResponse({ success: true, logs: consoleLogsCache });
+      sendResponse({ success: true, logs: consoleLogsCache, revision: consoleRevision, epoch: consoleEpoch });
       return true;
   }
 
   if (request.action === "clear_console_logs") {
       consoleLogsCache = [];
+      consoleRevision++;
+      chrome.runtime.sendMessage({ action: 'console_cleared', revision: consoleRevision, epoch: consoleEpoch }, () => { void chrome.runtime.lastError; });
       sendResponse({ success: true });
       return true;
   }
 
-  if (request.action === "clear_task") {
-      if (activeTasks[request.id]) {
-          delete activeTasks[request.id];
-          delete activePorts[request.id];
-      }
+  if (request.action === 'append_console_log') {
+      broadcastLog(null, null, String(request.log || ''));
+      sendResponse({ success: true });
+      return;
+  }
+  if (request.action === 'clear_history') {
+      updateHistory(() => []).then(() => sendResponse({ success: true }));
       return true;
+  }
+  if (request.action === 'clear_task' || request.action === 'clear_finished') {
+      const ids = request.action === 'clear_task' ? [request.id] : Object.keys(activeTasks);
+      for (const id of ids) {
+          const task = activeTasks[id];
+          if (!task || !['completed', 'cancelled', 'error'].includes(task.status)) continue;
+          if (request.status && task.status !== request.status) continue;
+          delete activeTasks[id];
+          chrome.runtime.sendMessage({ action: 'download_remove', id }, () => { void chrome.runtime.lastError; });
+      }
+      sendResponse({ success: true });
+      return;
   }
 
   if (request.action === "cancel_download") {
       let task = activeTasks[request.id];
-      if (task) {
+      if (task && ["queued", "started", "progress"].includes(task.status)) {
           task.status = "cancelled";
           try { chrome.runtime.sendMessage({ action: "download_update", task: task }, () => { let _ = chrome.runtime.lastError; }); } catch(err) {}
           
           let port = activePorts[request.id];
           if (port) {
+              delete activePorts[request.id];
               port.disconnect(); // Terminate native host instantly
-              activeDownloadsCount--; // Free slot
+              runningSlots.delete(request.id); // Release only this task's slot
               setTimeout(processDownloadQueue, 500); // Process next
           } else {
               // It's queued, not started natively yet
@@ -274,6 +281,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
               }
           }, 2000);
       }
+      sendResponse({ success: Boolean(task) });
       return true;
   }
 
@@ -305,8 +313,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return true;
     }
 
+    queueDownload(request, sendResponse);
+    return true; // Asynchronous response
+  }
+});
+
+function queueDownload(request, sendResponse = () => {}) {
     // Action === "download"
-    chrome.storage.local.get(['autoEngine'], (res) => {
+    AppState.readSettings(res => {
+        const normalized = AppState.normalize({ ...res, ...request });
+        Object.assign(request, normalized);
+        request.savePath = request.savePath ?? normalized.customSavePath;
         let autoEngine = res.autoEngine !== undefined ? res.autoEngine : true; // Activado por defecto
         let engineSetting = request.engineSetting || "ytdlp";
         
@@ -343,12 +360,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         processDownloadQueue();
     });
-    return true; // Asynchronous response
-  }
-});
+}
 
 let downloadQueue = [];
-let activeDownloadsCount = 0;
+const runningSlots = new Set();
 
 function getCookiesForDomain(targetUrl, downloadId, callback) {
     function logMsg(msg) {
@@ -397,7 +412,7 @@ function getCookiesForDomain(targetUrl, downloadId, callback) {
 }
 
 function processDownloadQueue() {
-    if (activeDownloadsCount >= maxConcurrentDownloadsLimit) return;
+    if (runningSlots.size >= maxConcurrentDownloadsLimit) return;
     if (downloadQueue.length === 0) return;
 
     let queuedItem = downloadQueue.shift();
@@ -410,9 +425,10 @@ function processDownloadQueue() {
         return;
     }
 
-    activeDownloadsCount++;
+    runningSlots.add(downloadId);
     activeTasks[downloadId].status = "started";
-    broadcastLog(downloadId, null, `[COLA] Iniciando descarga de "${activeTasks[downloadId].title}". Numero de descargas paralelas: ${activeDownloadsCount} (Límite: ${maxConcurrentDownloadsLimit})`);
+    chrome.runtime.sendMessage({ action: 'download_update', task: activeTasks[downloadId] }, () => { void chrome.runtime.lastError; });
+    broadcastLog(downloadId, null, `[COLA] Iniciando descarga de "${activeTasks[downloadId].title}". Numero de descargas paralelas: ${runningSlots.size} (Límite: ${maxConcurrentDownloadsLimit})`);
 
     // Extraer cookies de forma centralizada en background.js antes de conectar con el host nativo
     chrome.storage.local.get(['cookiesSetting'], (storageRes) => {
@@ -448,12 +464,14 @@ function processDownloadQueue() {
             launchNativeDownload(downloadId, request);
         }
     });
+    // Fill all free slots, including after the concurrency setting increases.
+    processDownloadQueue();
 }
 
 function launchNativeDownload(downloadId, request) {
     if (!activeTasks[downloadId] || activeTasks[downloadId].status !== "started") {
         // Cancelado o removido durante la obtención de cookies
-        activeDownloadsCount--;
+        runningSlots.delete(downloadId);
         setTimeout(processDownloadQueue, 500);
         return;
     }
@@ -468,13 +486,14 @@ function launchNativeDownload(downloadId, request) {
         activeTasks[downloadId].error = e.message;
         try { chrome.runtime.sendMessage({ action: "download_update", task: activeTasks[downloadId] }, () => { let _ = chrome.runtime.lastError; }); } catch(err) {}
         
-        activeDownloadsCount--;
-        broadcastLog(downloadId, null, `[COLA] Error al conectar con el host para "${activeTasks[downloadId].title}". (Simultáneas activas restantes: ${activeDownloadsCount}/${maxConcurrentDownloadsLimit})`);
+        runningSlots.delete(downloadId);
+        broadcastLog(downloadId, null, `[COLA] Error al conectar con el host para "${activeTasks[downloadId].title}". (Simultáneas activas restantes: ${runningSlots.size}/${maxConcurrentDownloadsLimit})`);
         setTimeout(processDownloadQueue, 500);
         return;
     }
 
     port.onMessage.addListener((message) => {
+        if (activePorts[downloadId] !== port) return;
         if (message.status === "log") {
             let title = activeTasks[downloadId] ? activeTasks[downloadId].title : "Descarga";
             broadcastLog(downloadId, title, message.log);
@@ -485,6 +504,7 @@ function launchNativeDownload(downloadId, request) {
                 activeTasks[downloadId].status = message.status;
                 if (message.percent) activeTasks[downloadId].percent = message.percent;
                 if (message.error) activeTasks[downloadId].error = message.error;
+                if (message.final_file) activeTasks[downloadId].final_file = message.final_file;
             }
             try { chrome.runtime.sendMessage({ action: "download_update", task: activeTasks[downloadId] }, () => { let _ = chrome.runtime.lastError; }); } catch(err) {}
             
@@ -493,13 +513,9 @@ function launchNativeDownload(downloadId, request) {
                     let final_file = message.final_file || "";
                     let title = activeTasks[downloadId].title;
                     let url = activeTasks[downloadId].url;
-                    chrome.storage.local.get(['downloadHistory'], (res) => {
-                        let history = res.downloadHistory || [];
-                        history.push({ title: title, url: url, final_file: final_file, date: new Date().toISOString() });
-                        chrome.storage.local.set({ downloadHistory: history });
-                    });
+                    updateHistory(history => [...history, { title, url, final_file, date: new Date().toISOString() }]);
                 }
-                activeDownloadsCount--;
+                runningSlots.delete(downloadId);
 
                 // Disconnect the native port immediately to close the Python process
                 let port = activePorts[downloadId];
@@ -509,7 +525,7 @@ function launchNativeDownload(downloadId, request) {
                 }
 
                 let taskName = activeTasks[downloadId] ? activeTasks[downloadId].title : "Descarga";
-                broadcastLog(downloadId, null, `[COLA] Finalizó "${taskName}" con estado: ${message.status}. (Simultáneas activas restantes: ${activeDownloadsCount}/${maxConcurrentDownloadsLimit})`);
+                broadcastLog(downloadId, null, `[COLA] Finalizó "${taskName}" con estado: ${message.status}. (Simultáneas activas restantes: ${runningSlots.size}/${maxConcurrentDownloadsLimit})`);
                 setTimeout(processDownloadQueue, 1500); // 1.5s delay to cool down between sequential downloads
 
                 if (message.status !== "error") {
@@ -534,9 +550,9 @@ function launchNativeDownload(downloadId, request) {
                 activeTasks[downloadId].error = err;
                 try { chrome.runtime.sendMessage({ action: "download_update", task: activeTasks[downloadId] }, () => {}); } catch(e) {}
                 
-                activeDownloadsCount--;
+                runningSlots.delete(downloadId);
                 let taskName = activeTasks[downloadId] ? activeTasks[downloadId].title : "Descarga";
-                broadcastLog(downloadId, null, `[COLA] Error en "${taskName}": Desconectado inesperadamente. (Simultáneas activas restantes: ${activeDownloadsCount}/${maxConcurrentDownloadsLimit})`);
+                broadcastLog(downloadId, null, `[COLA] Error en "${taskName}": Desconectado inesperadamente. (Simultáneas activas restantes: ${runningSlots.size}/${maxConcurrentDownloadsLimit})`);
                 setTimeout(processDownloadQueue, 1000);
             }
         }
@@ -558,6 +574,8 @@ function launchNativeDownload(downloadId, request) {
         videoFormatPref: request.videoFormatPref,
         customFormatId: request.customFormatId,
         netscapeCookies: request.netscapeCookies,
-        isAutoTitle: request.isAutoTitle
+        isAutoTitle: request.isAutoTitle,
+        ytAudioLang: request.ytAudioLang,
+        ytSubs: request.ytSubs
     });
 }

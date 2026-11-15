@@ -39,3 +39,6 @@ m3u8_results.json
 .env
 .env.*
 !.env.example
+
+# Development-only JavaScript test dependencies
+node_modules/

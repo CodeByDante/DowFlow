@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "jsdom": "^26.1.0"
+  },
+  "name": "chromium-media-downloader",
+  "private": true,
+  "scripts": {
+    "test": "node --test extension/tests/*.test.cjs"
+  }
+}

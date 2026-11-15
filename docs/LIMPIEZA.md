@@ -17,7 +17,7 @@ Las otras tres pruebas de `scratch/` se movieron a `host/tests/manual/`. Reciben
 ## Corregido
 
 - El cierre del canal Native Messaging usaba una variable inexistente. Ahora comparte la cancelación de los procesos activos y marca también las descargas nativas para detenerlas.
-- El actualizador resuelve la raíz desde `scripts/` y escribe en `host/bin/`, no en `scripts/host/bin/`.
+- El actualizador está en la raíz y escribe en `host/bin/`.
 - La comprobación de Tkinter importa el módulo sin abrir una ventana que bloquee el instalador.
 - El historial de popup y panel asigna títulos, fechas y atributos con métodos DOM, sin interpolar datos como HTML.
 - El instalador de AtomicParsley vuelve a verificar certificados HTTPS.
@@ -37,10 +37,14 @@ No se han ejecutado los instaladores, el navegador ni descargas reales en Window
 - Reducir duplicaciones entre popup y panel y separar el host por responsabilidades.
 - Revisar permisos de la extensión según las funciones que se quieran conservar.
 - Mejorar el reporte de fallos y la verificación de integridad de los instaladores de herramientas.
-- Sustituir el apagado manual por nombre por una solución que identifique solo los procesos de esta aplicación.
+- El apagado manual por nombre fue retirado. La cancelación se gestiona desde la app por tarea.
 
 ## Identidad visual
 
 Se rediseñó el logo original manteniendo el gato, avión y violeta. Un mismo símbolo se aplica en la barra de extensión (16/32/48/128 px), cabecera del popup, cabecera del panel, favicon y Acerca de (fuente de 512 px). Los PNG se guardan directamente en Git para que las descargas ZIP incluyan imágenes utilizables.
 
 Se verificaron las dimensiones y transparencia de los iconos y sus referencias en HTML y manifest. La revisión visual completa de la interfaz queda pendiente: el navegador de pruebas no pudo iniciarse en este entorno.
+
+## Organización de los BAT
+
+Los tres puntos de entrada manuales están en la raíz: `conectar_extension.bat`, `instalar_requisitos.bat` y `actualizar_e_instalar_motores.bat`. Se retiró `scripts/apagado_emergencia.bat` porque podía terminar procesos de otras aplicaciones. El lanzador interno `host/download_host.bat` se conserva para Native Messaging.

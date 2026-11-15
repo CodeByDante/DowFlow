@@ -40,3 +40,4 @@ try:
     print("N_m3u8DL-RE ha sido instalado correctamente.")
 except Exception as e:
     print(f"Ocurrió un error: {e}")
+    raise SystemExit(1)

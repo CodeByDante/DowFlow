@@ -8,13 +8,21 @@ Extensión para navegadores Chromium conectada a un host local en Python mediant
 
 ## Instalación en Windows
 
+Los tres BAT de uso manual están en la raíz. Orden de instalación:
+
 1. Ejecutar `instalar_requisitos.bat`. Comprueba Python y la disponibilidad de Tkinter para elegir carpetas.
-2. Ejecutar `scripts/actualizar_motores.bat`. Instala o actualiza yt-dlp, FFmpeg, N_m3u8DL-RE y AtomicParsley dentro de `host/bin/`. Requiere conexión a Internet. aria2 es opcional y este script no lo instala; para usarlo, colocar `aria2c.exe` en `host/bin/`.
+2. Ejecutar `actualizar_e_instalar_motores.bat`. Instala o actualiza yt-dlp, FFmpeg, N_m3u8DL-RE y AtomicParsley dentro de `host/bin/`. Requiere conexión a Internet. aria2 es opcional y este script no lo instala; para usarlo, colocar `aria2c.exe` en `host/bin/`.
 3. Abrir `chrome://extensions`, `edge://extensions` o `brave://extensions`, activar el modo desarrollador y cargar la carpeta `extension` como extensión descomprimida.
-4. Ejecutar `install_host.bat` e introducir el ID de la extensión. Genera el manifiesto local y registra el host para el usuario actual en Chrome, Edge y Brave. No requiere permisos de administrador porque utiliza HKCU.
+4. Ejecutar `conectar_extension.bat` e introducir el ID de la extensión. Genera el manifiesto local y registra el host para el usuario actual en Chrome, Edge y Brave. No requiere permisos de administrador porque utiliza HKCU.
 5. Abrir una página con contenido multimedia, abrir la extensión, elegir la configuración y descargar.
 
-Si se mueve la carpeta del proyecto o cambia el ID de la extensión, volver a ejecutar `install_host.bat`.
+Si se mueve la carpeta del proyecto o cambia el ID de la extensión, volver a ejecutar `conectar_extension.bat`.
+
+## Inicio automático
+
+No hay una tarea de inicio con Windows. `conectar_extension.bat` registra el host una vez para el usuario actual. El navegador administra el proceso de fondo de la extensión y lanza Python cuando recibe una petición Native Messaging. No se deben ejecutar los BAT cada vez que se enciende el equipo.
+
+`host/download_host.bat` es un lanzador interno llamado por el navegador; no es un cuarto paso de instalación manual.
 
 ## Estructura y mantenimiento
 
@@ -22,11 +30,18 @@ El [mapa del proyecto](docs/ESTRUCTURA.md) explica cada carpeta y archivo. El [r
 
 - `extension/`: interfaz y coordinación desde el navegador.
 - `host/`: descarga, conversión y comunicación con los programas locales.
-- `scripts/`: actualización y herramientas auxiliares para Windows.
 - `tools/`: utilidades para desarrollar el proyecto.
 - `docs/`: documentación de estructura y mantenimiento.
 
 Los binarios, registros, cookies y la configuración generada para cada PC no se publican en Git. Los iconos se incluyen directamente en Git y en las descargas ZIP.
+
+## Actualizar una instalación existente
+
+Descargar los archivos nuevos o ejecutar `git pull` en la carpeta local. En la página de extensiones del navegador, pulsar **Recargar** y cerrar y abrir de nuevo el panel de herramientas. La versión debe indicar **1.1.0**. Los cambios de GitHub no actualizan automáticamente una extensión cargada como descomprimida.
+
+Si cambió la ubicación de la carpeta o el ID de la extensión, volver a ejecutar `conectar_extension.bat`. No hace falta reinstalar los motores si siguen disponibles en `host/bin/`.
+
+La sincronización del popup y panel utiliza el mismo perfil e instalación de la extensión. Detalles en [Sincronización](docs/SINCRONIZACION.md).
 
 ## Verificación
 
@@ -34,10 +49,20 @@ Pruebas automáticas sin descargas ni conexión de red:
 
 ```sh
 python -m unittest discover -s host/tests -p "test_*.py" -v
+node --check extension/js/state.js
 node --check extension/js/background.js
 node --check extension/js/popup.js
 node --check extension/js/tools.js
 ```
+
+Para comprobar las dos interfaces y el gestor con APIs del navegador simuladas:
+
+```sh
+npm ci
+npm test
+```
+
+Node y las dependencias de desarrollo solo son necesarios para estas pruebas; no para utilizar la extensión.
 
 Las pruebas manuales en `host/tests/manual/` requieren Windows, motores instalados y URLs elegidas por el usuario. Realizan descargas en la carpeta Downloads y no se ejecutan con la batería automática:
 
@@ -57,7 +82,5 @@ python tools/resize.py imagen_original.png extension/icons/icon.png
 ## Alcance
 
 La calidad y los formatos dependen de lo que ofrezca el origen y de los motores instalados. La compatibilidad con cada sitio puede cambiar. Los permisos de cookies y acceso a sitios se utilizan para detectar contenido y descargar con la sesión del navegador cuando el usuario lo selecciona.
-
-El script `scripts/apagado_emergencia.bat` es un recurso manual de último uso: finaliza todos los procesos con los nombres de los motores, incluidos los iniciados por otros programas. Para cancelar normalmente, usar la interfaz de la extensión.
 
 Utilizar únicamente con contenido que se tenga derecho a descargar.
