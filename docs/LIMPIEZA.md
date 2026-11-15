@@ -38,3 +38,9 @@ No se han ejecutado los instaladores, el navegador ni descargas reales en Window
 - Revisar permisos de la extensión según las funciones que se quieran conservar.
 - Mejorar el reporte de fallos y la verificación de integridad de los instaladores de herramientas.
 - Sustituir el apagado manual por nombre por una solución que identifique solo los procesos de esta aplicación.
+
+## Identidad visual
+
+Se rediseñó el logo original manteniendo el gato, avión y violeta. Un mismo símbolo se aplica en la barra de extensión (16/32/48/128 px), cabecera del popup, cabecera del panel, favicon y Acerca de (fuente de 512 px). Los PNG se guardan directamente en Git para que las descargas ZIP incluyan imágenes utilizables.
+
+Se verificaron las dimensiones y transparencia de los iconos y sus referencias en HTML y manifest. La revisión visual completa de la interfaz queda pendiente: el navegador de pruebas no pudo iniciarse en este entorno.

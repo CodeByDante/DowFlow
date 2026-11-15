@@ -22,7 +22,7 @@ El [mapa del proyecto](docs/ESTRUCTURA.md) explica cada carpeta y archivo. El [r
 - `tools/`: utilidades para desarrollar el proyecto.
 - `docs/`: documentación de estructura y mantenimiento.
 
-Los binarios, registros, cookies y la configuración generada para cada PC no se publican en Git. Con Git LFS instalado, ejecutar `git lfs pull` después de clonar para recuperar el icono si aparece como un archivo de texto.
+Los binarios, registros, cookies y la configuración generada para cada PC no se publican en Git. Los iconos se incluyen directamente en Git y en las descargas ZIP.
 
 ## Verificación
 

@@ -23,7 +23,9 @@ flowchart TD
 | `extension/tools.html` | Panel amplio de herramientas y gestión. Incluye sus estilos. | Sí. |
 | `extension/js/tools.js` | Lógica del panel, listas de reproducción, lotes, consola e historial. | Sí. |
 | `extension/lib/hls.light.min.js` | Biblioteca externa usada para la vista previa HLS. | Sí, está referenciada en el popup. |
-| `extension/icons/icon.png` | Icono de la extensión. Se almacena con Git LFS. | Sí. |
+| `extension/icons/icon.png` | Logo rediseñado de 128 px para extensión, popup y panel. | Sí. |
+| `extension/icons/icon-16.png`, `icon-32.png`, `icon-48.png` | Versiones dimensionadas para la barra, favicon y gestor de extensiones. | Sí. |
+| `extension/icons/logo-512.png` | Versión de mayor tamaño, utilizada en Acerca de. | Sí. |
 
 ## Host: lo que trabaja en el PC
 
@@ -58,7 +60,7 @@ Estas rutas se crean en cada PC y no se deben subir al repositorio:
 | `scripts/apagado_emergencia.bat` | Detiene motores por nombre. Puede afectar otros programas; conservar como último recurso. |
 | `tools/resize.py` | Prepara el icono PNG desde una imagen indicada en la consola; requiere Pillow. |
 | `.gitignore` | Impide añadir binarios, registros, cookies, configuración local y temporales. |
-| `.gitattributes` | Reglas de Git LFS para activos y archivos grandes. |
+| `.gitattributes` | Reglas de Git LFS para archivos grandes; los iconos pequeños se guardan directamente en Git. |
 | `README.md` | Instrucciones de instalación, uso y pruebas. |
 | `docs/ESTRUCTURA.md` | Este mapa. |
 | `docs/LIMPIEZA.md` | Cambios realizados y tareas pendientes. |
