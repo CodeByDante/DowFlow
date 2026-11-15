@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="extension/icons/logo-512.png" alt="Logo de Local Video Downloader: gato violeta con avión y símbolo de descarga" width="160" height="160">
+</p>
+
 # Local Video Downloader
 
 Extensión para navegadores Chromium conectada a un host local en Python mediante Native Messaging. Permite descargar video o audio, elegir formatos y calidad, consultar listas de reproducción y gestionar descargas. El procesamiento se realiza en el PC con yt-dlp, FFmpeg y motores opcionales.
