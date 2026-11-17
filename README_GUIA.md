@@ -6,6 +6,8 @@
 
 Extensión para navegadores Chromium conectada a un host local en Python mediante Native Messaging. Permite descargar video o audio, elegir formatos y calidad, consultar listas de reproducción y gestionar descargas. El procesamiento se realiza en el PC con yt-dlp, FFmpeg y motores opcionales.
 
+[Ver las ventanas y la Caja de Herramientas con capturas](#guía-visual-de-dowflow)
+
 ## Calidad y detección
 
 - **Calidad fija:** guarda una resolución máxima para todas las descargas. Elige el mejor formato hasta ese límite; conserva fuentes menores y reduce con FFmpeg si solo existe una fuente mayor.
@@ -34,6 +36,134 @@ Los tres BAT de uso manual están en la raíz. Orden de instalación:
 5. Abrir una página con contenido multimedia, abrir la extensión, elegir la configuración y descargar.
 
 Si se mueve la carpeta del proyecto o cambia el ID de la extensión, volver a ejecutar `conectar_extension.bat`.
+
+## Guía visual de DowFlow
+
+Las capturas muestran DowFlow 1.3.0 en Chromium. Los videos, el historial y las tareas que aparecen en ellas son ejemplos.
+
+[Ventana de la extensión](#ventana-de-la-extensión) · [Caja de Herramientas](#caja-de-herramientas) · [Selección de calidad](#selección-de-calidad)
+
+### Ventana de la extensión
+
+En la barra superior del navegador, abre **Extensiones** y pulsa **DowFlow**. Puedes fijar su icono para abrirlo con un clic.
+
+<img src="docs/capturas/navegador-abrir.png" alt="Icono de puzle del menú Extensiones en la barra superior de Chromium" width="480">
+
+#### Detector
+
+Abre la página del video y reprodúcelo. En **Detector**, elige la tarjeta que corresponde al video y pulsa **Descargar**. Si no aparece, prueba **Buscar en página** o **Buscar streams** cuando se trate de una transmisión HLS o DASH.
+
+Para pegar tus propios enlaces, activa **Modo Personalizado (Enlace Manual)** en Configuración. Aparecerá el cuadro **Enlace Especial**.
+
+<img src="docs/capturas/popup-detector.png" alt="Detector con tarjetas de video y botones de descarga" width="500">
+
+#### Descargas
+
+Abre **Descargas** para consultar los archivos terminados. **Ver Origen** vuelve a la página del video y **Abrir Ubicación** abre su carpeta en Windows.
+
+<img src="docs/capturas/popup-descargas.png" alt="Historial del popup con las acciones para abrir el origen y la carpeta" width="500">
+
+#### Configuración
+
+Elige **Video** o **Audio** antes de descargar. Para mantener un límite de resolución, selecciona **Calidad fija** y escoge la altura máxima. Más abajo, **Seleccionar Carpeta...** cambia el destino de los archivos.
+
+<img src="docs/capturas/popup-configuracion.png" alt="Configuración de formato y calidad en la extensión" width="500">
+
+<details>
+<summary>Ver motores y descargas simultáneas</summary>
+
+Activa **Automatización de motor** para que DowFlow elija el motor según el enlace y el formato. Ajusta **Descargas simultáneas máximas** para limitar cuántos archivos se procesan a la vez.
+
+<img src="docs/capturas/popup-configuracion-motores.png" alt="Controles de motor, hilos y descargas simultáneas en el popup" width="500">
+
+</details>
+
+<details>
+<summary>Ver el selector de carpeta</summary>
+
+En **Seleccionar Carpeta...**, elige el destino y confirma. Con **Cancelar** conservas la carpeta anterior. La imagen muestra el selector del programa en Linux. En Windows se abre el selector de carpetas del sistema.
+
+<img src="docs/capturas/carpeta-destino.png" alt="Selector del sistema con las carpetas de ejemplo Clips y Concierto" width="416">
+
+</details>
+
+#### Acerca de
+
+Consulta la versión instalada. Si una descarga falla, ve a **Consola de Procesos**, pulsa **Ir al final** y lee el último mensaje. **Copiar** copia el registro.
+
+<img src="docs/capturas/popup-acerca.png" alt="Acerca de DowFlow con la versión y la consola de procesos" width="500">
+
+### Caja de Herramientas
+
+Con DowFlow abierto, pulsa la **llave inglesa junto a Rastreador**, en el pie de la ventana. Al pasar el cursor aparece **Abrir Caja de Herramientas**. Se abre una pestaña nueva del navegador.
+
+<img src="docs/capturas/popup-abrir-caja.png" alt="Detalle del botón de llave inglesa junto a Rastreador que abre la Caja de Herramientas" width="500">
+
+#### Dashboard
+
+Pulsa una de las seis tarjetas para entrar en su herramienta. Puedes cambiar de sección con el menú lateral o volver aquí con **Dashboard**. En ventanas estrechas, abre el menú desde la esquina superior izquierda.
+
+![Dashboard de la Caja de Herramientas con sus seis accesos](docs/capturas/caja-inicio.png)
+
+#### Descargador de Enlaces
+
+Pega **una URL por línea** y elige cómo nombrar los archivos. Pulsa **Iniciar Descarga**. DowFlow abre la consola y te permite seguir cada tarea desde **Progreso**.
+
+![Descargador por lotes con varias URL, selector de nombres y botón Iniciar Descarga](docs/capturas/caja-lotes.png)
+
+#### Playlist YT
+
+Pega la URL de una lista de YouTube y pulsa **Analizar**. Deja marcados los videos que quieres guardar y pulsa **Descargar Seleccionados**. Si aparece «No hay videos seleccionados», cierra el aviso y marca al menos una casilla.
+
+![Playlist analizada con casillas para elegir los videos](docs/capturas/caja-playlist.png)
+
+#### Consola
+
+Lee los mensajes para saber qué motor se utilizó y en qué paso ocurrió un error. Si hay fallos, usa **Copiar todas las URLs** en **Enlaces que fallaron** para volver a procesarlas desde **Descargador**.
+
+![Consola del sistema con registro de actividad y zona de enlaces fallidos](docs/capturas/caja-consola.png)
+
+#### Progreso
+
+Cada tarjeta muestra una tarea en curso o en espera. **Cancelar** detiene esa tarea. **Parada de Emergencia** pide confirmación antes de detener todas las descargas y vaciar la cola. Pulsa **Cancelar** en ese aviso si quieres que el lote continúe.
+
+![Progreso de descargas con una tarea activa y otra en espera](docs/capturas/caja-activas.png)
+
+#### Historial
+
+Busca el video por su título y fecha. **Abrir Ubicación** te lleva al archivo descargado y **Ver Origen** abre su página web.
+
+![Historial de la Caja de Herramientas con descargas terminadas](docs/capturas/caja-historial.png)
+
+#### Configuración global
+
+Cambia el formato, la calidad o la carpeta de destino desde esta pantalla. El popup y la Caja de Herramientas comparten estos ajustes en el mismo perfil del navegador.
+
+![Configuración global de la Caja de Herramientas](docs/capturas/caja-ajustes.png)
+
+<details>
+<summary>Ver carpeta, idioma y subtítulos</summary>
+
+Elige dónde guardar los archivos y qué pista de audio prefieres. Si el video ofrece subtítulos, puedes elegir **Incrustar (ES/EN)** para activarlos o desactivarlos después desde tu reproductor.
+
+![Configuración de nombres de lote, carpeta de destino, idioma y subtítulos](docs/capturas/caja-ajustes-idiomas.png)
+
+</details>
+
+<details>
+<summary>Ver enlace manual y rastreador</summary>
+
+Activa **Modo Personalizado (Enlace Manual)** para mostrar **Enlace Especial** en el popup. El interruptor del rastreador controla si se añaden tarjetas al detectar contenido durante la reproducción.
+
+![Opciones para pegar enlaces manuales y activar o detener el rastreador](docs/capturas/caja-ajustes-detector.png)
+
+</details>
+
+#### Selección de calidad
+
+Si elegiste **Video → Detector** en Configuración y envías un enlace manual o un lote, se abre **Detector: elige la calidad**. Escoge un formato disponible y pulsa **Descargar**. **Reintentar** vuelve a consultar los formatos de ese enlace.
+
+![Diálogo del Detector con los formatos disponibles y el botón Descargar](docs/capturas/caja-formato.png)
 
 ## Inicio automático
 

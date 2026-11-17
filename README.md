@@ -11,3 +11,5 @@
 </p>
 
 **DowFlow** es una extensión para descargar video y audio desde el navegador con ayuda de motores instalados en tu PC. Permite elegir calidad, formato y pistas de audio, consultar listas de reproducción y gestionar descargas desde una misma interfaz.
+
+[Guía de uso con capturas de la extensión y la Caja de Herramientas](README_GUIA.md#guía-visual-de-dowflow)
