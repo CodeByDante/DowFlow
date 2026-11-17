@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (keys.includes('formatSetting') || keys.includes('qualitySetting')) updateAllDropdowns();
         if (keys.includes('customMode') || keys.includes('snifferEnabled')) renderDetectorUI();
     });
-    AppState.watchLocal(['sniffedUrls'], () => renderDetectorUI());
+    AppState.watchStorage(['sniffedUrls'], () => renderDetectorUI());
     AppState.bindConsole(document.getElementById('debugConsole'));
 
     if (clearErrorsBtn) {
@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (urls.length === 0) return;
 
             if (manualDownloadBtn.innerText === "Descargar" || manualDownloadBtn.innerText === "Fallido" || manualDownloadBtn.innerText === "Añadir a Cola") {
-                chrome.storage.local.get(['batchNamingMode', 'batchCustomPrefix'], (cfg) => {
+                AppState.readSettings(cfg => {
                     const namingMode = cfg.batchNamingMode || 'original';
                     const customPrefix = (cfg.batchCustomPrefix || '').trim();
 
@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
 
                         setTimeout(() => {
-                            startDownloadTask(manualDownloadBtn, title, url, manualQualityDrop.value, "", isAutoTitle);
+                            startDownloadTask(manualDownloadBtn, title, url, manualQualityDrop.value, "", cfg, isAutoTitle);
                         }, index * 100);
                     });
                 });
@@ -423,73 +423,72 @@ document.addEventListener('DOMContentLoaded', () => {
         }))];
     }
 
-    function startDownloadTask(btn, title, url, dropdownValue, pageUrl, isAutoTitle = false) {
+    function startDownloadTask(btn, title, url, dropdownValue, pageUrl, result, isAutoTitle = false) {
         btn.disabled = true;
         btn.innerText = "Procesando...";
 
-        chrome.storage.local.get(['customSavePath', 'formatSetting', 'qualitySetting', 'engineSetting', 'threadCount', 'audioFormat', 'audioQuality', 'audioConvert', 'videoFormatPref', 'ytAudioLang', 'ytSubs', 'cookiesSetting'], (result) => {
-            let customFormatId = '';
-            if (result.qualitySetting === 'detect' && btn.closest('.detected-video-card')) {
-                const detector = btn.closest('.detected-video-card').querySelector('.detect-dropdown');
-                const saved = btn.closest('.detected-video-card').dataset.formatId;
-                if ((!detector || detector.disabled || !detector.value) && !saved) {
-                    btn.disabled = false; btn.innerText = 'Descargar';
-                    const status = btn.closest('.detected-video-card').querySelector('.status-msg');
-                    if (status) { status.style.display = 'block'; status.innerText = detector?.dataset.error || 'Espera a que termine la deteccion y selecciona un formato.'; }
-                    return;
-                }
-                customFormatId = !detector?.disabled && detector?.value ? detector.value : saved;
-            } else if (result.qualitySetting === 'ask') {
-                customFormatId = dropdownValue;
-                if (!customFormatId) customFormatId = "1080";
+        let customFormatId = '';
+        if (result.qualitySetting === 'detect' && btn.closest('.detected-video-card')) {
+            const detector = btn.closest('.detected-video-card').querySelector('.detect-dropdown');
+            const saved = btn.closest('.detected-video-card').dataset.formatId;
+            if ((!detector || detector.disabled || !detector.value) && !saved) {
+                btn.disabled = false; btn.innerText = 'Descargar';
+                const status = btn.closest('.detected-video-card').querySelector('.status-msg');
+                if (status) { status.style.display = 'block'; status.innerText = detector?.dataset.error || 'Espera a que termine la deteccion y selecciona un formato.'; }
+                return;
             }
+            customFormatId = !detector?.disabled && detector?.value ? detector.value : saved;
+        } else if (result.qualitySetting === 'ask') {
+            customFormatId = dropdownValue;
+            if (!customFormatId) customFormatId = "1080";
+        }
 
-            const payload = {
-                action: "download",
-                title: title,
-                url: url,
-                pageUrl: pageUrl,
-                savePath: result.customSavePath || "",
-                formatSetting: result.formatSetting || "mp4",
-                qualitySetting: result.qualitySetting || "max",
-                engineSetting: result.engineSetting || "ytdlp",
-                threadCount: result.threadCount || 4,
-                audioFormat: result.audioFormat || "best",
-                audioQuality: result.audioQuality || "0",
-                audioConvert: result.audioConvert || "mp3",
-                videoFormatPref: result.videoFormatPref || "legado",
-                customFormatId: customFormatId,
-                netscapeCookies: "", // Extraído de forma centralizada en background.js
-                ytAudioLang: result.ytAudioLang || "es",
-                ytSubs: result.ytSubs || "off",
-                isAutoTitle: isAutoTitle
-            };
-            AppState.sendDownload(payload, (response) => {
-                if (chrome.runtime.lastError) {
-                    btn.innerText = "Error Host";
-                    btn.disabled = false;
-                    return;
-                }
-                if (response && response.success) {
-                    // La historia se guarda cuando la descarga se completa exitosamente en background.js
-                    // Actualización visual instantánea para evitar lag percibido
-                    createOrUpdateCard(url, title, true, {
-                        id: response.id,
-                        url: url,
-                        title: title,
-                        status: "queued",
-                        percent: "0"
-                    });
-                } else {
-                    btn.innerText = "Fallido";
-                    btn.disabled = false;
-                }
-            });
+        const payload = {
+            action: "download",
+            title: title,
+            url: url,
+            pageUrl: pageUrl,
+            savePath: result.customSavePath || "",
+            formatSetting: result.formatSetting || "mp4",
+            qualitySetting: result.qualitySetting || "max",
+            engineSetting: result.engineSetting || "ytdlp",
+            threadCount: result.threadCount || 4,
+            audioFormat: result.audioFormat || "best",
+            audioQuality: result.audioQuality || "0",
+            audioConvert: result.audioConvert || "mp3",
+            videoFormatPref: result.videoFormatPref || "legado",
+            customFormatId: customFormatId,
+            netscapeCookies: "", // Extraído de forma centralizada en background.js
+            ytAudioLang: result.ytAudioLang || "es",
+            ytSubs: result.ytSubs || "off",
+            isAutoTitle: isAutoTitle
+        };
+        AppState.sendDownload(payload, (response) => {
+            if (chrome.runtime.lastError) {
+                btn.innerText = "Error Host";
+                btn.disabled = false;
+                return;
+            }
+            if (response && response.success) {
+                // La historia se guarda cuando la descarga se completa exitosamente en background.js
+                // Actualización visual instantánea para evitar lag percibido
+                createOrUpdateCard(url, title, true, {
+                    id: response.id,
+                    url: url,
+                    pageUrl: pageUrl,
+                    title: title,
+                    status: "queued",
+                    percent: "0"
+                });
+            } else {
+                btn.innerText = "Fallido";
+                btn.disabled = false;
+            }
         });
     }
 
     // One card per detected URL or queued task.
-    function createOrUpdateCard(url, title, isTask, taskState, pageUrl) {
+    function createOrUpdateCard(url, title, isTask, taskState, pageUrl = taskState?.pageUrl) {
         // Task IDs distinguish concurrent downloads of the same URL.
         let id = isTask && taskState?.id ? "vid_task_" + taskState.id : "vid_" + btoa(unescape(encodeURIComponent(url))).replace(/[^a-zA-Z0-9]/g, '');
         let el = document.getElementById(id);
@@ -616,11 +615,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     let titleInput = el.querySelector('.preview-title');
                     let currentTitle = titleInput && titleInput.tagName === 'INPUT' ? (titleInput.value.trim() || title) : title;
                     
-                    chrome.storage.local.get(['qualitySetting'], (res) => {
+                    AppState.readSettings(res => {
                         if (res.qualitySetting === 'detect' && detDrop && !detDrop.classList.contains('hidden')) {
                             selectedQuality = detDrop.value;
                         }
-                        startDownloadTask(btn, currentTitle, url, selectedQuality, pageUrl);
+                        startDownloadTask(btn, currentTitle, url, selectedQuality, pageUrl, res);
                     });
                 } else if (btn.innerText === "Cancelar") {
                     let activeTaskId = el.getAttribute('data-taskid');

@@ -5,6 +5,7 @@ import json
 import struct
 import subprocess
 import sys
+import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest.mock import Mock, patch
@@ -14,6 +15,30 @@ sys.path.insert(0, str(HOST_PATH.parent))
 spec = importlib.util.spec_from_file_location('download_host', HOST_PATH)
 host = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(host)
+
+
+class OutputFileTests(unittest.TestCase):
+    def test_receipt_selects_media_even_when_title_differs_and_subtitle_written_last(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            media, sub = root / 'Título [id].mp4', root / 'captions.es.srt'
+            media.write_bytes(b'video')
+            sub.write_bytes(b'captions')
+            receipt = root / 'download-result.jsonl'
+            receipt.write_text(json.dumps(str(media)) + '\n', encoding='utf-8')
+            self.assertEqual(host.engine_output([str(sub)], folder, None, 'Other', receipt), str(media))
+            self.assertEqual(host.engine_output([str(sub)], folder, None, 'Other'), '')
+
+    def test_repeating_a_title_publishes_a_separate_file(self):
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory(dir=directory) as job:
+            previous = Path(directory) / 'Clip [id].mp4'
+            previous.write_bytes(b'english')
+            source = Path(job) / previous.name
+            source.write_bytes(b'espanol')
+            second = Path(host.publish_media(source, directory))
+            self.assertEqual(second.name, 'Clip [id] (2).mp4')
+            self.assertEqual(previous.read_bytes(), b'english')
+            self.assertEqual(second.read_bytes(), b'espanol')
 
 
 class HostShutdownTests(unittest.TestCase):
@@ -55,7 +80,6 @@ class HostShutdownTests(unittest.TestCase):
         process.terminate.assert_called_once()
 
     def test_cancel_during_language_query_does_not_start_a_download(self):
-        import tempfile
         metadata = SimpleNamespace(pid=123, returncode=-15, terminate=Mock())
         def query_result(**kwargs):
             host.cancel_active_processes()

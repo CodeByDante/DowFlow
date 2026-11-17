@@ -1,4 +1,4 @@
-# Calidad y detección — DowFlow 1.3.0
+# Calidad y detección — DowFlow 1.3.1
 
 ## Calidad fija
 
@@ -50,6 +50,6 @@ La consola compartida explica la elección. Un motor ausente produce una alterna
 
 Las pruebas JavaScript usan los HTML y código reales con APIs de Chrome simuladas para comprobar controles, selección de formatos, errores y reintentos, mensajería, caché y captura de enlaces. Las pruebas Python comprueban selectores, herramientas disponibles y reducción de resolución con videos sintéticos y FFmpeg real cuando está instalado. También se contrastó la selección de resoluciones con la biblioteca yt-dlp sobre listas de formatos sintéticas, sin descargar contenido externo.
 
-La ejecución completa de la extensión con páginas reales y motores en Windows sigue pendiente. Para aplicar esta actualización, actualizar los archivos locales, pulsar Recargar en la página de extensiones y volver a abrir el panel. Verificar versión 1.3.0.
+La ejecución completa de la extensión con páginas reales y motores en Windows sigue pendiente. [Cómo actualizar la extensión y el host a la versión 1.3.1](../README_GUIA.md#actualizar-una-instalación-existente)
 
 La selección Español/Original requiere consultar pistas con yt-dlp. Para conservar la pista habitual del origen y permitir otros motores compatibles, elegir Del sitio. Ver [Idiomas de audio](IDIOMAS_AUDIO.md).

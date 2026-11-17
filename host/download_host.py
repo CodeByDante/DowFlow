@@ -7,6 +7,9 @@ import threading
 import re
 import shutil
 import time
+import tempfile
+from pathlib import Path
+from subtitle_tracks import NO_SUBTITLE_DOWNLOAD, prepare_caption_download, finalize_subtitles
 from engines import available_engine
 from audio_tracks import metadata_command, apply_audio_plan
 from video_quality import fixed_height, fixed_selector, detected_selector, enforce_height, clean_formats
@@ -55,6 +58,111 @@ def cancel_active_processes():
                 proc.terminate()
         except OSError:
             pass
+
+def start_child(job, command, **kwargs):
+    with lock:
+        if job.is_cancelled:
+            raise RuntimeError('Descarga cancelada.')
+        child = subprocess.Popen(command, **kwargs)
+        active_processes.append(child)
+        return child
+
+
+def finish_child(child):
+    with lock:
+        if child in active_processes:
+            active_processes.remove(child)
+
+
+def conversion_launcher(job):
+    def start(command):
+        return start_child(job, command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT, creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+    return start
+
+
+def get_track_info(job, args, env):
+    send_message({'status': 'log', 'log': '[Idiomas] Consultando pistas disponibles…'})
+    process = start_child(job, metadata_command(args), stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE, text=True, encoding='utf-8', errors='replace',
+                          creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0), env=env)
+    try:
+        try:
+            raw, errors = process.communicate(timeout=90)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.communicate()
+            raise RuntimeError('La consulta de idiomas superó 90 segundos. Vuelve a intentarlo.')
+        if job.is_cancelled:
+            raise RuntimeError('Descarga cancelada al consultar idiomas.')
+        if process.returncode:
+            raise RuntimeError('No se pudieron consultar las pistas: ' + (errors or '')[-1500:])
+        return json.loads(raw)
+    finally:
+        finish_child(process)
+
+
+def fetch_captions(job, command, env):
+    process = start_child(job, command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                          text=True, encoding='utf-8', errors='replace',
+                          creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0), env=env)
+    try:
+        last_line = ''
+        with process.stdout:
+            for line in process.stdout:
+                last_line = line.strip()
+                if last_line:
+                    send_message({'status': 'log', 'log': '[Subtítulos] ' + last_line})
+        process.wait()
+        if job.is_cancelled:
+            raise RuntimeError('Descarga cancelada al obtener subtítulos.')
+        if process.returncode:
+            raise RuntimeError('Falló el proceso de subtítulos: ' + last_line)
+    finally:
+        finish_child(process)
+
+
+def engine_output(tracked, downloads_path, tmp_folder, output_name, receipt=None):
+    """Prefer yt-dlp's final path, which also works for translated/generated titles."""
+    if receipt and receipt.is_file():
+        with receipt.open(encoding='utf-8') as entries:
+            final = Path(json.loads(next(entries)))
+        return str(final) if final.is_file() and final.stat().st_size else ''
+    # Other engines may only report a destination or use the requested basename.
+    media_extensions = {'.mp4', '.m4v', '.mkv', '.webm', '.mov', '.ts', '.flv', '.avi', '.mpeg',
+                        '.mpg', '.3gp', '.mp3', '.m4a', '.aac', '.opus', '.ogg', '.flac', '.wav'}
+    candidates = [Path(name) for name in reversed(tracked)]
+    if output_name:
+        for directory in (downloads_path, tmp_folder):
+            if directory and Path(directory).is_dir():
+                candidates.extend(p for p in Path(directory).iterdir() if p.stem == output_name)
+    for path in candidates:
+        if (path.suffix.lower() in media_extensions and not re.search(r'\.f[^.]+$', path.stem) and
+                path.is_file() and path.stat().st_size):
+            return str(path)
+    return ''
+
+
+def publish_media(source, directory):
+    """Never reuse the audio/subtitles from an earlier download of the same title."""
+    source = Path(source)
+    target = Path(directory) / source.name
+    counter = 2
+    while True:
+        try:
+            with target.open('xb'):
+                pass
+            break
+        except FileExistsError:
+            target = Path(directory) / f'{source.stem} ({counter}){source.suffix}'
+            counter += 1
+    try:
+        os.replace(source, target)
+    except OSError:
+        target.unlink()
+        raise
+    return str(target)
+
 
 def native_download(url, output_name, downloads_path, thread_count=1, format_type='video', base_title='Video'):
     global active_downloads
@@ -118,10 +226,16 @@ def native_download(url, output_name, downloads_path, thread_count=1, format_typ
             send_message({"status": "log", "log": "[-] Descarga nativa cancelada.", "output_name": output_name})
             send_message({"status": "error", "error": "Descarga cancelada.", "output_name": output_name})
         else:
+            if format_type != 'mp3':
+                bin_dir = Path(__file__).resolve().parent / 'bin'
+                dest = finalize_subtitles(dest, False, None, bin_dir / 'ffmpeg.exe', bin_dir / 'ffprobe.exe',
+                                          conversion_launcher(proc), finish_child)
+            if proc.is_cancelled:
+                raise RuntimeError('Descarga cancelada.')
             send_message({"status": "progress", "percent": "100", "output_name": output_name})
             send_message({"status": "log", "log": f"[Descarga Nativa] 100.0% ({downloaded / 1024 / 1024:.2f} MB Completados)", "output_name": output_name})
             send_message({"status": "log", "log": "[*] Descarga nativa completada con éxito.", "output_name": output_name})
-            send_message({"status": "completed", "output_name": output_name})
+            send_message({"status": "completed", "output_name": output_name, "final_file": dest})
             
     except Exception as e:
         send_message({"status": "log", "log": f"[ERROR] {str(e)}", "output_name": output_name})
@@ -131,8 +245,9 @@ def native_download(url, output_name, downloads_path, thread_count=1, format_typ
             if proc in active_processes:
                 active_processes.remove(proc)
             active_downloads -= 1
+            active_output_names.discard(output_name)
 
-def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None, fixed_limit=None, audio_options=None):
+def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None, fixed_limit=None, audio_options=None, subtitle_enabled=None):
     global active_downloads
     from types import SimpleNamespace
     job = SimpleNamespace(is_cancelled=False)
@@ -140,19 +255,13 @@ def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None
         active_downloads += 1
         active_processes.append(job)
 
-    def launch(command, **kwargs):
-        with lock:
-            if job.is_cancelled:
-                raise RuntimeError('Descarga cancelada.')
-            child = subprocess.Popen(command, **kwargs)
-            active_processes.append(child)
-            return child
-
     task_tracked_files = []
     process = None
+    receipt = None
+    media_stage = None
     
     try:
-        create_no_window = getattr(subprocess, 'CREATE_NO_WINDOW', 0x08000000)
+        create_no_window = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
         
         exe_name = os.path.basename(args[0])
         send_message({"status": "log", "log": f"[*] Iniciando {exe_name}..."})
@@ -161,29 +270,37 @@ def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None
         env["PYTHONUNBUFFERED"] = "1"
         env["PYTHONIOENCODING"] = "utf-8"
         
-        if audio_options:
-            send_message({'status': 'log', 'log': '[Audio] Consultando pistas e idiomas disponibles...'})
-            process = launch(metadata_command(args), stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE, text=True, encoding='utf-8', errors='replace', creationflags=create_no_window, env=env)
-            try:
-                raw_info, errors = process.communicate(timeout=90)
-            except subprocess.TimeoutExpired:
-                process.kill()
-                process.communicate()
-                raise RuntimeError('La consulta de pistas de audio supero 90 segundos. Vuelve a intentarlo.')
-            finally:
-                with lock:
-                    if process in active_processes:
-                        active_processes.remove(process)
-            if job.is_cancelled:
-                raise RuntimeError('Descarga cancelada al consultar idiomas.')
-            if process.returncode:
-                raise RuntimeError('No se pudieron consultar las pistas de audio: ' + (errors or '')[-1500:])
-            info = json.loads(raw_info)
+        if tmp_folder and exe_name.lower() in ('yt-dlp', 'yt-dlp.exe'):
             os.makedirs(tmp_folder, exist_ok=True)
-            args, notice = apply_audio_plan(args, info, audio_options, os.path.join(tmp_folder, 'audio-selection.json'))
-            send_message({'status': 'log', 'log': '[Audio] ' + notice})
-        process = launch(args, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            receipt = Path(tmp_folder) / 'download-result.jsonl'
+            args = list(args)
+            if downloads_path:
+                Path(downloads_path).mkdir(parents=True, exist_ok=True)
+                media_stage = tempfile.TemporaryDirectory(prefix='.dowflow-', dir=downloads_path)
+                # A stable auto-title must never cause yt-dlp to reuse an older language.
+                args[-1:-1] = ['-P', 'home:' + media_stage.name]
+            args = [*args[:-1], '--print-to-file', 'after_move:%(filepath)j',
+                    str(receipt).replace('%', '%%'), args[-1]]
+
+        if audio_options or subtitle_enabled:
+            info = get_track_info(job, args, env)
+            os.makedirs(tmp_folder, exist_ok=True)
+            if subtitle_enabled:
+                caption_command = prepare_caption_download(args, info, tmp_folder)
+                if caption_command:
+                    fetch_captions(job, caption_command, env)
+            # Web captions were handled independently; huge translation catalogs
+            # need not travel in the media selection that yt-dlp loads next.
+            for field in ('subtitles', 'automatic_captions', 'requested_subtitles'):
+                info.pop(field, None)
+            if audio_options:
+                args, notice = apply_audio_plan(args, info, audio_options, os.path.join(tmp_folder, 'audio-selection.json'))
+                send_message({'status': 'log', 'log': '[Audio] ' + notice})
+            else:
+                selection = Path(tmp_folder) / 'media-info.json'
+                selection.write_text(json.dumps(info, ensure_ascii=False), encoding='utf-8')
+                args = [*args[:-1], '--load-info-json', str(selection)]
+        process = start_child(job, args, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          text=True, encoding='utf-8', errors='replace', bufsize=1, creationflags=create_no_window, env=env)
 
         send_message({"status": "log", "log": "[*] Subproceso creado, leyendo respuestas..."})
@@ -280,77 +397,33 @@ def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None
         
         is_cancelled = job.is_cancelled or getattr(process, 'is_cancelled', False)
         
-        final_file = ""
-        import tempfile
-        temp_dir = tempfile.gettempdir()
-        
-        # 1. Buscar en task_tracked_files
-        if task_tracked_files:
-            for f in reversed(task_tracked_files):
-                if os.path.exists(f) and os.path.isfile(f) and os.path.getsize(f) > 0 and not f.endswith(('.jpg', '.png', '.webp', '.part', '.ytdl')):
-                    final_file = f
-                    break
-                    
-        # 2. Si no se encontró, buscar cualquier video del lote en downloads_path o tmp_folder
-        search_dirs = []
-        if downloads_path and os.path.exists(downloads_path):
-            search_dirs.append(downloads_path)
-        if tmp_folder and os.path.exists(tmp_folder):
-            search_dirs.append(tmp_folder)
-            
-        if not final_file and output_name:
-            for d in search_dirs:
-                try:
-                    for f in os.listdir(d):
-                        if f.startswith(output_name) and not f.endswith(('.part', '.ytdl', '.tmp', '.m4a', '.ytdl.part', '.jpg', '.png', '.webp')):
-                            full_path = os.path.join(d, f)
-                            if os.path.isfile(full_path) and os.path.getsize(full_path) > 0:
-                                final_file = full_path
-                                break
-                    if final_file:
-                        break
-                except:
-                    pass
-
-        # Detectar si la falla fue únicamente por incrustar miniatura o metadatos en ffmpeg
-        only_postprocessor_error = False
-        if last_errors and final_file:
-            err_text = " ".join(last_errors).lower()
-            if "embedthumbnail" in err_text or "ffmpegpostprocessorerror" in err_text or "unable to embed" in err_text or "metadata" in err_text:
-                only_postprocessor_error = True
+        actual_home = media_stage.name if media_stage else downloads_path
+        final_file = engine_output(task_tracked_files, actual_home, tmp_folder, output_name, receipt)
+        # A thumbnail failure is recoverable only when every error concerns the thumbnail.
+        only_postprocessor_error = bool(last_errors and final_file) and all(
+            'thumbnail' in error.lower() for error in last_errors)
 
         if (process.returncode == 0 or only_postprocessor_error) and not is_cancelled and final_file:
-            # Si el video quedó en el directorio temporal por el fallo del postprocesador, moverlo a downloads_path
-            if (final_file.startswith(temp_dir) or (tmp_folder and final_file.startswith(tmp_folder))) and downloads_path:
-                try:
-                    target_file = os.path.join(downloads_path, os.path.basename(final_file))
-                    shutil.move(final_file, target_file)
-                    final_file = target_file
-                except Exception:
-                    pass
-                    
+            if tmp_folder and actual_home and Path(tmp_folder).resolve() in Path(final_file).resolve().parents:
+                target = Path(actual_home) / Path(final_file).name
+                final_file = shutil.move(final_file, str(target))
             if only_postprocessor_error:
-                send_message({"status": "log", "log": "[*] ADVERTENCIA: La miniatura/metadatos no se pudieron incrustar (formato no soportado), pero el video se descargó y guardó con éxito."})
+                send_message({"status": "log", "log": "[*] La miniatura no se pudo incrustar."})
+            bin_dir = Path(args[0]).parent
+            ffmpeg, ffprobe = bin_dir / 'ffmpeg.exe', bin_dir / 'ffprobe.exe'
+            start_conversion = conversion_launcher(job)
             if fixed_limit:
-                bin_dir = os.path.dirname(args[0])
-                def start_conversion(command):
-                    with lock:
-                        if job.is_cancelled or getattr(process, 'is_cancelled', False):
-                            raise RuntimeError('Descarga cancelada antes del ajuste de calidad.')
-                        conversion = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                                                      stderr=subprocess.STDOUT, creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
-                        active_processes.append(conversion)
-                        return conversion
-                def finish_conversion(conversion):
-                    with lock:
-                        if conversion in active_processes:
-                            active_processes.remove(conversion)
-                final_file = enforce_height(final_file, fixed_limit,
-                    os.path.join(bin_dir, 'ffmpeg.exe'), os.path.join(bin_dir, 'ffprobe.exe'),
-                    start_conversion, finish_conversion,
+                final_file = enforce_height(final_file, fixed_limit, ffmpeg, ffprobe,
+                    start_conversion, finish_child,
                     lambda text: send_message({'status': 'log', 'log': '[Calidad fija] ' + text}))
-                if job.is_cancelled or getattr(process, 'is_cancelled', False):
-                    raise RuntimeError('Descarga cancelada durante el ajuste de calidad.')
+            if subtitle_enabled is not None:
+                final_file = finalize_subtitles(final_file, subtitle_enabled, tmp_folder, ffmpeg, ffprobe,
+                    start_conversion, finish_child,
+                    lambda text: send_message({'status': 'log', 'log': '[Subtítulos] ' + text}))
+            if job.is_cancelled or getattr(process, 'is_cancelled', False):
+                raise RuntimeError('Descarga cancelada.')
+            if media_stage:
+                final_file = publish_media(final_file, downloads_path)
             send_message({"status": "completed", "final_file": final_file})
         else:
             if not is_cancelled:
@@ -388,6 +461,8 @@ def handle_download(args, output_name=None, downloads_path=None, tmp_folder=None
             if output_name and output_name in active_output_names:
                 active_output_names.remove(output_name)
         
+        if media_stage:
+            media_stage.cleanup()
         # Limpiar carpeta temporal si existe
         if tmp_folder and os.path.exists(tmp_folder):
             try:
@@ -475,7 +550,7 @@ def main():
                 ytdlp_path = os.path.join(bin_dir, "yt-dlp.exe")
                 
                 try:
-                    create_no_window = getattr(subprocess, 'CREATE_NO_WINDOW', 0x08000000)
+                    create_no_window = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
                     result = subprocess.run([ytdlp_path, '--flat-playlist', '-J', url], capture_output=True, text=True, check=True, creationflags=create_no_window)
                     info = json.loads(result.stdout)
                     send_message({"status": "info", "info": info})
@@ -509,8 +584,10 @@ def main():
                 fixed_limit = fixed_height(msg.get('fixedQuality', 1080)) if quality_setting == 'fixed' and format_type != 'mp3' else None
                 engine_setting = msg.get('engineSetting', 'ytdlp')
                 
-                # Fixed/detected formats need yt-dlp rather than a motor that ignores format selection.
-                if (format_type == 'mp3' or quality_setting in ('fixed', 'detect', 'ask', 'min') or msg.get('ytAudioLang', 'es') in ('es', 'orig')) and engine_setting not in ('ytdlp', 'aria2'):
+                yt_audio_lang = msg.get('ytAudioLang', 'es')
+                subtitle_enabled = format_type != 'mp3' and msg.get('ytSubs', 'off') in (True, 'on')
+                needs_track_selection = subtitle_enabled or yt_audio_lang in ('es', 'orig')
+                if (format_type == 'mp3' or quality_setting in ('fixed', 'detect', 'ask', 'min') or needs_track_selection) and engine_setting not in ('ytdlp', 'aria2'):
                     engine_setting = 'ytdlp'
                     
                 thread_count = int(msg.get('threadCount', 4))
@@ -522,8 +599,6 @@ def main():
                 if quality_setting == 'detect' and format_type != 'mp3':
                     detected_selector(custom_format_id)
                 netscape_cookies = msg.get('netscapeCookies', '')
-                yt_audio_lang = msg.get('ytAudioLang', 'es')
-                yt_subs = msg.get('ytSubs', 'off')
                 auto_engine_status = msg.get('autoEngine', True)
                 
                 global tracked_files
@@ -573,7 +648,7 @@ def main():
                         with open(update_lock_file, 'w') as f_lock:
                             f_lock.write(str(os.getpid()))
                         send_message({"status": "log", "log": "[*] Comprobando actualizaciones de yt-dlp (rápido)..."})
-                        create_no_window = getattr(subprocess, 'CREATE_NO_WINDOW', 0x08000000)
+                        create_no_window = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
                         subprocess.run([ytdlp_path, '--update-to', 'master'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=create_no_window, timeout=10)
                         with open(update_flag_file, 'w') as f:
                             f.write(str(time.time()))
@@ -677,7 +752,8 @@ def main():
                     except Exception:
                         pass
                         
-                    threading.Thread(target=handle_download, args=(args, output_name, downloads_path, tmp_folder_nm), daemon=False).start()
+                    args.extend(['--drop-subtitle', 'all'])
+                    threading.Thread(target=handle_download, args=(args, output_name, downloads_path, tmp_folder_nm, None, None, False), daemon=False).start()
                     return
                 # End N_m3u8DL-RE Mode
                 
@@ -790,8 +866,7 @@ def main():
                 if sort_directives:
                     args.extend(['-S', ','.join(sort_directives)])
                     
-                if yt_subs == 'on':
-                    args.extend(['--write-subs', '--write-auto-subs', '--sub-langs', 'es.*,en.*', '--embed-subs'])
+                args.extend(NO_SUBTITLE_DOWNLOAD)
                         
                 if engine_setting == 'aria2':
                     aria2c_path = os.path.join(bin_dir, "aria2c.exe")
@@ -815,7 +890,8 @@ def main():
                         'audio_quality': audio_quality, 'format_type': format_type,
                         'quality': quality_setting, 'video_preference': video_format_pref,
                         'fixed_limit': fixed_limit, 'custom_id': custom_format_id}
-                threading.Thread(target=handle_download, args=(args, output_name, downloads_path, tmp_folder_ytdlp, fixed_limit, audio_options), daemon=False).start()
+                threading.Thread(target=handle_download, args=(args, output_name, downloads_path, tmp_folder_ytdlp, fixed_limit, audio_options,
+                                                              subtitle_enabled if format_type != 'mp3' else None), daemon=False).start()
                 
             elif msg.get('command') == 'cancel':
                 cancel_active_processes()

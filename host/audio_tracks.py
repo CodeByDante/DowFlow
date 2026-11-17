@@ -1,6 +1,8 @@
 """Select an offered audio track before building download format selectors."""
 import copy
+import json
 import re
+from pathlib import Path
 
 SAFE_ID = re.compile(r'[A-Za-z0-9_.-]+')
 
@@ -28,19 +30,24 @@ def _descriptive(track):
 
 def select_audio(info, preference='es', audio_format='best', audio_quality='0'):
     tracks = [item for item in info.get('formats') or [info]
-              if item.get('acodec') not in (None, 'none') and
+              if item.get('acodec') != 'none' and
+              (item.get('acodec') is not None or item.get('vcodec') == 'none') and
               SAFE_ID.fullmatch(str(item.get('format_id') or ''))]
     if not tracks:
         return None, 'El origen no publica pistas de audio seleccionables.'
     spanish = [item for item in tracks if _language(item).split('-')[0] in ('es', 'spa') or
                (not _language(item) and re.search(r'spanish|espa[nñ]ol|castellano', str(item.get('format_note') or ''), re.I))]
-    originals = [item for item in tracks if _original(item)]
+    youtube = str(info.get('extractor_key') or info.get('extractor') or '').lower() == 'youtube'
+    # yt-dlp's YouTube extractor marks original audio as 10, and default dubs as 5.
+    originals = [item for item in tracks if _original(item) or
+                 (youtube and _number(item.get('language_preference')) == 10)]
     if preference == 'es' and spanish:
         candidates, reason = spanish, 'Se eligio una pista en espanol disponible.'
     elif originals:
         languages = {_language(item) for item in originals if _language(item)}
-        candidates = [item for item in tracks if _original(item) or (_language(item) and _language(item) in languages)]
-        reason = 'No hay pista en espanol; se eligio la original.' if preference == 'es' else 'Se eligio la pista identificada como original.'
+        ids = {item['format_id'] for item in originals}
+        candidates = [item for item in tracks if item['format_id'] in ids or _language(item) in languages]
+        reason = 'No hay pista en espanol identificada por el sitio; se eligio la original.' if preference == 'es' else 'Se eligio la pista identificada como original.'
     else:
         highest = max(_number(item.get('language_preference'), -1) for item in tracks)
         candidates = [item for item in tracks if _number(item.get('language_preference'), -1) == highest]
@@ -49,7 +56,7 @@ def select_audio(info, preference='es', audio_format='best', audio_quality='0'):
         candidates = primary_candidates or candidates
         reason = 'El sitio no identifica una pista original; se conserva su preferencia predeterminada.'
         if preference == 'es':
-            reason = 'No hay pista en espanol. ' + reason
+            reason = 'No hay pista en espanol identificada por el sitio. ' + reason
     regular = [item for item in candidates if not _descriptive(item)]
     candidates = regular or candidates
     cap = _number(audio_quality)
@@ -144,17 +151,21 @@ def metadata_command(args):
 
 
 def apply_audio_plan(args, info, options, info_path):
-    import json
-    from pathlib import Path
     chosen, notice = select_audio(info, options['preference'], options.get('audio_format', 'best'), options.get('audio_quality', '0'))
     audio_only = options.get('format_type') == 'mp3'
-    if chosen is None:
-        if audio_only:
-            raise ValueError('El origen no publica ninguna pista de audio para descargar.')
-        return args, notice
     raw_formats = info.get('formats') or [info]
-    single_combined = not audio_only and len(raw_formats) == 1 and chosen.get('vcodec') not in (None, 'none')
-    if single_combined:
+    # Generic direct media URLs often have neither codec until the file exists.
+    # Keep their normal selector and inspect the download before extraction.
+    plugin_args = ['--plugin-dirs', str(Path(__file__).resolve().parent / 'yt_plugins'),
+                   '--use-postprocessor', 'DowFlowAudio:preference=' + options['preference']]
+    merging = False
+    if chosen is None:
+        if audio_only and all(fmt.get('acodec') == 'none' for fmt in raw_formats):
+            raise ValueError('El origen no publica ninguna pista de audio para descargar.')
+        prepared = copy.deepcopy(info)
+        selector = args[args.index('-f') + 1]
+        notice = 'El idioma se comprobará en el archivo descargado.'
+    elif not audio_only and len(raw_formats) == 1 and chosen.get('vcodec') != 'none':
         if options.get('quality') == 'detect' and options.get('custom_id') != chosen['format_id']:
             raise ValueError('El formato del Detector ya no esta disponible. Vuelve a detectarlo.')
         prepared = copy.deepcopy(info)
@@ -166,6 +177,7 @@ def apply_audio_plan(args, info, options, info_path):
         if audio_only:
             selector = audio_id
         else:
+            merging = True
             selector = video_selector(options.get('quality', 'max'), audio_id,
                 options.get('video_preference', 'legado'), options.get('fixed_limit'),
                 options.get('custom_id', ''), video_ids)
@@ -173,9 +185,21 @@ def apply_audio_plan(args, info, options, info_path):
     # will be chosen again by the final download command.
     for key in ('requested_formats', 'requested_downloads', 'requested_subtitles', '_filename', 'filepath', '__files_to_merge'):
         prepared.pop(key, None)
+    for fmt in prepared.get('formats') or [prepared]:
+        # FFmpegFD defaults to one audio stream when it downloads an HLS
+        # rendition itself. Keep its siblings until the local probe can select.
+        if fmt.get('protocol') in ('m3u8', 'm3u8_native') and fmt.get('manifest_stream_number') is None:
+            downloader = fmt.setdefault('downloader_options', {})
+            ffmpeg_args = downloader.setdefault('ffmpeg_args_out', [])
+            if '-map' not in ffmpeg_args:
+                ffmpeg_args.extend(['-map', '0:v:0?', '-map', '0:a?', '-map', '0:s?'])
     Path(info_path).write_text(json.dumps(prepared, ensure_ascii=False), encoding='utf-8')
     updated = list(args[:-1])
     index = updated.index('-f')
     updated[index + 1] = selector
+    updated.extend(plugin_args)
+    if merging:
+        # FFmpegFD can merge while downloading and bypass the local merger hook.
+        updated.extend(['--compat-options', 'no-direct-merge'])
     updated.extend(['--load-info-json', str(info_path)])
     return updated, notice

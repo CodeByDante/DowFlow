@@ -19,11 +19,15 @@ Extensión para navegadores Chromium conectada a un host local en Python mediant
 
 Más detalles y límites en [Calidad y detección](docs/CALIDAD_Y_DETECCION.md).
 
-## Pistas de audio e idiomas
+## Audio y subtítulos en YouTube y otros sitios
 
-En **Audio e idiomas**, Español selecciona una pista española ofrecida por el origen; si no existe, elige la original identificada. Original prioriza la pista marcada como original. Si el sitio no identifica esa pista, se utiliza su preferencia predeterminada y se informa en la consola. Del sitio mantiene la elección habitual del origen.
+En **Configuración → Audio e idiomas**, deja **Español** para guardar el doblaje en español que ofrezca el video. Si falta, DowFlow usa la pista original. Si el sitio tampoco identifica la original, usa la pista predeterminada del sitio. Puedes elegir **Original** o **Del sitio** directamente. La consola indica qué pista seleccionó DowFlow cuando eliges Español u Original.
 
-Funciona con los sitios compatibles que exponen sus pistas mediante yt-dlp, no solo con YouTube. No genera traducciones ni doblajes. La consola muestra el idioma y la pista elegida. Más detalles en [Idiomas de audio](docs/IDIOMAS_AUDIO.md).
+Para YouTube, pega la URL de la página del video. Así se pueden consultar todas sus pistas. En otros sitios compatibles también conviene usar la página del video o un manifiesto que contenga los distintos audios. Un enlace directo a una sola pista ofrece únicamente ese audio.
+
+**Subtítulos** empieza en **Desactivados** cada vez que inicias el navegador. Elige **Añadir pistas (ES/EN)** antes de enviar un video o lote para incluir los subtítulos disponibles en español e inglés. La selección se comparte entre el popup y la Caja de Herramientas durante esa sesión. Las pistas se guardan apagadas y se pueden elegir en VLC desde **Subtítulo → Pista de subtítulos**. El audio del archivo se consulta en **Audio → Pista de audio**.
+
+[Detalles de la selección de idiomas y pruebas de reproducción](docs/IDIOMAS_AUDIO.md)
 
 ## Instalación en Windows
 
@@ -39,7 +43,7 @@ Si se mueve la carpeta del proyecto o cambia el ID de la extensión, volver a ej
 
 ## Guía visual de DowFlow
 
-Las capturas muestran DowFlow 1.3.0 en Chromium. Los videos, el historial y las tareas que aparecen en ellas son ejemplos.
+Las capturas se tomaron en Chromium con DowFlow 1.3.0 y 1.3.1. Los videos, el historial y las tareas que aparecen en ellas son ejemplos.
 
 [Ventana de la extensión](#ventana-de-la-extensión) · [Caja de Herramientas](#caja-de-herramientas) · [Selección de calidad](#selección-de-calidad)
 
@@ -144,7 +148,7 @@ Cambia el formato, la calidad o la carpeta de destino desde esta pantalla. El po
 <details>
 <summary>Ver carpeta, idioma y subtítulos</summary>
 
-Elige dónde guardar los archivos y qué pista de audio prefieres. Si el video ofrece subtítulos, puedes elegir **Incrustar (ES/EN)** para activarlos o desactivarlos después desde tu reproductor.
+Elige dónde guardar los archivos y qué pista de audio prefieres. La captura de DowFlow 1.3.1 muestra **Desactivados** seleccionado. Para incluir los subtítulos disponibles, pulsa **Añadir pistas (ES/EN)**.
 
 ![Configuración de nombres de lote, carpeta de destino, idioma y subtítulos](docs/capturas/caja-ajustes-idiomas.png)
 
@@ -184,11 +188,12 @@ Los binarios, registros, cookies y la configuración generada para cada PC no se
 
 ## Actualizar una instalación existente
 
-Descargar los archivos nuevos o ejecutar `git pull` en la carpeta local. En la página de extensiones del navegador, pulsar **Recargar** y cerrar y abrir de nuevo el panel de herramientas. La extensión debe aparecer como **DowFlow**, versión **1.3.0**. Los cambios de GitHub no actualizan automáticamente una extensión cargada como descomprimida.
+1. Espera a que terminen las descargas y cierra la Caja de Herramientas y el navegador por completo. Al cerrar su conexión, DowFlow termina el proceso del host local.
+2. Actualiza **las dos carpetas, `extension/` y `host/`**, en la instalación que ya utilizas. Si la instalaste con Git, ejecuta `git pull` desde la raíz. Si usaste un ZIP, extrae la nueva versión y copia sus archivos sobre los de la instalación existente. Conserva `host/bin/` y el manifiesto local `host/com.gonzalo.videodownloader.json`. La selección de pistas y el montaje del archivo dependen del código Python incluido en `host/`.
+3. Abre de nuevo el navegador. En `chrome://extensions`, `edge://extensions` o `brave://extensions`, pulsa **Recargar** en DowFlow. Si moviste el proyecto o cambió el ID de la extensión, ejecuta `conectar_extension.bat` con el ID actual.
+4. Abre DowFlow y comprueba **Acerca de → Versión 1.3.1**. Abre de nuevo la Caja de Herramientas si la usas. La siguiente descarga iniciará el host actualizado. Para comprobar el ajuste, abre **Configuración → Audio e idiomas** y verifica que **Subtítulos** esté en **Desactivados**.
 
-Si cambió la ubicación de la carpeta o el ID de la extensión, volver a ejecutar `conectar_extension.bat`. No hace falta reinstalar los motores si siguen disponibles en `host/bin/`.
-
-La sincronización del popup y panel utiliza el mismo perfil e instalación de la extensión. Detalles en [Sincronización](docs/SINCRONIZACION.md).
+[Cómo se comparten los ajustes entre el popup y la Caja de Herramientas](docs/SINCRONIZACION.md)
 
 ## Verificación
 

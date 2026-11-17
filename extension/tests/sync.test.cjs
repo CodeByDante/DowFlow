@@ -13,29 +13,33 @@ function event() {
     return { addListener: fn => listeners.add(fn), removeListener: fn => listeners.delete(fn), emit: (...args) => [...listeners].forEach(fn => fn(...args)) };
 }
 function createBus(initial = {}) {
-    const clients = [], ports = [], timers = [], data = clone(initial);
+    const clients = [], ports = [], timers = [], data = clone(initial), session = {};
     let writes = 0;
     const bus = {
-        data, ports, timers, formatResponses: new Map(), scanResults: [], get writes() { return writes; },
+        data, session, ports, timers, formatResponses: new Map(), scanResults: [], get writes() { return writes; },
+        activeTab: { id: 1, url: 'https://example.com/video', title: 'Example video' },
         client() {
             const changes = event(), messages = event();
-            const client = {
-                storage: { onChanged: changes, local: {
+            function storageArea(area, values) {
+                return {
                     get(keys, callback) {
-                        const result = keys === null ? clone(data) : Object.fromEntries((Array.isArray(keys) ? keys : [keys]).filter(k => k in data).map(k => [k, clone(data[k])]));
+                        const result = keys === null ? clone(values) : Object.fromEntries((Array.isArray(keys) ? keys : [keys]).filter(k => k in values).map(k => [k, clone(values[k])]));
                         queueMicrotask(() => callback(result));
                     },
                     set(patch, callback = () => {}) {
                         writes++;
                         const changed = {};
                         for (const [key, value] of Object.entries(patch)) {
-                            if (JSON.stringify(data[key]) === JSON.stringify(value)) continue;
-                            changed[key] = { oldValue: clone(data[key]), newValue: clone(value) };
-                            data[key] = clone(value);
+                            if (JSON.stringify(values[key]) === JSON.stringify(value)) continue;
+                            changed[key] = { oldValue: clone(values[key]), newValue: clone(value) };
+                            values[key] = clone(value);
                         }
-                        queueMicrotask(() => { if (Object.keys(changed).length) clients.forEach(c => c.storage.onChanged.emit(clone(changed), 'local')); callback(); });
+                        queueMicrotask(() => { if (Object.keys(changed).length) clients.forEach(c => c.storage.onChanged.emit(clone(changed), area)); callback(); });
                     }
-                } },
+                };
+            }
+            const client = {
+                storage: { onChanged: changes, local: storageArea('local', data), session: storageArea('session', session) },
                 runtime: { onMessage: messages, onInstalled: event(), lastError: undefined,
                     getURL: name => `chrome-extension://test/${name}`,
                     sendMessage(message, callback = () => {}) {
@@ -64,7 +68,7 @@ function createBus(initial = {}) {
                         return port;
                     }
                 },
-                tabs: { query: (_, cb) => queueMicrotask(() => cb([{ id: 1, url: 'https://example.com/video', title: 'Example video' }])), create() {}, onUpdated: event(), onRemoved: event() },
+                tabs: { query: (_, cb) => queueMicrotask(() => cb([clone(bus.activeTab)])), create() {}, onUpdated: event(), onRemoved: event() },
                 webRequest: { onBeforeRequest: event(), onHeadersReceived: event() }, contextMenus: { create() {}, onClicked: event() },
                 cookies: { getAll: (_, cb) => queueMicrotask(() => cb([])) },
                 scripting: { executeScript: (_, cb) => queueMicrotask(() => cb?.(clone(bus.scanResults))) }
@@ -135,7 +139,7 @@ test('all common settings synchronize in both directions, without feedback write
         ]) {
             setRadio(from, name, value);
             await flush();
-            assert.equal(bus.data[key], stored);
+            assert.equal((key === 'ytSubs' ? bus.session : bus.data)[key], stored);
             assert.equal(to.window.document.querySelector(`input[name="${name}"]:checked`).value, value);
         }
         for (const [id, value, key, eventType] of [
@@ -206,11 +210,11 @@ test('console messages appear once in both pages and clearing propagates', async
     assert.equal(popup.window.document.getElementById('debugConsole').textContent, '');
 });
 
-test('legacy booleans normalize and both pages reopen with identical defaults', async t => {
+test('legacy local subtitle consent is ignored and legacy engine flags keep working', async t => {
     const { popup, tools } = await setup({ ytSubs: true, autoEngine: 'off', snifferEnabled: 'off' });
     t.after(() => { popup.window.close(); tools.window.close(); });
     for (const dom of [popup, tools]) {
-        assert.equal(dom.window.document.querySelector('input[name="ytSubs"]:checked').value, 'on');
+        assert.equal(dom.window.document.querySelector('input[name="ytSubs"]:checked').value, 'off');
         assert.equal(dom.window.document.querySelector('input[name="autoEngine"]:checked').value, 'off');
         assert.equal(dom.window.document.getElementById('threadSlider').value, '4');
     }
@@ -246,7 +250,7 @@ test('settings changes arriving during the initial read override stale snapshots
     const context = vm.createContext({ chrome, console });
     vm.runInContext(source('state.js'), context);
     const seen = [];
-    context.AppState.watchLocal(['formatSetting', 'batchCustomPrefix'], values => seen.push(values));
+    context.AppState.watchStorage(['formatSetting', 'batchCustomPrefix'], values => seen.push(values));
     chrome.storage.onChanged.emit({ formatSetting: { newValue: 'mp3' }, batchCustomPrefix: { newValue: 'Nuevo' } }, 'local');
     read({ formatSetting: 'mp4', batchCustomPrefix: 'Viejo' });
     assert.equal(seen.length, 1);
@@ -555,4 +559,142 @@ test('site-neutral audio preferences synchronize and are forwarded unchanged', a
     assert.equal(bus.ports.at(-1).posted[0].engineSetting, 'ytdlp');
     assert.equal(popup.window.document.body.textContent.includes('Exclusivo de YouTube'), false);
     assert.equal(tools.window.document.body.textContent.includes('Exclusivo de YouTube'), false);
+});
+
+test('subtitles require a new opt-in after restart, including upgrades with local on', async t => {
+    const { bus, popup, tools, worker } = await setup({ ytSubs: 'on', autoEngine: false, maxConcurrentDownloads: 6 });
+    t.after(() => { popup.window.close(); tools.window.close(); });
+    const track = 'https://r2.googlevideo.com/videoplayback?itag=140';
+    const watch = 'https://www.youtube.com/watch?v=Abc_123-xyz';
+    function downloadByMenu() {
+        worker.chrome.contextMenus.onClicked.emit(
+            { menuItemId: 'download_video_link', srcUrl: track, pageUrl: watch }, { title: 'Clip', url: watch });
+    }
+    downloadByMenu();
+    await flush();
+    const first = bus.ports.at(-1).posted[0];
+    assert.equal(first.ytSubs, 'off');
+    assert.equal(first.ytAudioLang, 'es');
+    assert.equal(first.url, watch);
+
+    setRadio(popup, 'ytSubs', 'on');
+    setRadio(tools, 'ytAudioLang', 'orig');
+    await flush();
+    const panel = tools.window.document;
+    panel.getElementById('bulkUrlsInput').value = 'https://example.com/first\nhttps://example.com/second';
+    panel.getElementById('startBulkDownloadBtn').click();
+    downloadByMenu();
+    await flush();
+    const optedIn = bus.ports.slice(1).map(port => port.posted[0]);
+    assert.equal(optedIn.length, 3);
+    assert.ok(optedIn.every(item => item.ytSubs === 'on' && item.ytAudioLang === 'orig' && item.autoEngine === false));
+
+    const restarted = await setup(bus.data);
+    t.after(() => { restarted.popup.window.close(); restarted.tools.window.close(); });
+    for (const dom of [restarted.popup, restarted.tools]) {
+        assert.equal(dom.window.document.querySelector('input[name="ytSubs"]:checked').value, 'off');
+        assert.equal(dom.window.document.querySelector('input[name="ytAudioLang"]:checked').value, 'orig');
+    }
+    await send(restarted.popup.window.chrome, { action: 'download', url: watch });
+    await flush();
+    assert.equal(restarted.bus.ports.at(-1).posted[0].ytSubs, 'off');
+});
+
+test('popup manual batches keep the subtitle choice made when the batch was started', async t => {
+    const { bus, popup, tools } = await setup({ ytSubs: 'on', maxConcurrentDownloads: 5 });
+    t.after(() => { popup.window.close(); tools.window.close(); });
+    const page = popup.window.document;
+    const button = page.getElementById('manualDownloadBtn');
+    // Run both staggered download callbacks after changing the live setting.
+    const staged = [];
+    popup.window.setTimeout = (run, delay) => { if (delay < 1000) staged.push(run); };
+    setRadio(tools, 'ytSubs', 'on');
+    await flush();
+    button.innerText = 'Descargar';
+    page.getElementById('manualUrlInput').value = 'https://example.com/a\nhttps://example.com/b';
+    button.click();
+    await flush();
+    setRadio(tools, 'ytSubs', 'off');
+    await flush();
+    staged.forEach(run => run());
+    await flush();
+    const downloads = bus.ports.flatMap(port => port.posted).filter(msg => msg.command === 'download');
+    assert.equal(downloads.length, 2);
+    assert.ok(downloads.every(item => item.ytSubs === 'on' && item.ytAudioLang === 'es'));
+});
+
+test('popup Detector offers the watch page formats for a detected YouTube track', async t => {
+    const bus = createBus({ ytSubs: 'on', qualitySetting: 'detect' });
+    const watch = 'https://www.youtube.com/watch?v=Abc_123-xyz';
+    bus.activeTab.url = watch + '&t=15';
+    const track = 'https://r2.googlevideo.com/videoplayback?itag=137';
+    bus.data.sniffedUrls = { 1: [track, 'https://r3.googlevideo.com/videoplayback?itag=140'] };
+    bus.formatResponses.set(watch, detectorInfo);
+    bus.formatResponses.set(bus.activeTab.url, detectorInfo);
+    bus.worker();
+    const popup = await bus.page('popup');
+    t.after(() => popup.window.close());
+    const trackQueries = bus.ports.flatMap(port => port.posted).filter(msg => msg.command === 'get_info' && msg.url === watch);
+    assert.equal(trackQueries.length, 1, 'coalesce the individual track requests for a video');
+    const card = [...popup.window.document.querySelectorAll('[data-url]')].find(el => el.dataset.url === track);
+    const select = card.querySelector('.detect-dropdown');
+    assert.equal(select.disabled, false);
+    select.value = 'low-real';
+    const button = card.querySelector('.main-btn');
+    button.innerText = 'Descargar';
+    button.click();
+    await flush();
+    const download = bus.ports.flatMap(port => port.posted).find(msg => msg.command === 'download');
+    assert.equal(download.url, watch);
+    assert.equal(download.customFormatId, 'low-real');
+    assert.equal(download.engineSetting, 'ytdlp');
+    assert.equal(download.ytAudioLang, 'es');
+    assert.equal(download.ytSubs, 'off');
+});
+
+test('canonical pages require a recognized video and a related media source', async t => {
+    const { popup, tools } = await setup();
+    t.after(() => { popup.window.close(); tools.window.close(); });
+    const { mediaSourceUrl, playlistEntryUrl } = popup.window.AppState;
+    const id = 'Abc_123-xyz';
+    const watch = 'https://www.youtube.com/watch?v=' + id;
+    const track = 'https://rr1.googlevideo.com/videoplayback?itag=140';
+    for (const page of [watch, 'https://youtu.be/' + id, 'https://m.youtube.com/shorts/' + id, 'https://www.youtube.com/embed/' + id]) {
+        assert.equal(mediaSourceUrl(track, page), watch);
+    }
+    assert.equal(mediaSourceUrl('blob:https://www.youtube.com/blob-id', watch), watch);
+    for (const [media, page] of [
+        [track, 'https://www.youtube.com/playlist?list=1'], [track, 'https://www.youtube.com/watch?v=bad'],
+        [track, 'https://www.youtube.com.evil.example/watch?v=' + id], [track, 'https://x@yOuTuBe.com/watch?v=' + id],
+        ['https://evilgooglevideo.com/videoplayback', watch], ['https://cdn.example/video.mp4', watch],
+        ['https://rr1.googlevideo.com/unrelated', watch], ['blob:https://example.com/blob-id', watch],
+        [track, 'https://example.com/page'], [track, undefined]
+    ]) assert.equal(mediaSourceUrl(media, page), media);
+    assert.equal(playlistEntryUrl({ id }, 'https://other.example/playlist'), null);
+    assert.equal(playlistEntryUrl({ id, ie_key: 'Vimeo' }, watch), null);
+    assert.equal(playlistEntryUrl({ id, ie_key: 'Youtube' }, watch), watch);
+    assert.equal(playlistEntryUrl({ webpage_url: 'javascript:alert(1)', url: track }, watch), track);
+});
+
+test('each selected playlist entry uses its own page and current session subtitle preference', async t => {
+    const { bus, popup, tools } = await setup({ maxConcurrentDownloads: 3 });
+    t.after(() => { popup.window.close(); tools.window.close(); });
+    const panel = tools.window.document;
+    setRadio(popup, 'ytSubs', 'on');
+    setRadio(tools, 'ytAudioLang', 'orig');
+    panel.getElementById('playlistUrlInput').value = 'https://example.com/playlist';
+    panel.getElementById('fetchPlaylistBtn').click();
+    await flush();
+    const first = 'https://www.youtube.com/watch?v=Abc_123-xyz';
+    const second = 'https://example.org/video/2';
+    bus.ports[0].onMessage.emit({ status: 'info', info: { entries: [
+        { title: 'First', webpage_url: first, url: 'https://r2.googlevideo.com/videoplayback?itag=140' },
+        { title: 'Second', webpage_url: second, url: 'https://cdn.example/stream.mp4' }
+    ] } });
+    await flush();
+    panel.getElementById('downloadSelectedPlaylistBtn').click();
+    await flush();
+    const downloads = bus.ports.flatMap(port => port.posted).filter(msg => msg.command === 'download');
+    assert.deepEqual(downloads.map(msg => msg.url).sort(), [first, second].sort());
+    assert.ok(downloads.every(msg => msg.ytSubs === 'on' && msg.ytAudioLang === 'orig' && msg.engineSetting === 'ytdlp'));
 });

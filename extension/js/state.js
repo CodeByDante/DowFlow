@@ -42,12 +42,51 @@
         }
         return state;
     }
+    function webUrl(raw) {
+        try {
+            const url = new URL(raw);
+            if (['http:', 'https:'].includes(url.protocol) && !url.username && !url.password) return url;
+        } catch (_) {}
+        return null;
+    }
+    function isYouTube(host) {
+        return /^(?:(?:www|m|music)\.)?youtube\.com$/.test(host) || host === 'youtu.be';
+    }
+    function youtubeVideoId(page) {
+        if (!page || page.port || !isYouTube(page.hostname)) return null;
+        let id;
+        if (page.hostname === 'youtu.be') id = page.pathname.slice(1);
+        else if (page.pathname === '/watch') id = page.searchParams.get('v');
+        else id = page.pathname.match(/^\/(?:shorts|live|embed)\/([^/]+)\/?$/)?.[1];
+        return /^[A-Za-z0-9_-]{11}$/.test(id || '') ? id : null;
+    }
+    // A YouTube player can expose just one audio or video stream. Extract its watch page.
+    function mediaSourceUrl(raw, pageUrl) {
+        if (typeof raw !== 'string' || !pageUrl || raw === pageUrl) return raw;
+        const page = webUrl(pageUrl);
+        const id = youtubeVideoId(page);
+        if (!id) return raw;
+        const media = webUrl(raw);
+        const youtubeStream = media && !media.port && /(^|\.)googlevideo\.com$/.test(media.hostname)
+            && /^\/(?:videoplayback|api\/manifest)(?:\/|$)/.test(media.pathname);
+        if (youtubeStream || raw.startsWith('blob:' + page.origin + '/')) return 'https://www.youtube.com/watch?v=' + id;
+        return raw;
+    }
+    function playlistEntryUrl(entry, playlistUrl) {
+        // webpage_url belongs to this entry, even when its media is on a different CDN.
+        for (const raw of [entry.webpage_url, entry.url]) {
+            if (webUrl(raw)) return raw;
+        }
+        const extractor = entry.ie_key || entry.extractor_key;
+        const youtube = extractor ? extractor.toLowerCase() === 'youtube' : isYouTube(webUrl(playlistUrl)?.hostname);
+        return youtube && /^[A-Za-z0-9_-]{11}$/.test(entry.id || '') ? 'https://www.youtube.com/watch?v=' + entry.id : null;
+    }
     function chooseEngine(request, automatic = true) {
         const manual = ['ytdlp', 'aria2', 'nm3u8', 'native'].includes(request.engineSetting) ? request.engineSetting : 'ytdlp';
         const needsProcessing = request.formatSetting === 'mp3' || ['fixed', 'detect', 'ask', 'min'].includes(request.qualitySetting) || request.ytSubs === 'on' || ['es', 'orig'].includes(request.ytAudioLang);
-        if (needsProcessing) {
+        if (needsProcessing || mediaSourceUrl(request.url, request.pageUrl) !== request.url) {
             return { engine: !automatic && manual === 'aria2' ? 'aria2' : 'ytdlp',
-                reason: 'El idioma, formato, calidad o subtitulos solicitados necesitan seleccion o procesamiento con yt-dlp.' };
+                reason: 'La selección de pistas, formato y calidad de la fuente requiere procesamiento con yt-dlp.' };
         }
         if (!automatic) return { engine: manual, reason: 'Se conserva el motor elegido manualmente.' };
         let url;
@@ -62,25 +101,36 @@
         if (/\.mp4$/.test(pathname)) return { engine: 'native', reason: 'Archivo MP4 directo sin conversion ni seleccion de calidad.' };
         return { engine: 'ytdlp', reason: 'Pagina web u otro formato: yt-dlp analizara sus opciones.' };
     }
+    // A previous release kept ytSubs in local storage. Only the current session may opt in.
+    function storageArea(key) {
+        return key === 'ytSubs' ? 'session' : 'local';
+    }
+    function readStored(keys, callback) {
+        if (!keys.includes('ytSubs')) return chrome.storage.local.get(keys, callback);
+        chrome.storage.local.get(keys.filter(key => key !== 'ytSubs'), values => {
+            chrome.storage.session.get('ytSubs', session => callback({ ...values, ...session }));
+        });
+    }
     function readSettings(callback) {
-        chrome.storage.local.get(Object.keys(defaults), values => callback(normalize(values)));
+        readStored(Object.keys(defaults), values => callback(normalize(values)));
     }
     // Subscribe before reading, so changes during the initial read win over its snapshot.
-    function watchLocal(keys, callback) {
+    function watchStorage(keys, callback) {
         let initialized = false;
         let pending = {};
         let state = {};
         const listener = (changes, namespace) => {
-            if (namespace !== 'local') return;
             const patch = {};
-            for (const key of keys) if (changes[key]) patch[key] = changes[key].newValue;
+            for (const key of keys) {
+                if (storageArea(key) === namespace && changes[key]) patch[key] = changes[key].newValue;
+            }
             if (!Object.keys(patch).length) return;
             if (!initialized) { Object.assign(pending, patch); return; }
             Object.assign(state, patch);
             callback({ ...state }, Object.keys(patch));
         };
         chrome.storage.onChanged.addListener(listener);
-        chrome.storage.local.get(keys, values => {
+        readStored(keys, values => {
             state = { ...values, ...pending };
             initialized = true;
             callback({ ...state }, keys);
@@ -91,7 +141,7 @@
     function bindSettings(doc, onChange = () => {}) {
         const write = (key, value) => {
             const normalized = normalize({ [key]: value })[key];
-            chrome.storage.local.set({ [key]: normalized });
+            chrome.storage[storageArea(key)].set({ [key]: normalized });
         };
         for (const [name, key] of Object.entries(radioKeys)) {
             doc.querySelectorAll(`input[name="${name}"]`).forEach(el => {
@@ -103,7 +153,7 @@
             if (!el) continue;
             el.addEventListener(el.type === 'range' || key === 'batchCustomPrefix' ? 'input' : 'change', () => write(key, el.value));
         }
-        return watchLocal(Object.keys(defaults), (values, keys) => {
+        return watchStorage(Object.keys(defaults), (values, keys) => {
             const state = normalize(values);
             const byId = (id, apply) => { const el = doc.getElementById(id); if (el) apply(el); };
             for (const [name, key] of Object.entries(radioKeys)) {
@@ -267,7 +317,7 @@
         if (clearButton) clearButton.addEventListener('click', () => {
             chrome.runtime.sendMessage({ action: 'clear_history' }, () => { void chrome.runtime.lastError; });
         });
-        return watchLocal(['downloadHistory'], values => {
+        return watchStorage(['downloadHistory'], values => {
             element.replaceChildren();
             const history = values.downloadHistory || [];
             if (!history.length) {
@@ -340,5 +390,5 @@
             element.scrollTop = element.scrollHeight;
         });
     }
-    root.AppState = { defaults, normalize, chooseEngine, readSettings, watchLocal, bindSettings, watchConsole, bindConsole, bindHistory, watchTasks, loadFormats, sendDownload };
+    root.AppState = { defaults, normalize, mediaSourceUrl, playlistEntryUrl, chooseEngine, readSettings, watchStorage, bindSettings, watchConsole, bindConsole, bindHistory, watchTasks, loadFormats, sendDownload };
 })(globalThis);

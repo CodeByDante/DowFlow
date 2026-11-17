@@ -37,7 +37,7 @@ def detected_selector(format_id):
 
 def probe_height(filename, ffprobe):
     result = subprocess.run(
-        [str(ffprobe), '-v', 'error', '-select_streams', 'v:0',
+        [str(ffprobe), '-v', 'error', '-select_streams', 'V:0',
          '-show_entries', 'stream=height', '-of', 'json', str(filename)],
         capture_output=True, text=True, check=True, timeout=30,
         creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0),
@@ -59,10 +59,15 @@ def enforce_height(filename, height, ffmpeg, ffprobe, start_process=None, finish
     temporary = source.with_name(source.stem + '.nekodrop-' + uuid.uuid4().hex[:8] + source.suffix)
     process = None
     try:
-        args = [str(ffmpeg), '-hide_banner', '-loglevel', 'error', '-y', '-i', str(source),
-                '-map', '0:v:0', '-map', '0:a?', '-map_metadata', '0',
-                '-vf', 'scale=-2:{}'.format(height), '-c:v', 'libx264', '-preset', 'fast',
-                '-crf', '20', '-c:a', 'copy', str(temporary)]
+        args = [str(ffmpeg), '-hide_banner', '-loglevel', 'error', '-y', '-copyts', '-i', str(source),
+                '-map', '0', '-map_metadata', '0', '-map_chapters', '0', '-c', 'copy',
+                '-filter:V:0', 'scale=-2:{}'.format(height)]
+        # V:0 selects the first real video, excluding attached cover art.
+        if source.suffix.lower() == '.webm':
+            args.extend(['-c:V:0', 'libvpx-vp9', '-crf:V:0', '32', '-b:V:0', '0'])
+        else:
+            args.extend(['-c:V:0', 'libx264', '-preset:V:0', 'fast', '-crf:V:0', '20'])
+        args.append(str(temporary))
         if start_process:
             process = start_process(args)
         else:

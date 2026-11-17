@@ -49,6 +49,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === "download_video_link") {
         let targetUrl = info.srcUrl || info.linkUrl || info.pageUrl || (tab ? tab.url : "");
         if (!targetUrl) return;
+        const sourcePage = info.frameUrl || info.pageUrl || tab?.url;
+        const hasVideoPage = info.srcUrl && AppState.mediaSourceUrl(info.srcUrl, sourcePage) !== info.srcUrl;
         
         let title = (tab && tab.title) ? tab.title.replace(/^\(\d+\)\s*/, '').replace(/ - YouTube$/, '').trim() : "Video Descargado (Menú)";
         
@@ -56,6 +58,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             let request = {
                 action: "download",
                 url: targetUrl,
+                pageUrl: hasVideoPage ? sourcePage : undefined,
                 title: title,
                 savePath: result.customSavePath || "",
                 formatSetting: result.formatSetting || "mp4",
@@ -76,7 +79,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     }
 });
 
-AppState.watchLocal(['snifferEnabled', 'maxConcurrentDownloads'], (values, keys) => {
+AppState.watchStorage(['snifferEnabled', 'maxConcurrentDownloads'], (values, keys) => {
     const settings = AppState.normalize(values);
     snifferEnabled = settings.snifferEnabled;
     maxConcurrentDownloadsLimit = settings.maxConcurrentDownloads;
@@ -87,7 +90,8 @@ AppState.watchLocal(['snifferEnabled', 'maxConcurrentDownloads'], (values, keys)
 const formatRequests = new Map();
 const formatCache = new Map();
 function fetchVideoInfo(url, pageUrl, callback, refresh = false) {
-    const key = `${url}\n${pageUrl || ''}`;
+    const sourceUrl = AppState.mediaSourceUrl(url, pageUrl);
+    const key = `${sourceUrl}\n${pageUrl || ''}`;
     if (refresh) formatCache.delete(key);
     const cached = formatCache.get(key);
     if (cached && Date.now() - cached.time < 300000) { callback(cached.response); return; }
@@ -115,7 +119,7 @@ function fetchVideoInfo(url, pageUrl, callback, refresh = false) {
             });
             port.onDisconnect.addListener(() => finish({ success: false, error: chrome.runtime.lastError?.message || 'El host se desconecto durante la deteccion.' }));
             timer = setTimeout(() => finish({ success: false, error: 'La deteccion tardo demasiado. Vuelve a intentarlo.' }), 65000);
-            port.postMessage({ command: 'get_info', url, pageUrl: pageUrl || '', netscapeCookies: cookies || '' });
+            port.postMessage({ command: 'get_info', url: sourceUrl, pageUrl: pageUrl || '', netscapeCookies: cookies || '' });
         } catch (error) { finish({ success: false, error: error.message }); }
     }
     AppState.readSettings(settings => {
@@ -590,13 +594,14 @@ function launchNativeDownload(downloadId, request) {
     port.postMessage({ 
         command: "download", 
         title: request.title,
-        url: request.url, 
+        url: AppState.mediaSourceUrl(request.url, request.pageUrl),
         pageUrl: request.pageUrl,
         savePath: request.savePath,
         formatSetting: request.formatSetting,
         qualitySetting: request.qualitySetting,
         fixedQuality: request.fixedQuality,
         engineSetting: request.engineSetting,
+        autoEngine: request.autoEngine,
         threadCount: request.threadCount,
         audioFormat: request.audioFormat,
         audioQuality: request.audioQuality,

@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentPlaylistVideos = entries.filter(e => e && e.title).map(e => ({
           title: e.title,
-          url: e.url || e.webpage_url || (e.id ? `https://www.youtube.com/watch?v=${e.id}` : null),
+          url: AppState.playlistEntryUrl(e, url),
           duration: e.duration || 0
         })).filter(e => e.url);
 
